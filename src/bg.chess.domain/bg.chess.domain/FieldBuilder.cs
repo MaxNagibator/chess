@@ -27,13 +27,16 @@
             field.Positions = new List<Position>();
             for (var x = 0; x < rules.FieldWidth; x++)
             {
-                for (var y = 0; y < rules.FieldWidth; y++)
+                for (var y = 0; y < rules.FieldHeight; y++)
                 {
                     var positionFromRules = rules.positions.FirstOrDefault(rulPos => rulPos.X == x && rulPos.Y == y);
 
                     field.Positions.Add(new Position(x, y, positionFromRules?.Piece));
                 }
             }
+
+            field.FieldWidth = rules.FieldWidth;
+            field.FieldHeight = rules.FieldHeight;
 
             return field;
         }
