@@ -28,7 +28,7 @@
 
             if (field == null)
             {
-                Globals.FieldBuilder.GetField(new Rules());
+                field = new Field().WithDefaultRules();
             }
 
             _field = field;

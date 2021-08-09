@@ -9,10 +9,7 @@ namespace bg.chess.domain.tests
         [Test]
         public void GetBaseFieldTest()
         {
-            var fieldBuilder = new FieldBuilder();
-            var rules = new Rules();
-            var field = fieldBuilder.GetField(rules);
-
+            var field = new Field().WithDefaultRules();
             string fieldText = GetFieldText(field);
             var expected =
 @"RNBQKBNR
@@ -40,17 +37,16 @@ K    ")]
 K  ")]
         public void GetCustomFieldTest(int width, int height, string expected)
         {
-            var fieldBuilder = new FieldBuilder();
             var rules = new Rules();
             rules.FieldWidth = width;
             rules.FieldHeight = height;
-            rules.positions = new List<Position>
+            rules.Positions = new List<Position>
             {
                 new Position(0, 0, new King(Side.White)),
                 new Position(width-1, height-1, new King(Side.Black)),
             };
 
-            var field = fieldBuilder.GetField(rules);
+            var field = new Field(rules);
 
             string fieldText = GetFieldText(field);
             Assert.AreEqual(expected, fieldText);

@@ -4,19 +4,18 @@
     /// Позиция.
     /// </summary>
     /// <remarks>
-    /// Координаты на поле и фигура.
+    /// Кусочек игрового поля.
     /// </remarks>
-    public class Position
+    public class FieldPosition : Position
     {
         /// <summary>
         /// Конструктор позиции.
         /// </summary>
         /// <param name="x">По горизонтали.</param>
         /// <param name="y">По вертикали.</param>
-        public Position(int x, int y)
+        public FieldPosition(Field field, int x, int y) : base(x, y)
         {
-            X = x;
-            Y = y;
+            Field = field;
         }
 
         /// <summary>
@@ -25,29 +24,14 @@
         /// <param name="x">По горизонтали.</param>
         /// <param name="y">По вертикали.</param>
         /// <param name="piece">Фигура.</param>
-        public Position(int x, int y, Piece piece) : this(x, y)
+        public FieldPosition(Field field, int x, int y, Piece piece) : base(x, y, piece)
         {
-            Piece = piece;
+            Field = field;
         }
 
         /// <summary>
-        /// По горизонтали.
+        /// Поле, к которому пренадлежит этот кусочек.
         /// </summary>
-        public int X { get; }
-
-        /// <summary>
-        /// По вертикали.
-        /// </summary>
-        public int Y { get; }
-
-        /// <summary>
-        /// Шахматная фигура.
-        /// </summary>
-        public Piece Piece { get; }
-
-        public override string ToString()
-        {
-            return X + "/" + Y + (Piece != null ? "/" + Piece.ToString() : null);
-        }
+        public Field Field { get; }
     }
 }

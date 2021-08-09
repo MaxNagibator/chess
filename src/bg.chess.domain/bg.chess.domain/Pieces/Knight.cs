@@ -1,4 +1,7 @@
-﻿namespace bg.chess.domain
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace bg.chess.domain
 {
     /// <summary>
     /// Фигура "Конь"
@@ -11,6 +14,29 @@
         /// <param name="side">Кому пренадлежит фигура.</param>
         public Knight(Side side) : base(side)
         {
+        }
+
+        /// </inheritdoc>
+        public override List<FieldPosition> GetMoves(FieldPosition position)
+        {
+            var width = position.Field.FieldWidth;
+            var height = position.Field.FieldHeight;
+
+            var availablePositions = new List<FieldPosition>();
+
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 1, position.Y + 2));
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 1, position.Y + 2));
+
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 2, position.Y - 1));
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 2, position.Y + 1));
+
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 1, position.Y - 2));
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 1, position.Y - 2));
+
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 2, position.Y - 1));
+            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 2, position.Y + 1));
+
+            return availablePositions.Where(x => x != null).ToList();
         }
 
         public override string ToString()
