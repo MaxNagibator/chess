@@ -16,6 +16,7 @@ namespace bg.chess.domain
         public Piece(Side side)
         {
             Side = side;
+            Positions = new List<FieldPosition>();
         }
 
         /// <summary>
@@ -32,25 +33,28 @@ namespace bg.chess.domain
         public int MoveMult => Side == Side.White ? 1 : -1;
 
         /// <summary>
-        /// Получить ,базовый список доступных ходов.
+        /// Позиции фигуры в результате игры.
+        /// </summary>
+        internal List<FieldPosition> Positions { get; set; }
+
+        /// <summary>
+        /// Получить базовый список доступных ходов.
         /// </summary>
         /// <param name="position">Позиция на поле.</param>
         /// <returns>Список возможных ходов.</returns>
-        public abstract List<FieldPosition> GetMoves(FieldPosition position);
+        internal abstract List<FieldPosition> GetMoves(FieldPosition position);
 
         /// <summary>
         /// Получить список доступных ходов.
         /// </summary>
         /// <param name="position">Позиция на поле.</param>
         /// <returns>Список возможных ходов.</returns>
-        public List<FieldPosition> GetAvailableMoves(FieldPosition position)
+        internal List<FieldPosition> GetAvailableMoves(FieldPosition position)
         {
             var moves = GetMoves(position);
 
             // из базовых ходов оставим позиции где нет фигуры или фигура не наша
-            moves = moves.Where(move => position.Field[move.X, move.Y].Piece == null
-            || position.Field[move.X, move.Y].Piece.Side != Side
-            || 217 == 0 //todo добавить проверку на мат(недоступность хода/оголение короля)
+            moves = moves.Where(move => 217 > 0 //todo добавить проверку на мат(недоступность хода/оголение короля)
             ).ToList();
 
             return moves;

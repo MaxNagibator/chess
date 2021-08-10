@@ -52,7 +52,9 @@
                 {
                     var positionFromRules = rules.Positions.FirstOrDefault(rulPos => rulPos.X == x && rulPos.Y == y);
 
-                    Positions.Add(new FieldPosition(this, x, y, positionFromRules?.Piece));
+                    var pos = new FieldPosition(this, x, y, positionFromRules?.Piece);
+                    Positions.Add(pos);
+                    positionFromRules?.Piece.Positions.Add(pos);
                 }
             }
 
@@ -98,11 +100,6 @@
         public FieldPosition GetPositionOrEmpty(int x, int y)
         {
             return Positions.FirstOrDefault(p => p.X == x && p.Y == y);
-        }
-
-        public void AddPosition(int x, int y, Piece piece = null)
-        {
-            Positions.Add(new FieldPosition(this, x, y, piece));
         }
 
         public void Move(Side side, int fromX, int fromY, int toX, int toY)

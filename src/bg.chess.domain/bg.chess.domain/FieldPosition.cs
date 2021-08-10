@@ -1,4 +1,6 @@
-﻿namespace bg.chess.domain
+﻿using System.Collections.Generic;
+
+namespace bg.chess.domain
 {
     /// <summary>
     /// Позиция.
@@ -33,5 +35,19 @@
         /// Поле, к которому пренадлежит этот кусочек.
         /// </summary>
         public Field Field { get; }
+
+        /// <summary>
+        /// Получить список доступных ходов в этой клетке.
+        /// </summary>
+        /// <returns>Список возможных ходов.</returns>
+        public List<FieldPosition> GetAvailableMoves()
+        {
+            if(Piece == null)
+            {
+                return new List<FieldPosition>();
+            }
+
+            return Piece.GetMoves(this);
+        }
     }
 }

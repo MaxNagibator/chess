@@ -16,7 +16,7 @@ namespace bg.chess.domain
         }
 
         /// </inheritdoc>
-        public override List<FieldPosition> GetMoves(FieldPosition position)
+        internal override List<FieldPosition> GetMoves(FieldPosition position)
         {
             throw new System.NotImplementedException();
         }

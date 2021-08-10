@@ -45,6 +45,26 @@
         /// </summary>
         public Piece Piece { get; }
 
+        /// <summary>
+        /// Позиция пустая или там вражеская фигура.
+        /// </summary>
+        /// <param name="side">Сторона фигуры вызывающей проверку.</param>
+        /// <returns>true - если позиция без фигуры или вражеская фигура присутствует.</returns>
+        public bool IsEmptyOrEnemy(Side side)
+        {
+            return Piece == null || Piece.Side != side;
+        }
+
+        /// <summary>
+        /// Позиция с вражеской фигурой.
+        /// </summary>
+        /// <param name="side">Сторона фигуры вызывающей проверку.</param>
+        /// <returns>true - если вражеская фигура присутствует.</returns>
+        public bool IsEnemy(Side side)
+        {
+            return Piece != null && Piece.Side != side;
+        }
+
         public override string ToString()
         {
             return X + "/" + Y + (Piece != null ? "/" + Piece.ToString() : null);

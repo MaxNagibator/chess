@@ -17,7 +17,7 @@ namespace bg.chess.domain
         }
 
         /// </inheritdoc>
-        public override List<FieldPosition> GetMoves(FieldPosition position)
+        internal override List<FieldPosition> GetMoves(FieldPosition position)
         {
             var width = position.Field.FieldWidth;
             var height = position.Field.FieldHeight;
@@ -36,7 +36,7 @@ namespace bg.chess.domain
             availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 2, position.Y - 1));
             availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 2, position.Y + 1));
 
-            return availablePositions.Where(x => x != null).ToList();
+            return availablePositions.Where(x => x != null && position.Field[x.X, x.Y].IsEmptyOrEnemy(Side)).ToList();
         }
 
         public override string ToString()
