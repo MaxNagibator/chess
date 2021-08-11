@@ -18,7 +18,11 @@ namespace Bg.Chess.Domain
         /// </inheritdoc>
         internal override List<FieldPosition> GetMoves(FieldPosition position)
         {
-            throw new System.NotImplementedException();
+            var availablePositions = new List<FieldPosition>();
+
+            AddAvailableDiagonalMoves(position, availablePositions);
+
+            return availablePositions;
         }
 
         public override string ToString()
