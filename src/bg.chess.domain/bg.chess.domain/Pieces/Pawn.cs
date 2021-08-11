@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace bg.chess.domain
+namespace Bg.Chess.Domain
 {
     /// <summary>
     /// Фигура "Пешка"

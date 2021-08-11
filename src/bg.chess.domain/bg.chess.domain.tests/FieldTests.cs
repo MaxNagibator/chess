@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
 
-namespace bg.chess.domain.tests
+namespace Bg.Chess.Domain.Tests
 {
     public class FieldTests
     {

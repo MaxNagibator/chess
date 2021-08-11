@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace bg.chess.domain
+namespace Bg.Chess.Domain
 {
     /// <summary>
     /// Фигура "Король"

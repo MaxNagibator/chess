@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bg.chess.domain", "bg.chess.domain\bg.chess.domain.csproj", "{E55C1550-C445-4424-81E1-D6141D5C5A6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bg.Chess.Domain", "bg.chess.domain\Bg.Chess.Domain.csproj", "{E55C1550-C445-4424-81E1-D6141D5C5A6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bg.chess.domain.tests", "bg.chess.domain.tests\bg.chess.domain.tests.csproj", "{98A3A065-B5B9-42EC-9750-F08448569FB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bg.Chess.Domain.Tests", "bg.chess.domain.tests\Bg.Chess.Domain.Tests.csproj", "{98A3A065-B5B9-42EC-9750-F08448569FB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

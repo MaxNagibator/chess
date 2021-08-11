@@ -1,4 +1,4 @@
-﻿namespace bg.chess.domain
+﻿namespace Bg.Chess.Domain
 {
     using System;
 

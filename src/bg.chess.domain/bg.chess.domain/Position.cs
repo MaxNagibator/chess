@@ -1,4 +1,4 @@
-﻿namespace bg.chess.domain
+﻿namespace Bg.Chess.Domain
 {
     /// <summary>
     /// Позиция.
@@ -63,6 +63,16 @@
         public bool IsEnemy(Side side)
         {
             return Piece != null && Piece.Side != side;
+        }
+
+        /// <summary>
+        /// Позиция с дружественной фигурой.
+        /// </summary>
+        /// <param name="side">Сторона фигуры вызывающей проверку.</param>
+        /// <returns>true - если дружественная фигура присутствует.</returns>
+        public bool IsTeammate(Side side)
+        {
+            return Piece != null && Piece.Side == side;
         }
 
         public override string ToString()
