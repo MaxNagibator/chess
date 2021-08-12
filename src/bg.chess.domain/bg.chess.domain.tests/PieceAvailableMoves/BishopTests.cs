@@ -2,15 +2,15 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bg.Chess.Domain.Tests.PieceMoves
+namespace Bg.Chess.Domain.PieceAvailableMoves
 {
     /// <summary>
-    /// Ќабор тестов на передвижение ферз€.
+    /// Ќабор тестов на доступные ходы слона.
     /// </summary>
-    public class QueenMoveTests
+    public class BishopTests
     {
         /// <summary>
-        /// ‘ерзь на первой и последней линии всегда имеет 21 ход.
+        /// —лон на первой и последней линии всегда имеет 7 ходов.
         /// </summary>
         [TestCase(0)]
         [TestCase(7)]
@@ -21,32 +21,29 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
                 var rules = new Rules();
                 rules.FieldWidth = 8;
                 rules.FieldHeight = 8;
-                var piece = new Queen(Side.White);
+                var piece = new Bishop(Side.White);
                 rules.Positions = new List<Position> { new Position(x, y, piece) };
 
                 var field = new Field(rules);
 
                 var moves = field[x, y].GetAvailableMoves();
-                Assert.AreEqual(21, moves.Count);
+                Assert.AreEqual(7, moves.Count);
             }
         }
 
         /// <summary>
-        /// ¬ разных местах доски ферзь имеет разное количество ходов.
+        /// ¬ разных местах доски слон имеет разное количество ходов.
         /// </summary>
-        /// <remarks>
-        /// ѕо диагонал€м разное, а по горизонтали и вертикали всегда 7 + 7
-        /// </remarks>
-        [TestCase(1, 1, 9 + 7 + 7)]
-        [TestCase(1, 4, 9 + 7 + 7)]
-        [TestCase(3, 3, 13 + 7 + 7)]
-        [TestCase(5, 5, 11 + 7 + 7)]
+        [TestCase(1, 1, 9)]
+        [TestCase(1, 4, 9)]
+        [TestCase(3, 3, 13)]
+        [TestCase(5, 5, 11)]
         public void BishopCustomPositionTest(int x, int y, int movesCount)
         {
             var rules = new Rules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
-            var piece = new Queen(Side.White);
+            var piece = new Bishop(Side.White);
             rules.Positions = new List<Position> { new Position(x, y, piece) };
 
             var field = new Field(rules);
@@ -56,10 +53,10 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
         }
 
         /// <summary>
-        /// ‘ерзь в центре пол€, но на клетках куда она может сходить, есть две фигуры по горизонтали
+        /// —лон в центре пол€, но на клетках куда она может сходить, есть две фигуры
         /// </summary>
         /// <remarks>
-        /// 3 + 3 хода у кон€ по незан€тым диагональным направлени€м. и 14 по горизонтали/вертикали
+        /// 3 + 3 хода у кон€ по незан€тым направлени€м.
         /// ‘игуры на рассто€нии 2 клеток по другим направлени€м. 
         /// ≈сли они союзные, то один ход, если вражеские то два возможных хода.
         /// </remarks>
@@ -74,7 +71,7 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>
             {
-                new Position(4, 4, new Queen(Side.White)),
+                new Position(4, 4, new Bishop(Side.White)),
                 new Position(6, 6, new Pawn(first == 1 ? Side.White : Side.Black)),
                 new Position(2, 2, new Pawn(second == 1 ? Side.White : Side.Black))
             };
@@ -84,7 +81,7 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
             var field = new Field(rules);
 
             var moves = field[4, 4].GetAvailableMoves();
-            Assert.AreEqual(14 + 6 + 4 - teammateCount, moves.Count);
+            Assert.AreEqual(6 + 4 - teammateCount, moves.Count);
         }
     }
 }

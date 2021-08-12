@@ -15,4 +15,12 @@
         /// </summary>
         Black = 1,
     }
+
+    public static class SideHelper
+    {
+        public static Side Invert(this Side side)
+        {
+           return side == Side.White ? Side.Black : Side.White;
+        }
+    }
 }

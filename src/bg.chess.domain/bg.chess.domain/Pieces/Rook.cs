@@ -16,7 +16,7 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        internal override List<FieldPosition> GetMoves(FieldPosition position)
+        protected override List<FieldPosition> GetBaseMoves(FieldPosition position)
         {
             var availablePositions = new List<FieldPosition>();
 

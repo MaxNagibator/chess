@@ -2,12 +2,12 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bg.Chess.Domain.Tests.PieceMoves
+namespace Bg.Chess.Domain.PieceAvailableMoves
 {
     /// <summary>
-    /// Набор тестов на передвижение ладьи.
+    /// Набор тестов на доступные ходы ладьи.
     /// </summary>
-    public class RookMoveTests
+    public class RookTests
     {
         /// <summary>
         /// В любой точке поле ладья имеет 7 + 7 ходов

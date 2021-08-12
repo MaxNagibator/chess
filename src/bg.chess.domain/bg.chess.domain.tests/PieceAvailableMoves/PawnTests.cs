@@ -2,12 +2,12 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bg.Chess.Domain.Tests.PieceMoves
+namespace Bg.Chess.Domain.PieceAvailableMoves
 {
     /// <summary>
-    /// Набор тестов на передвижение пешки.
+    /// Набор тестов на доступные ходы пешки.
     /// </summary>
-    public class PawnMoveTests
+    public class PawnTests
     {
         /// <summary>
         /// Проверка пешки на пустой доске.

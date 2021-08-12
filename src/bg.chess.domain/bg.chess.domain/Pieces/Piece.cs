@@ -42,7 +42,7 @@ namespace Bg.Chess.Domain
         /// </summary>
         /// <param name="position">Позиция на поле.</param>
         /// <returns>Список возможных ходов.</returns>
-        internal abstract List<FieldPosition> GetMoves(FieldPosition position);
+        protected abstract List<FieldPosition> GetBaseMoves(FieldPosition position);
 
         /// <summary>
         /// Получить список доступных ходов.
@@ -51,7 +51,7 @@ namespace Bg.Chess.Domain
         /// <returns>Список возможных ходов.</returns>
         internal List<FieldPosition> GetAvailableMoves(FieldPosition position)
         {
-            var moves = GetMoves(position);
+            var moves = GetBaseMoves(position);
 
             // из базовых ходов оставим позиции где нет фигуры или фигура не наша
             moves = moves.Where(move => 217 > 0 //todo добавить проверку на мат(недоступность хода/оголение короля)

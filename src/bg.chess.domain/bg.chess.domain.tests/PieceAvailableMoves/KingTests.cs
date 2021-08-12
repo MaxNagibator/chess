@@ -2,43 +2,30 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bg.Chess.Domain.Tests.PieceMoves
+namespace Bg.Chess.Domain.PieceAvailableMoves
 {
     /// <summary>
-    /// Набор тестов на передвижение коня.
+    /// Набор тестов на доступные ходы короля.
     /// </summary>
-    public class KnightMoveTests
+    public class KingTests
     {
         /// <summary>
         /// Проверка коня на пустой доске.
         /// </summary>
         /// <remarks>
-        /// Конь в углах имеет 4 хода, 
-        /// рядом с углом смещённый на 1 1 имеет 4
-        /// У края, но не в углу 4 хода
-        /// Рядом с краем, но не в углу 6 ходов
-        /// В "центре" 8 ходов
+        /// В углах король имеет 3 хода.
+        /// Касаясь одного из краёв поля 5 ходов.
         /// </remarks>
         [Test]
-        [TestCase(0, 0, 2)]
-        [TestCase(0, 7, 2)]
-        [TestCase(7, 0, 2)]
-        [TestCase(7, 7, 2)]
+        [TestCase(0, 0, 3)]
+        [TestCase(0, 7, 3)]
+        [TestCase(7, 0, 3)]
+        [TestCase(7, 7, 3)]
 
-        [TestCase(1, 1, 4)]
-        [TestCase(1, 6, 4)]
-        [TestCase(6, 1, 4)]
-        [TestCase(6, 6, 4)]
-
-        [TestCase(4, 0, 4)]
-        [TestCase(4, 7, 4)]
-        [TestCase(0, 4, 4)]
-        [TestCase(7, 4, 4)]
-
-        [TestCase(4, 6, 6)]
-        [TestCase(4, 1, 6)]
-        [TestCase(6, 4, 6)]
-        [TestCase(1, 4, 6)]
+        [TestCase(0, 1, 5)]
+        [TestCase(1, 0, 5)]
+        [TestCase(7, 1, 5)]
+        [TestCase(1, 7, 5)]
 
         [TestCase(2, 2, 8)]
         [TestCase(4, 4, 8)]
@@ -49,7 +36,7 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
             var rules = new Rules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
-            var piece = new Knight(Side.White);
+            var piece = new King(Side.White);
             rules.Positions = new List<Position> { new Position(x, y, piece) };
 
             var field = new Field(rules);
@@ -59,7 +46,7 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
         }
 
         /// <summary>
-        /// Конь в центре, но на клетках куда он может сходить, есть две фигуры
+        /// Король в центре, но на клетках куда он может сходить, есть две фигуры
         /// </summary>
         [TestCase(1, 1)]
         [TestCase(1, -1)]
@@ -72,9 +59,9 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>
             {
-                new Position(4, 5, new Knight(Side.White)),
-                new Position(6, 6, new Rook(first == 1 ? Side.White : Side.Black)),
-                new Position(2, 4, new Rook(second == 1 ? Side.White : Side.Black))
+                new Position(4, 5, new King(Side.White)),
+                new Position(4, 6, new Knight(first == 1 ? Side.White : Side.Black)),
+                new Position(3, 4, new Knight(second == 1 ? Side.White : Side.Black))
             };
 
             var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White) - 1;

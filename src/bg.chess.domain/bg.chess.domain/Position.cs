@@ -1,4 +1,6 @@
-﻿namespace Bg.Chess.Domain
+﻿using System;
+
+namespace Bg.Chess.Domain
 {
     /// <summary>
     /// Позиция.
@@ -43,7 +45,7 @@
         /// <summary>
         /// Шахматная фигура.
         /// </summary>
-        public Piece Piece { get; }
+        public Piece Piece { get; private set; }
 
         /// <summary>
         /// Позиция пустая или там вражеская фигура.
@@ -73,6 +75,36 @@
         public bool IsTeammate(Side side)
         {
             return Piece != null && Piece.Side == side;
+        }
+
+        /// <summary>
+        /// Передвинуть фигуру с текущего поля на новую позицию.
+        /// </summary>
+        /// <param name="newPosition">Новая позиция.</param>
+        internal void Move(Position newPosition)
+        {
+            if(Piece == null)
+            {
+                throw new Exception("piece not found");
+            }
+
+            if(newPosition.Piece != null)
+            {
+                if (newPosition.IsTeammate(Piece.Side))
+                {
+                    // при правильной логики мы не увидим эти ошибки никогда, но добавить стоит
+                    throw new Exception("it's teammate attack!!!");
+                }
+
+                //todo нужен метод "смерти фигуры" или не нужен?
+                //newPosition.Piece.Kill();
+
+                //так я вернулся)) убедился что музыку слышно)) мотивация)
+                    //мотивированно пью пивко)
+            }
+
+            newPosition.Piece = Piece;
+            Piece = null;
         }
 
         public override string ToString()

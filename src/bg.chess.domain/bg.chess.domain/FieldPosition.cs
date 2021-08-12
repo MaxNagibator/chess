@@ -47,7 +47,7 @@ namespace Bg.Chess.Domain
                 return new List<FieldPosition>();
             }
 
-            return Piece.GetMoves(this);
+            return Piece.GetAvailableMoves(this);
         }
     }
 }

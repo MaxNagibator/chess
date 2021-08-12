@@ -105,6 +105,16 @@
         public void Move(Side side, int fromX, int fromY, int toX, int toY)
         {
             var currentPosition = this[fromX, fromY];
+            var nextPosition = this[toX, toY];
+            if(currentPosition == null)
+            {
+                throw new Exception("position not found by " + fromX + "/" + fromY);
+            }
+            if (nextPosition == null)
+            {
+                throw new Exception("position not found by " + toX + "/" + toY);
+            }
+
             var piece = currentPosition.Piece;
             if (piece == null)
             {
@@ -115,7 +125,15 @@
                 throw new Exception("piece not this side");
             }
 
-            piece.GetMoves(currentPosition);
+            // в прошлых сериях (шутка) серии, мы родили ходы оставшихся фигур. и тем самым позволим сейчас себе двинуть фигуру (ну тока накодить над).
+            var moves = piece.GetAvailableMoves(currentPosition);
+
+            if(moves.Any(move=>move.X == toX && move.Y == toY))
+            {
+
+                currentPosition.Move(this[toX, toY]);
+            }
+
         }
     }
 }
