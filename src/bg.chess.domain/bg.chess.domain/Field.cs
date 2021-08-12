@@ -92,6 +92,72 @@
         }
 
         /// <summary>
+        /// Проверка на мат.
+        /// </summary>
+        /// <param name="checkSide">Проверяющая сторона.</param>
+        /// <remarks>
+        /// Если белые проверяют на мат, то нам надо проверить вражеского короля.
+        /// </remarks>
+        /// <returns>true - если мат.</returns>
+        internal bool CheckMate(Side checkSide)
+        {
+            var shah = false;
+            var enemyKing = Positions.First(x => x.Piece != null && x.Piece is King && x.Piece.Side == checkSide.Invert());
+            foreach (var pos in Positions)
+            {
+                if (pos.Piece != null && pos.Piece.Side == checkSide)
+                {
+                    var moves = pos.GetAvailableMoves();
+                    if (moves.Any(x => x.X == enemyKing.X && x.Y == enemyKing.Y))
+                    {
+                        //шах!
+                        shah = true;
+
+                    }
+                }
+            }
+            if (shah)
+            {
+                var kingMoves = enemyKing.GetAvailableMoves();
+                if (kingMoves.Count == 0)
+                {
+                    return true;
+                }
+
+                // todo если король может срубить нашу фигуру, но его взамен срубит другая наша, то он не может срубить её
+                // и это надо обыграть
+                // прокачать метод GetAvailableMoves(PARAMETER);
+                // PARAMETER позволяет своим рубить своих (ну типо, его место займёт враг. а я его срублю).
+
+                foreach (var pos in Positions)
+                {
+                    if (pos.Piece != null && pos.Piece.Side == checkSide)
+                    {
+                        var moves = pos.GetAvailableMoves();
+                        var kingMovesCount = kingMoves.Count;
+                        for (int i = 0; i < kingMovesCount; i++)
+                        {
+                            FieldPosition kingMove = kingMoves[i];
+                            var kingBlockedMove = moves.FirstOrDefault(x => x.X == kingMove.X && x.Y == kingMove.Y);
+                            if (kingBlockedMove != null)
+                            {
+                                kingMoves.Remove(kingBlockedMove);
+                                i--;
+                                kingMovesCount--;
+                                if (kingMoves.Count == 0)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Получить кусочек позиции, или пустоту
         /// </summary>
         /// <param name="x">По ширине.</param>
@@ -106,7 +172,7 @@
         {
             var currentPosition = this[fromX, fromY];
             var nextPosition = this[toX, toY];
-            if(currentPosition == null)
+            if (currentPosition == null)
             {
                 throw new Exception("position not found by " + fromX + "/" + fromY);
             }
@@ -128,12 +194,14 @@
             // в прошлых сериях (шутка) серии, мы родили ходы оставшихся фигур. и тем самым позволим сейчас себе двинуть фигуру (ну тока накодить над).
             var moves = piece.GetAvailableMoves(currentPosition);
 
-            if(moves.Any(move=>move.X == toX && move.Y == toY))
+            if (moves.Any(move => move.X == toX && move.Y == toY))
             {
-
                 currentPosition.Move(this[toX, toY]);
             }
-
+            else
+            {
+                throw new Exception("move not available " + toX + "/" + toY);
+            }
         }
     }
 }

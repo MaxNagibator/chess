@@ -39,7 +39,9 @@ namespace Bg.Chess.Domain
             return availablePositions.Where(x => x != null).ToList();
         }
 
-        // проверка на возможность убить врага
+        /// <summary>
+        /// Проверка на возможность убить врага
+        /// </summary>
         private void CheckEnemyKill(FieldPosition position, int shiftX, List<FieldPosition> availablePositions)
         {
             var pos1 = position.Field.GetPositionOrEmpty(position.X + shiftX, position.Y + MoveMult);

@@ -51,6 +51,7 @@ namespace Bg.Chess.Domain
         /// <returns>Список возможных ходов.</returns>
         internal List<FieldPosition> GetAvailableMoves(FieldPosition position)
         {
+            // todo если король под шахом, то нужно это будет учесть
             var moves = GetBaseMoves(position);
 
             // из базовых ходов оставим позиции где нет фигуры или фигура не наша

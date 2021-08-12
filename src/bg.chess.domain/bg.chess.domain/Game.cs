@@ -1,6 +1,7 @@
 ﻿namespace Bg.Chess.Domain
 {
     using System;
+    using System.Linq;
 
     /// <summary>
     /// Игра.
@@ -8,7 +9,11 @@
     public class Game
     {
         private Field _field;
-        private GameState state = GameState.WaitStart;
+
+        /// <summary>
+        /// Состояние игры.
+        /// </summary>
+        public GameState State { get; private set; } = GameState.WaitStart;
 
         // нужны буковки и цифорки, чтоб кормить на вход можно было e2 e4 :)
         private string widthSymbols = "abcdefgh";
@@ -25,7 +30,7 @@
         /// <param name="field">Поле.</param>
         public void Init(Field field = null)
         {
-            if (state != GameState.WaitStart)
+            if (State != GameState.WaitStart)
             {
                 throw new Exception("game state != waitStart");
             }
@@ -36,7 +41,7 @@
             }
 
             _field = field;
-            state = GameState.InProgress;
+            State = GameState.InProgress;
         }
 
         /// <summary>
@@ -76,7 +81,7 @@
         /// <param name="toY">Куда Y</param>
         public void Move(Side side, int fromX, int fromY, int toX, int toY)
         {
-            if (state != GameState.InProgress)
+            if (State != GameState.InProgress)
             {
                 throw new Exception("game state != InProgress");
             }
@@ -88,6 +93,20 @@
 
             _field.Move(side, fromX, fromY, toX, toY);
 
+            // над теперь реализовать какойнить бомжатский MVP для окончания игры
+            var mate = _field.CheckMate(StepSide);
+            if (mate)
+            {
+                if(StepSide == Side.White)
+                {
+                    State = GameState.WinWhite;
+                }
+                else
+                {
+                    State = GameState.WinBlack;
+                }
+                return;
+            }
             StepSide = StepSide.Invert();
         }
     }

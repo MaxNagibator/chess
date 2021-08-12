@@ -10,7 +10,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
     public class KingTests
     {
         /// <summary>
-        /// Проверка коня на пустой доске.
+        /// Проверка короля на пустой доске.
         /// </summary>
         /// <remarks>
         /// В углах король имеет 3 хода.

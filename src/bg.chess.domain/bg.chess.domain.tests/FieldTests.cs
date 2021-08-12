@@ -52,7 +52,7 @@ K  ")]
             Assert.AreEqual(expected, fieldText);
         }
 
-        private static string GetFieldText(Field field)
+        private string GetFieldText(Field field)
         {
             var sb = new StringBuilder();
             for (var h = field.FieldHeight - 1; h >= 0; h--)
