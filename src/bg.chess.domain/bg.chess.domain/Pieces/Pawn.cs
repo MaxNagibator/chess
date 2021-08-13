@@ -16,6 +16,8 @@ namespace Bg.Chess.Domain
         {
         }
 
+        //todo если пешка прекрывает фигуру, которая угрожает королю, то королю пофиг и он срубит!
+        // учеть тут MOVEMODE! написать тестик
         /// </inheritdoc>
         protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
         {
@@ -26,7 +28,7 @@ namespace Bg.Chess.Domain
             availablePositions.Add(position.Field.GetPositionOrEmpty(position.X, position.Y + MoveMult));
 
             // если пешка ранее не ходила, то имеет право сходить на две клетки
-            if (Positions.Count == 1)
+            if (IsInStartPosition)
             {
                 availablePositions.Add(position.Field.GetPositionOrEmpty(position.X, position.Y + MoveMult + MoveMult));
             }
@@ -35,6 +37,8 @@ namespace Bg.Chess.Domain
             CheckEnemyKill(position, -1, availablePositions);
 
             // todo если пешка достигра конца поля, то может породить событие "выбор фигуры"
+
+            // todo взятие на проходе https://ru.wikipedia.org/wiki/%D0%92%D0%B7%D1%8F%D1%82%D0%B8%D0%B5_%D0%BD%D0%B0_%D0%BF%D1%80%D0%BE%D1%85%D0%BE%D0%B4%D0%B5
 
             return availablePositions.Where(x => x != null).ToList();
         }

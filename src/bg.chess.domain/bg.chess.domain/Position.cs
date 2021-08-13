@@ -103,6 +103,8 @@ namespace Bg.Chess.Domain
                     //мотивированно пью пивко)
             }
 
+            // todo записать в историю ходов новую позицию фигуры (начать с тестика, что пешка может сделать два раза двойной шаг)
+            //Piece.Positions.Add(newPosition);
             newPosition.Piece = Piece;
             Piece = null;
         }

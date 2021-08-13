@@ -21,7 +21,6 @@ namespace Bg.Chess.Domain
             var availablePositions = new List<FieldPosition>();
 
             AddAvailableDiagonalMoves(position, availablePositions, moveMode);
-            //начнём со слона, так как в нашем тесте ферзя король забирает, а конь куколдит
 
             return availablePositions;
         }

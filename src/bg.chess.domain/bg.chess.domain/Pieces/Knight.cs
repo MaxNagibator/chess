@@ -19,24 +19,18 @@ namespace Bg.Chess.Domain
         /// </inheritdoc>
         protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
         {
-            var width = position.Field.FieldWidth;
-            var height = position.Field.FieldHeight;
-
             var availablePositions = new List<FieldPosition>();
 
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 1, position.Y + 2));
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 1, position.Y + 2));
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X - 1, position.Y + 2);
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X + 1, position.Y + 2);
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X + 2, position.Y - 1);
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X + 2, position.Y + 1);
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X - 1, position.Y - 2);
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X + 1, position.Y - 2);
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X - 2, position.Y - 1);
+            AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X - 2, position.Y + 1);
 
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 2, position.Y - 1));
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 2, position.Y + 1));
-
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 1, position.Y - 2));
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X + 1, position.Y - 2));
-
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 2, position.Y - 1));
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X - 2, position.Y + 1));
-
-            return availablePositions.Where(x => x != null && position.Field[x.X, x.Y].IsEmptyOrEnemy(Side)).ToList();
+            return availablePositions;
         }
 
         public override string ToString()

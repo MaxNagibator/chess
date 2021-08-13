@@ -33,6 +33,11 @@ namespace Bg.Chess.Domain
         public int MoveMult => Side == Side.White ? 1 : -1;
 
         /// <summary>
+        /// Фигура в результате игры не двигалась.
+        /// </summary>
+        internal bool IsInStartPosition => Positions.Count == 1;
+
+        /// <summary>
         /// Позиции фигуры в результате игры.
         /// </summary>
         internal List<FieldPosition> Positions { get; set; }
@@ -156,7 +161,7 @@ namespace Bg.Chess.Domain
         /// <param name="x">Координаты проверки по ширине.</param>
         /// <param name="y">Координаты проверки по высоте</param>
         /// <returns>true - если клетка существует и на ней нет союзной(или своей по требованию) фигуры.</returns>
-        private bool AddPositionIfAvailable(Field field, List<FieldPosition> availablePositions, MoveMode moveMode, int x, int y)
+        protected bool AddPositionIfAvailable(Field field, List<FieldPosition> availablePositions, MoveMode moveMode, int x, int y)
         {
             var pos = field.GetPositionOrEmpty(x, y);
             if (pos == null)

@@ -68,6 +68,16 @@
         public List<FieldPosition> Positions { get; private set; }
 
         /// <summary>
+        /// Получить позиции на поле, где находятся фигуры игрока.
+        /// </summary>
+        /// <param name="side">Игровая сторона, чьи фигуры мы хотим получить.</param>
+        /// <returns>Список позиций.</returns>
+        public List<FieldPosition> GetPositionsWithPiece(Side side)
+        {
+            return Positions.Where(x => x.Piece != null && x.Piece.Side == side).ToList();
+        }
+
+        /// <summary>
         /// Ширина поля
         /// </summary>
         public int FieldWidth { get; private set; }

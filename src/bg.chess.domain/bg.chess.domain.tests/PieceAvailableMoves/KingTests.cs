@@ -31,7 +31,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         [TestCase(4, 4, 8)]
         [TestCase(5, 5, 8)]
         [TestCase(4, 5, 8)]
-        public void KnightDefaultTest(int x, int y, int movesCount)
+        public void KingDefaultTest(int x, int y, int movesCount)
         {
             var rules = new Rules();
             rules.FieldWidth = 8;
@@ -48,11 +48,22 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <summary>
         /// Король в центре, но на клетках куда он может сходить, есть две фигуры
         /// </summary>
-        [TestCase(1, 1)]
-        [TestCase(1, -1)]
-        [TestCase(-1, 1)]
-        [TestCase(-1, -1)]
-        public void KnightWithTeamMateTest(int first, int second)
+        /// <remarks>
+        /// Вражеский конь сверху блокирует две клетки для хода вниз.
+        /// Вражеский конь левее и ниже блокирует клетку хода вверх.
+        /// Схема фигур ниже
+        /// 0N0
+        /// 0K0
+        /// N00 да та же херня
+        /// +N+
+        /// +K-
+        /// N+- да та же херня
+        /// </remarks>
+        [TestCase(1, 1, 6)]
+        [TestCase(1, -1, 6)]
+        [TestCase(-1, 1, 6)]
+        [TestCase(-1, -1, 4)] //todo бля да 4 хода вроде
+        public void KingWithTeamMateTest(int right, int leftDown, int availableMoves)
         {
             var rules = new Rules();
             rules.FieldWidth = 8;
@@ -60,16 +71,143 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             rules.Positions = new List<Position>
             {
                 new Position(4, 5, new King(Side.White)),
-                new Position(4, 6, new Knight(first == 1 ? Side.White : Side.Black)),
-                new Position(3, 4, new Knight(second == 1 ? Side.White : Side.Black))
+                new Position(4, 6, new Knight(right == 1 ? Side.White : Side.Black)),
+                new Position(3, 4, new Knight(leftDown == 1 ? Side.White : Side.Black))
             };
 
-            var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White) - 1;
+            var field = new Field(rules);
+            var moves = field[4, 5].GetAvailableMoves();
+            Assert.AreEqual(availableMoves, moves.Count);
+        }
+
+        /// <summary>
+        /// Королю ничего не угрожает и доступны обе рокировки.
+        /// </summary>
+        /// <remarks>
+        /// Король и две ладьи на своих местах, никто не двигался.
+        /// У короля так же доступно 5 ходов, помимо рокировки.
+        /// </remarks>
+        [TestCase(Side.White)]
+        [TestCase(Side.Black)]
+        public void KingCastlingTest(Side side)
+        {
+            var rules = new Rules();
+            rules.FieldWidth = 8;
+            rules.FieldHeight = 8;
+            var lineIndex = side == Side.White ? 0 : 7;
+            rules.Positions = new List<Position>
+            {                
+                new Position(0, lineIndex, new Rook(side)),
+                new Position(4, lineIndex, new King(side)),
+                new Position(7, lineIndex, new Rook(side)),
+            };
 
             var field = new Field(rules);
 
-            var moves = field[4, 5].GetAvailableMoves();
-            Assert.AreEqual(8 - teammateCount, moves.Count);
+            var moves = field[4, lineIndex].GetAvailableMoves();
+            Assert.AreEqual(5 + 2, moves.Count);
+            Assert.AreEqual(true, moves.Any(x => x.X == 2));
+            Assert.AreEqual(true, moves.Any(x => x.X == 6));
+        }
+
+        /// <summary>
+        /// Король имеет атакуемое поле с одной из сторон рокировки.
+        /// </summary>
+        /// <remarks>
+        /// Король и две ладьи на своих местах, никто не двигался.
+        /// У короля так же доступно 3 ходов, помимо 1 рокировки.
+        /// Рокировка с одной стороны будет под атакой и не доступна.
+        /// </remarks>
+        [TestCase(Side.White, 3)]
+        [TestCase(Side.Black, 3)]
+        [TestCase(Side.White, 5)]
+        [TestCase(Side.Black, 5)]
+        public void KingCastlingWithAttackTest(Side side, int attackVerticalLine)
+        {
+            var rules = new Rules();
+            rules.FieldWidth = 8;
+            rules.FieldHeight = 8;
+            var lineIndex = side == Side.White ? 0 : 7;
+            var attackLineIndex = side == Side.White ? 7 : 0;
+            rules.Positions = new List<Position>
+            {
+                new Position(0, lineIndex, new Rook(side)),
+                new Position(4, lineIndex, new King(side)),
+                new Position(7, lineIndex, new Rook(side)),
+
+                new Position(attackVerticalLine, attackLineIndex, new Rook(side.Invert())),
+            };
+
+            var field = new Field(rules);
+
+            var moves = field[4, lineIndex].GetAvailableMoves();
+            Assert.AreEqual(3 + 1, moves.Count);
+            if (attackVerticalLine > 4)
+            { 
+                Assert.AreEqual(true, moves.Any(x => x.X == 2));
+            }
+            else
+            {
+                Assert.AreEqual(true, moves.Any(x => x.X == 6));
+            }
+        }
+
+
+        /// <summary>
+        /// Король под шахом не может рокироваться.
+        /// </summary>
+        /// <remarks>
+        /// Король и две ладьи на своих местах, никто не двигался.
+        /// Королю остаётся только уйти от шаха 4 хода в стороны.
+        /// </remarks>
+        [TestCase(Side.White)]
+        [TestCase(Side.Black)]
+        public void KingCastlingWithShahTest(Side side)
+        {
+            var rules = new Rules();
+            rules.FieldWidth = 8;
+            rules.FieldHeight = 8;
+            var lineIndex = side == Side.White ? 0 : 7;
+            var attackLineIndex = side == Side.White ? 7 : 0;
+            rules.Positions = new List<Position>
+            {
+                new Position(0, lineIndex, new Rook(side)),
+                new Position(4, lineIndex, new King(side)),
+                new Position(7, lineIndex, new Rook(side)),
+
+                new Position(4, attackLineIndex, new Rook(side.Invert())),
+            };
+
+            var field = new Field(rules);
+
+            var moves = field[4, lineIndex].GetAvailableMoves();
+            Assert.AreEqual(4, moves.Count);
+        }
+
+        /// <summary>
+        /// Кони мешают делать рокировки
+        /// </summary>
+        [TestCase(Side.White)]
+        [TestCase(Side.Black)]
+        public void KingCastlingBlockedByTeammate(Side side)
+        {
+            var rules = new Rules();
+            rules.FieldWidth = 8;
+            rules.FieldHeight = 8;
+            var lineIndex = side == Side.White ? 0 : 7;
+            rules.Positions = new List<Position>
+            {
+                new Position(0, lineIndex, new Rook(side)),
+                new Position(1, lineIndex, new Knight(side)),
+                new Position(4, lineIndex, new King(side)),
+                new Position(6, lineIndex, new Knight(side)),
+                new Position(7, lineIndex, new Rook(side)),
+            };
+
+            var field = new Field(rules);
+
+            var moves = field[4, lineIndex].GetAvailableMoves();
+            Assert.AreEqual(5, moves.Count);
         }
     }
 }
