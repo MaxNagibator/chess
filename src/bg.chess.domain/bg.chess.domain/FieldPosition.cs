@@ -39,15 +39,16 @@ namespace Bg.Chess.Domain
         /// <summary>
         /// Получить список доступных ходов в этой клетке.
         /// </summary>
+        /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <returns>Список возможных ходов.</returns>
-        public List<FieldPosition> GetAvailableMoves()
+        public List<FieldPosition> GetAvailableMoves(MoveMode moveMode = MoveMode.WithoutKillTeammates)
         {
             if(Piece == null)
             {
                 return new List<FieldPosition>();
             }
 
-            return Piece.GetAvailableMoves(this);
+            return Piece.GetAvailableMoves(this, moveMode);
         }
     }
 }

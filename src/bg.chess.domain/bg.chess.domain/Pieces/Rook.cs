@@ -16,11 +16,11 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        protected override List<FieldPosition> GetBaseMoves(FieldPosition position)
+        protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
         {
             var availablePositions = new List<FieldPosition>();
 
-            AddAvailableLineMoves(position, availablePositions);
+            AddAvailableLineMoves(position, availablePositions, moveMode);
 
             return availablePositions;
         }

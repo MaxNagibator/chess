@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bg.Chess.Domain", "bg.chess.domain\Bg.Chess.Domain.csproj", "{E55C1550-C445-4424-81E1-D6141D5C5A6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bg.Chess.Domain", "bg.chess.domain\Bg.Chess.Domain.csproj", "{E55C1550-C445-4424-81E1-D6141D5C5A6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bg.Chess.Domain.Tests", "bg.chess.domain.tests\Bg.Chess.Domain.Tests.csproj", "{98A3A065-B5B9-42EC-9750-F08448569FB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bg.Chess.Domain.Tests", "bg.chess.domain.tests\Bg.Chess.Domain.Tests.csproj", "{98A3A065-B5B9-42EC-9750-F08448569FB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NonProjectItems", "NonProjectItems", "{9F62E787-B6D5-4F22-8863-81E91C7FD6C2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\worklog.txt = ..\..\worklog.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

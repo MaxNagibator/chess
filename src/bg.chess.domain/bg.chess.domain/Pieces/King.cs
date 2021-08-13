@@ -16,12 +16,12 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        protected override List<FieldPosition> GetBaseMoves(FieldPosition position)
+        protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
         {
             var availablePositions = new List<FieldPosition>();
 
-            AddAvailableDiagonalMoves(position, availablePositions, 1);
-            AddAvailableLineMoves(position, availablePositions, 1);
+            AddAvailableDiagonalMoves(position, availablePositions, moveMode, 1);
+            AddAvailableLineMoves(position, availablePositions, moveMode, 1);
 
             // todo добавить обсчёт возможности рокировки
 

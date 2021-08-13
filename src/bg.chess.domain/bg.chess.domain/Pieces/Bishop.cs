@@ -16,11 +16,12 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        protected override List<FieldPosition> GetBaseMoves(FieldPosition position)
+        protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
         {
             var availablePositions = new List<FieldPosition>();
 
-            AddAvailableDiagonalMoves(position, availablePositions);
+            AddAvailableDiagonalMoves(position, availablePositions, moveMode);
+            //начнём со слона, так как в нашем тесте ферзя король забирает, а конь куколдит
 
             return availablePositions;
         }

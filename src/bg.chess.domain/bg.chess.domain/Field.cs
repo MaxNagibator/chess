@@ -124,16 +124,11 @@
                     return true;
                 }
 
-                // todo если король может срубить нашу фигуру, но его взамен срубит другая наша, то он не может срубить её
-                // и это надо обыграть
-                // прокачать метод GetAvailableMoves(PARAMETER);
-                // PARAMETER позволяет своим рубить своих (ну типо, его место займёт враг. а я его срублю).
-
                 foreach (var pos in Positions)
                 {
                     if (pos.Piece != null && pos.Piece.Side == checkSide)
                     {
-                        var moves = pos.GetAvailableMoves();
+                        var moves = pos.GetAvailableMoves(MoveMode.NotRules);
                         var kingMovesCount = kingMoves.Count;
                         for (int i = 0; i < kingMovesCount; i++)
                         {
@@ -191,8 +186,7 @@
                 throw new Exception("piece not this side");
             }
 
-            // в прошлых сериях (шутка) серии, мы родили ходы оставшихся фигур. и тем самым позволим сейчас себе двинуть фигуру (ну тока накодить над).
-            var moves = piece.GetAvailableMoves(currentPosition);
+            var moves = piece.GetAvailableMoves(currentPosition, MoveMode.WithoutKillTeammates);
 
             if (moves.Any(move => move.X == toX && move.Y == toY))
             {

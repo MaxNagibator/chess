@@ -17,7 +17,7 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        protected override List<FieldPosition> GetBaseMoves(FieldPosition position)
+        protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
         {
             var width = position.Field.FieldWidth;
             var height = position.Field.FieldHeight;
