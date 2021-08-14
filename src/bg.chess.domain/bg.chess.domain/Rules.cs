@@ -1,5 +1,6 @@
 ﻿namespace Bg.Chess.Domain
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -21,5 +22,10 @@
         /// Расположение фигур
         /// </summary>
         public List<Position> Positions { get; set; }
+
+        /// <summary>
+        /// Методы получения фигуры для превращения пешки.
+        /// </summary>
+        public Dictionary<string, Func<Side, Piece>> PawnTransforms { get; set; }
     }
 }

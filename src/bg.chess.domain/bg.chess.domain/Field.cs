@@ -60,6 +60,7 @@
 
             FieldWidth = rules.FieldWidth;
             FieldHeight = rules.FieldHeight;
+            PawnTransforms = rules.PawnTransforms;
         }
 
         /// <summary>
@@ -86,6 +87,11 @@
         /// Высота поля
         /// </summary>
         public int FieldHeight { get; private set; }
+
+        /// <summary>
+        /// Методы получения фигуры для превращения пешки.
+        /// </summary>
+        public Dictionary<string, Func<Side, Piece>> PawnTransforms { get; private set; }
 
         /// <summary>
         /// Взять позицию по координатам.
@@ -173,7 +179,7 @@
             return Positions.FirstOrDefault(p => p.X == x && p.Y == y);
         }
 
-        public void Move(Side side, int fromX, int fromY, int toX, int toY)
+        public void Move(Side side, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null)
         {
             var currentPosition = this[fromX, fromY];
             var nextPosition = this[toX, toY];
@@ -200,7 +206,7 @@
 
             if (moves.Any(move => move.X == toX && move.Y == toY))
             {
-                currentPosition.Move(this[toX, toY]);
+                currentPosition.Move(this[toX, toY], pawnTransformPiece);
             }
             else
             {

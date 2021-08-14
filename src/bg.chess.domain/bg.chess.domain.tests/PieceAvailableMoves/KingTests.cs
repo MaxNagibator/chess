@@ -51,18 +51,11 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <remarks>
         /// Вражеский конь сверху блокирует две клетки для хода вниз.
         /// Вражеский конь левее и ниже блокирует клетку хода вверх.
-        /// Схема фигур ниже
-        /// 0N0
-        /// 0K0
-        /// N00 да та же херня
-        /// +N+
-        /// +K-
-        /// N+- да та же херня
         /// </remarks>
         [TestCase(1, 1, 6)]
         [TestCase(1, -1, 6)]
         [TestCase(-1, 1, 6)]
-        [TestCase(-1, -1, 4)] //todo бля да 4 хода вроде
+        [TestCase(-1, -1, 4)]
         public void KingWithTeamMateTest(int right, int leftDown, int availableMoves)
         {
             var rules = new Rules();

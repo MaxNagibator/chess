@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,5 +35,28 @@ namespace Bg.Chess.Domain.PieceMoves
             Assert.AreEqual(Side.White, field[2, 5].Piece.Side);
         }
 
+        /// <summary>
+        /// Ходим пешкой и получаем другую фигуру
+        /// </summary>
+        [Test]
+        [TestCase("queen", typeof(Queen))]
+        [TestCase("rook", typeof(Rook))]
+        [TestCase("knight", typeof(Knight))]
+        [TestCase("bishop", typeof(Bishop))]
+        public void PawnTransformToQueen(string name, Type pieceType)
+        {
+            var rules = new ClassicRules();
+            rules.Positions = new List<Position>
+            {
+                new Position(1, 6, new Pawn(Side.White))
+            };
+
+            var field = new Field(rules);
+
+            field.Move(Side.White, 1, 6, 1, 7, name);
+
+            Assert.AreEqual(Side.White, field[1, 7].Piece.Side);
+            Assert.AreEqual(pieceType, field[1, 7].Piece.GetType());
+        }
     }
 }

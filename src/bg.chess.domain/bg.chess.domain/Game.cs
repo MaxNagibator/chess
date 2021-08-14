@@ -48,11 +48,10 @@
         /// Сделать ход.
         /// </summary>
         /// <param name="side">Кто ходит.</param>
-        /// <param name="fromX">Откуда X</param>
-        /// <param name="fromY">Откуда Y</param>
-        /// <param name="toX">Куда X</param>
-        /// <param name="toY">Куда Y</param>
-        public void Move(Side side, string from, string to)
+        /// <param name="from">Откуда. пример A1.</param>
+        /// <param name="to">Куда. пример A7.</param>
+        /// <param name="pawnTransformPiece">Название фигуры, для превращения пешки в другую фигуру в конце поля.</param>
+        public void Move(Side side, string from, string to, string pawnTransformPiece = null)
         {
             if (from.Length != 2)
             {
@@ -68,18 +67,19 @@
             var fromY = heightSymbols.IndexOf(from[1]);
             var toX = widthSymbols.IndexOf(to[0]);
             var toY = heightSymbols.IndexOf(to[1]);
-            Move(side, fromX, fromY, toX, toY);
+            Move(side, fromX, fromY, toX, toY, pawnTransformPiece);
         }
 
         /// <summary>
         /// Сделать ход.
         /// </summary>
         /// <param name="side">Кто ходит.</param>
-        /// <param name="fromX">Откуда X</param>
-        /// <param name="fromY">Откуда Y</param>
-        /// <param name="toX">Куда X</param>
-        /// <param name="toY">Куда Y</param>
-        public void Move(Side side, int fromX, int fromY, int toX, int toY)
+        /// <param name="fromX">Откуда X.</param>
+        /// <param name="fromY">Откуда Y.</param>
+        /// <param name="toX">Куда X.</param>
+        /// <param name="toY">Куда Y.</param>
+        /// <param name="pawnTransformPiece">Название фигуры, для превращения пешки в другую фигуру в конце поля.</param>
+        public void Move(Side side, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null)
         {
             if (State != GameState.InProgress)
             {
@@ -91,7 +91,7 @@
                 throw new Exception("now move " + StepSide);
             }
 
-            _field.Move(side, fromX, fromY, toX, toY);
+            _field.Move(side, fromX, fromY, toX, toY, pawnTransformPiece);
 
             // над теперь реализовать какойнить бомжатский MVP для окончания игры
             var mate = _field.CheckMate(StepSide);

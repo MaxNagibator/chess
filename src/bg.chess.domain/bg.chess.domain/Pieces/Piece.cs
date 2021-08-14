@@ -10,6 +10,16 @@ namespace Bg.Chess.Domain
     public abstract class Piece
     {
         /// <summary>
+        /// Может ли пешка превратится в эту фигуру, если достигнет конца поля.
+        /// </summary>
+        public abstract bool IsPawnTransformAvailable { get; }
+
+        /// <summary>
+        /// Имя фигуры.
+        /// </summary>
+        public abstract string Name { get; }
+
+        /// <summary>
         /// Конструктор фигуры.
         /// </summary>
         /// <param name="side">Кому пренадлежит фигура.</param>

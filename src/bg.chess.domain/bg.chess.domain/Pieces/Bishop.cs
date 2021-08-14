@@ -7,6 +7,12 @@ namespace Bg.Chess.Domain
     /// </summary>
     public class Bishop : Piece
     {
+        /// </inheritdoc>
+        public override bool IsPawnTransformAvailable => true;
+
+        /// </inheritdoc>
+        public override string Name => "bishop";
+
         /// <summary>
         /// Конструктор фигуры.
         /// </summary>

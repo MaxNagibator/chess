@@ -1,6 +1,9 @@
 ﻿namespace Bg.Chess.Domain
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     /// Правила игры.
@@ -47,6 +50,21 @@
                 new Position(6, 6, new Pawn(Side.Black)),
                 new Position(7, 6, new Pawn(Side.Black)),
             };
+
+
+            // todo сделать нечто более нормальное
+            PawnTransforms = new Dictionary<string, Func<Side, Piece>>();
+            var ourtype = typeof(Piece);
+            IEnumerable<Type> list = Assembly.GetAssembly(ourtype).GetTypes().Where(type => type.IsSubclassOf(ourtype));
+
+            foreach (Type itm in list)
+            {
+                var instance = (Piece)Activator.CreateInstance(itm, Side.White);
+                if (instance.IsPawnTransformAvailable)
+                {
+                    PawnTransforms.Add(instance.Name, (Side side) => { return (Piece)Activator.CreateInstance(itm, side); });
+                }
+            }
         }
     }
 }
