@@ -37,6 +37,11 @@
             return this;
         }
 
+        /// <summary>
+        /// Позиции фигуры в результате игры.
+        /// </summary>
+        public List<Move> Moves { get; internal set; }
+
         private void SetRules(Rules rules)
         {
             var duplicatePos = rules.Positions.GroupBy(p => new { p.X, p.Y }).FirstOrDefault(pg => pg.Count() > 1);
@@ -54,13 +59,14 @@
 
                     var pos = new Position(this, x, y, positionFromRules?.Piece);
                     Positions.Add(pos);
-                    positionFromRules?.Piece.Positions.Add(pos);
+                    positionFromRules?.Piece.AddPosition(pos);
                 }
             }
 
             FieldWidth = rules.FieldWidth;
             FieldHeight = rules.FieldHeight;
             PawnTransforms = rules.PawnTransforms;
+            Moves = new List<Move>();
         }
 
         /// <summary>

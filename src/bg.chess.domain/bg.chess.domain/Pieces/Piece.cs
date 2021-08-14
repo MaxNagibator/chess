@@ -54,7 +54,21 @@ namespace Bg.Chess.Domain
         /// <summary>
         /// Позиции фигуры в результате игры.
         /// </summary>
-        internal List<Position> Positions { get; set; }
+        private List<Position> Positions { get; set; }
+
+        /// <summary>
+        /// Добавить историю движения фигуры.
+        /// </summary>
+        internal void AddPosition(Position position)
+        {
+            var lastPos = Positions.LastOrDefault();
+            if (lastPos != null)
+            {
+                position.Field.Moves.Add(new Move(lastPos, position));
+            }
+
+            Positions.Add(position);
+        }
 
         /// <summary>
         /// Получить базовый список доступных ходов.

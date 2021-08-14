@@ -143,15 +143,10 @@ namespace Bg.Chess.Domain
                 }
             }
 
-            // todo записать в историю ходов новую позицию фигуры (начать с тестика, что пешка может сделать два раза двойной шаг)
-            Piece.Positions.Add(newPosition);
-
-            //нужен метод "смерти фигуры" или не нужен?
-            //newPosition.Piece.Kill();
-
             var isTransform = false;
             if (Piece is Pawn)
             {
+                // если дошли до края поля, то выбираем новую фигуру
                 if (Piece.MoveMult == 1 && newPosition.Y == Field.FieldHeight - 1
                     || Piece.MoveMult == -1 && newPosition.Y == 0)
                 {
@@ -171,6 +166,16 @@ namespace Bg.Chess.Domain
                     isTransform = true;
                     newPosition.Piece = newPiece;
                 }
+
+                var pawn = Piece as Pawn;
+                if (pawn.EnPassant(this, 1) != null)
+                {
+                    Field[this.X + 1, this.Y].Piece = null;
+                }
+                if (pawn.EnPassant(this, -1) != null)
+                {
+                    Field[this.X - 1, this.Y].Piece = null;
+                }
             }
 
             if (isTransform == false)
@@ -178,6 +183,7 @@ namespace Bg.Chess.Domain
                 newPosition.Piece = Piece;
             }
 
+            Piece.AddPosition(newPosition);
             Piece = null;
         }
     }

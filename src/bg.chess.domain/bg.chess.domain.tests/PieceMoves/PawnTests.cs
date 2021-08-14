@@ -34,7 +34,7 @@ namespace Bg.Chess.Domain.PieceMoves
         }
 
         /// <summary>
-        /// Пешка, после того как сходила, не может ходить на две клетки вперёд
+        /// Пешка, после того как сходила, не может ходить на две клетки вперёд.
         /// </summary>
         [Test]
         public void PawnAfterMoveCanNotTwoFieldMoveTest()
@@ -53,6 +53,25 @@ namespace Bg.Chess.Domain.PieceMoves
             Assert.AreEqual(1, moves.Count);
             Assert.AreEqual(1, moves[0].X);
             Assert.AreEqual(3, moves[0].Y);
+        }
+
+        /// <summary>
+        /// Пешка не должна ходить на две клетки, если перед ней фигура.
+        /// </summary>
+        [Test]
+        public void PawnThroughKnightCanNotTwoFieldMoveTest()
+        {
+            var rules = new ClassicRules();
+            rules.Positions = new List<Position>
+            {
+                new Position(1, 1, new Pawn(Side.White)),
+                new Position(1, 2, new Knight(Side.White)),
+            };
+
+            var field = new Field(rules);
+            var moves = field[1, 1].GetAvailableMoves();
+
+            Assert.AreEqual(0, moves.Count);
         }
 
         /// <summary>
@@ -77,6 +96,39 @@ namespace Bg.Chess.Domain.PieceMoves
 
             Assert.AreEqual(Side.White, field[1, 7].Piece.Side);
             Assert.AreEqual(pieceType, field[1, 7].Piece.GetType());
+        }
+
+        /// <summary>
+        /// Взятие вражеской пешки на проходе.
+        /// </summary>
+        /// <remarks>
+        /// 1 - белый находится правее чёрного
+        /// -1 - белый находится левее чёрного
+        /// </remarks>
+        [Test]
+        [TestCase(1)]
+        [TestCase(-1)]
+        public void PawnEnPassantMoveTest(int shift)
+        {
+            var rules = new ClassicRules();
+            rules.Positions = new List<Position>
+            {
+                new Position(4, 6, new Pawn(Side.Black)),
+                new Position(4 + shift, 4, new Pawn(Side.White)),
+                new Position(4 + shift, 5, new Knight(Side.White)),
+            };
+
+            var field = new Field(rules);
+
+            field.Move(Side.Black, 4, 6, 4, 4);
+            var moves = field[4 + shift, 4].GetAvailableMoves();
+
+            Assert.AreEqual(1, moves.Count);
+            Assert.AreEqual(4, moves[0].X);
+            Assert.AreEqual(5, moves[0].Y);
+
+            field.Move(Side.White, 4 + shift, 4, 4, 5);
+            Assert.IsNull(field[4, 4].Piece, "Вражеская фигура осталась на поле");
         }
     }
 }
