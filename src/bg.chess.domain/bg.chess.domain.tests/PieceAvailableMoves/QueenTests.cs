@@ -12,13 +12,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <summary>
         /// Ферзь на первой и последней линии всегда имеет 21 ход.
         /// </summary>
+        [Test]
         [TestCase(0)]
         [TestCase(7)]
         public void BishopFirstLineTest(int x)
         {
             for (var y = 0; y < 8; y++)
             {
-                var rules = new Rules();
+                var rules = new ClassicRules();
                 rules.FieldWidth = 8;
                 rules.FieldHeight = 8;
                 var piece = new Queen(Side.White);
@@ -37,13 +38,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <remarks>
         /// По диагоналям разное, а по горизонтали и вертикали всегда 7 + 7
         /// </remarks>
+        [Test]
         [TestCase(1, 1, 9 + 7 + 7)]
         [TestCase(1, 4, 9 + 7 + 7)]
         [TestCase(3, 3, 13 + 7 + 7)]
         [TestCase(5, 5, 11 + 7 + 7)]
         public void BishopCustomPositionTest(int x, int y, int movesCount)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var piece = new Queen(Side.White);
@@ -63,13 +65,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// Фигуры на расстоянии 2 клеток по другим направлениям. 
         /// Если они союзные, то один ход, если вражеские то два возможных хода.
         /// </remarks>
+        [Test]
         [TestCase(1, 1)]
         [TestCase(1, -1)]
         [TestCase(-1, 1)]
         [TestCase(-1, -1)]
         public void BishopWithTeamMateTest(int first, int second)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>

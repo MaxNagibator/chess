@@ -16,9 +16,7 @@ namespace Bg.Chess.Domain.PieceMoves
         [Test]
         public void PawnMoveWithAtackTest()
         {
-            var rules = new Rules();
-            rules.FieldWidth = 8;
-            rules.FieldHeight = 8;
+            var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
                 new Position(1, 1, new Pawn(Side.White)),
@@ -33,6 +31,28 @@ namespace Bg.Chess.Domain.PieceMoves
             field.Move(Side.White, 1, 4, 2, 5);
 
             Assert.AreEqual(Side.White, field[2, 5].Piece.Side);
+        }
+
+        /// <summary>
+        /// Пешка, после того как сходила, не может ходить на две клетки вперёд
+        /// </summary>
+        [Test]
+        public void PawnAfterMoveCanNotTwoFieldMoveTest()
+        {
+            var rules = new ClassicRules();
+            rules.Positions = new List<Position>
+            {
+                new Position(1, 1, new Pawn(Side.White)),
+            };
+
+            var field = new Field(rules);
+
+            field.Move(Side.White, 1, 1, 1, 2);
+            var moves = field[1, 2].GetAvailableMoves();
+
+            Assert.AreEqual(1, moves.Count);
+            Assert.AreEqual(1, moves[0].X);
+            Assert.AreEqual(3, moves[0].Y);
         }
 
         /// <summary>

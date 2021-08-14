@@ -9,6 +9,10 @@ namespace Bg.Chess.Domain
     /// </summary>
     public abstract class Piece
     {
+        //// todo между Position и Piece нужно чтото третие
+        //// PieceType например, который будет описывать поведение фигуры.
+        //// а Piece будет реальной фигурой на доске
+
         /// <summary>
         /// Может ли пешка превратится в эту фигуру, если достигнет конца поля.
         /// </summary>
@@ -26,7 +30,7 @@ namespace Bg.Chess.Domain
         public Piece(Side side)
         {
             Side = side;
-            Positions = new List<FieldPosition>();
+            Positions = new List<Position>();
         }
 
         /// <summary>
@@ -50,7 +54,7 @@ namespace Bg.Chess.Domain
         /// <summary>
         /// Позиции фигуры в результате игры.
         /// </summary>
-        internal List<FieldPosition> Positions { get; set; }
+        internal List<Position> Positions { get; set; }
 
         /// <summary>
         /// Получить базовый список доступных ходов.
@@ -58,7 +62,7 @@ namespace Bg.Chess.Domain
         /// <param name="position">Позиция на поле.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <returns>Список возможных ходов.</returns>
-        protected abstract List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode);
+        protected abstract List<Position> GetBaseMoves(Position position, MoveMode moveMode);
 
         /// <summary>
         /// Получить список доступных ходов.
@@ -66,7 +70,7 @@ namespace Bg.Chess.Domain
         /// <param name="position">Позиция на поле.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <returns>Список возможных ходов.</returns>
-        internal List<FieldPosition> GetAvailableMoves(FieldPosition position, MoveMode moveMode)
+        internal List<Position> GetAvailableMoves(Position position, MoveMode moveMode)
         {
             // todo если король под шахом, то нужно это будет учесть
             var moves = GetBaseMoves(position, moveMode);
@@ -85,7 +89,7 @@ namespace Bg.Chess.Domain
         /// <param name="availablePositions">Список доступных позиций.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <param name="pieceMaxRange">Максимальная длина хода фигуры.</param>
-        protected void AddAvailableDiagonalMoves(FieldPosition position, List<FieldPosition> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
+        protected void AddAvailableDiagonalMoves(Position position, List<Position> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
         {
             for (var i = 1; i <= pieceMaxRange; i++)
             {
@@ -127,7 +131,7 @@ namespace Bg.Chess.Domain
         /// <param name="availablePositions">Список доступных позиций.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <param name="pieceMaxRange">Максимальная длина хода фигуры.</param>
-        protected void AddAvailableLineMoves(FieldPosition position, List<FieldPosition> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
+        protected void AddAvailableLineMoves(Position position, List<Position> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
         {
             for (var i = 1; i <= pieceMaxRange; i++)
             {
@@ -171,7 +175,7 @@ namespace Bg.Chess.Domain
         /// <param name="x">Координаты проверки по ширине.</param>
         /// <param name="y">Координаты проверки по высоте</param>
         /// <returns>true - если клетка существует и на ней нет союзной(или своей по требованию) фигуры.</returns>
-        protected bool AddPositionIfAvailable(Field field, List<FieldPosition> availablePositions, MoveMode moveMode, int x, int y)
+        protected bool AddPositionIfAvailable(Field field, List<Position> availablePositions, MoveMode moveMode, int x, int y)
         {
             var pos = field.GetPositionOrEmpty(x, y);
             if (pos == null)

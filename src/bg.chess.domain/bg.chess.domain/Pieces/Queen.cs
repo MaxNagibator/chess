@@ -22,9 +22,9 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
+        protected override List<Position> GetBaseMoves(Position position, MoveMode moveMode)
         {
-            var availablePositions = new List<FieldPosition>();
+            var availablePositions = new List<Position>();
 
             AddAvailableDiagonalMoves(position, availablePositions, moveMode);
             AddAvailableLineMoves(position, availablePositions, moveMode);

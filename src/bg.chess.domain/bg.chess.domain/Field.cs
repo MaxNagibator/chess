@@ -45,14 +45,14 @@
                 throw new Exception("dublicate position " + duplicatePos.Key.X + "/" + duplicatePos.Key.Y);
             }
 
-            Positions = new List<FieldPosition>();
+            Positions = new List<Position>();
             for (var x = 0; x < rules.FieldWidth; x++)
             {
                 for (var y = 0; y < rules.FieldHeight; y++)
                 {
                     var positionFromRules = rules.Positions.FirstOrDefault(rulPos => rulPos.X == x && rulPos.Y == y);
 
-                    var pos = new FieldPosition(this, x, y, positionFromRules?.Piece);
+                    var pos = new Position(this, x, y, positionFromRules?.Piece);
                     Positions.Add(pos);
                     positionFromRules?.Piece.Positions.Add(pos);
                 }
@@ -66,14 +66,14 @@
         /// <summary>
         /// Позиции на поле.
         /// </summary>
-        public List<FieldPosition> Positions { get; private set; }
+        public List<Position> Positions { get; private set; }
 
         /// <summary>
         /// Получить позиции на поле, где находятся фигуры игрока.
         /// </summary>
         /// <param name="side">Игровая сторона, чьи фигуры мы хотим получить.</param>
         /// <returns>Список позиций.</returns>
-        public List<FieldPosition> GetPositionsWithPiece(Side side)
+        public List<Position> GetPositionsWithPiece(Side side)
         {
             return Positions.Where(x => x.Piece != null && x.Piece.Side == side).ToList();
         }
@@ -99,7 +99,7 @@
         /// <param name="x">По ширине.</param>
         /// <param name="y">По высоте.</param>
         /// <returns>Позиция.</returns>
-        public FieldPosition this[int x, int y]
+        public Position this[int x, int y]
         {
             get
             {
@@ -148,7 +148,7 @@
                         var kingMovesCount = kingMoves.Count;
                         for (int i = 0; i < kingMovesCount; i++)
                         {
-                            FieldPosition kingMove = kingMoves[i];
+                            Position kingMove = kingMoves[i];
                             var kingBlockedMove = moves.FirstOrDefault(x => x.X == kingMove.X && x.Y == kingMove.Y);
                             if (kingBlockedMove != null)
                             {
@@ -174,7 +174,7 @@
         /// <param name="x">По ширине.</param>
         /// <param name="y">По высоте.</param>
         /// <returns>Позиция.</returns>
-        public FieldPosition GetPositionOrEmpty(int x, int y)
+        public Position GetPositionOrEmpty(int x, int y)
         {
             return Positions.FirstOrDefault(p => p.X == x && p.Y == y);
         }

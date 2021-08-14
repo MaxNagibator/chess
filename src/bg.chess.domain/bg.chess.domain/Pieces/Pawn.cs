@@ -23,12 +23,12 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
+        protected override List<Position> GetBaseMoves(Position position, MoveMode moveMode)
         {
             var width = position.Field.FieldWidth;
             var height = position.Field.PawnTransforms;
 
-            var availablePositions = new List<FieldPosition>();
+            var availablePositions = new List<Position>();
             availablePositions.Add(position.Field.GetPositionOrEmpty(position.X, position.Y + MoveMult));
 
             // если пешка ранее не ходила, то имеет право сходить на две клетки
@@ -51,7 +51,7 @@ namespace Bg.Chess.Domain
         /// <summary>
         /// Проверка на возможность убить врага
         /// </summary>
-        private void CheckEnemyKill(FieldPosition position, int shiftX, List<FieldPosition> availablePositions)
+        private void CheckEnemyKill(Position position, int shiftX, List<Position> availablePositions)
         {
             var pos1 = position.Field.GetPositionOrEmpty(position.X + shiftX, position.Y + MoveMult);
             if (pos1?.IsEnemy(Side) == true)

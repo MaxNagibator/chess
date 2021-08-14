@@ -37,7 +37,7 @@ K    ")]
 K  ")]
         public void GetCustomFieldTest(int width, int height, string expected)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = width;
             rules.FieldHeight = height;
             rules.Positions = new List<Position>

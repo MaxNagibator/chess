@@ -33,7 +33,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         [TestCase(4, 5, 8)]
         public void KingDefaultTest(int x, int y, int movesCount)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var piece = new King(Side.White);
@@ -52,13 +52,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// Вражеский конь сверху блокирует две клетки для хода вниз.
         /// Вражеский конь левее и ниже блокирует клетку хода вверх.
         /// </remarks>
+        [Test]
         [TestCase(1, 1, 6)]
         [TestCase(1, -1, 6)]
         [TestCase(-1, 1, 6)]
         [TestCase(-1, -1, 4)]
         public void KingWithTeamMateTest(int right, int leftDown, int availableMoves)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>
@@ -80,11 +81,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// Король и две ладьи на своих местах, никто не двигался.
         /// У короля так же доступно 5 ходов, помимо рокировки.
         /// </remarks>
+        [Test]
         [TestCase(Side.White)]
         [TestCase(Side.Black)]
         public void KingCastlingTest(Side side)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var lineIndex = side == Side.White ? 0 : 7;
@@ -111,13 +113,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// У короля так же доступно 3 ходов, помимо 1 рокировки.
         /// Рокировка с одной стороны будет под атакой и не доступна.
         /// </remarks>
+        [Test]
         [TestCase(Side.White, 3)]
         [TestCase(Side.Black, 3)]
         [TestCase(Side.White, 5)]
         [TestCase(Side.Black, 5)]
         public void KingCastlingWithAttackTest(Side side, int attackVerticalLine)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var lineIndex = side == Side.White ? 0 : 7;
@@ -153,11 +156,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// Король и две ладьи на своих местах, никто не двигался.
         /// Королю остаётся только уйти от шаха 4 хода в стороны.
         /// </remarks>
+        [Test]
         [TestCase(Side.White)]
         [TestCase(Side.Black)]
         public void KingCastlingWithShahTest(Side side)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var lineIndex = side == Side.White ? 0 : 7;
@@ -180,11 +184,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <summary>
         /// Кони мешают делать рокировки
         /// </summary>
+        [Test]
         [TestCase(Side.White)]
         [TestCase(Side.Black)]
-        public void KingCastlingBlockedByTeammate(Side side)
+        public void KingCastlingBlockedByTeammateTest(Side side)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var lineIndex = side == Side.White ? 0 : 7;
@@ -201,6 +206,58 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
 
             var moves = field[4, lineIndex].GetAvailableMoves();
             Assert.AreEqual(5, moves.Count);
+        }
+
+        /// <summary>
+        /// Король хочет срубить пешку, но её прикрывает другая пешка, поэтому он не может.
+        /// </summary>
+        /// <remarks>
+        /// Король не может срубить пешку по диагонали, но может уйти вверх или вправо.
+        /// </remarks>
+        [Test]
+        public void KingDontKillPawnTest()
+        {
+            var rules = new ClassicRules();
+            rules.Positions = new List<Position>
+            {
+                new Position(0, 0, new King(Side.White)),
+                new Position(1, 1, new Pawn(Side.Black)),
+                new Position(2, 2, new Pawn(Side.Black))
+            };
+
+            var field = new Field(rules);
+
+            var moves = field[0, 0].GetAvailableMoves();
+            Assert.AreEqual(2, moves.Count);
+            Assert.AreEqual(true, moves.Any(x=>x.X == 0 && x.Y == 1));
+            Assert.AreEqual(true, moves.Any(x=>x.X == 1 && x.Y == 0));
+        }
+
+        /// <summary>
+        /// Король хочет срубить коня, но её прикрывает пешка, поэтому он не может.
+        /// </summary>
+        /// <remarks>
+        /// Король не может срубить коня справа, но может уйти вверх или вправо.
+        /// </remarks>
+        [Test]
+        public void KingDontKillKnightTest()
+        {
+            var rules = new ClassicRules();
+            rules.Positions = new List<Position>
+            {
+                new Position(0, 1, new King(Side.White)),
+                new Position(1, 1, new Knight(Side.Black)),
+                new Position(2, 2, new Pawn(Side.Black))
+            };
+
+            var field = new Field(rules);
+
+            var moves = field[0, 0].GetAvailableMoves();
+            Assert.AreEqual(4, moves.Count);
+            Assert.AreEqual(true, moves.Any(x => x.X == 0 && x.Y == 0));
+            Assert.AreEqual(true, moves.Any(x => x.X == 1 && x.Y == 0));
+            Assert.AreEqual(true, moves.Any(x => x.X == 0 && x.Y == 2));
+            Assert.AreEqual(true, moves.Any(x => x.X == 1 && x.Y == 2));
         }
     }
 }

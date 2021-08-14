@@ -23,18 +23,18 @@ namespace Bg.Chess.Domain
         }
 
         /// </inheritdoc>
-        protected override List<FieldPosition> GetBaseMoves(FieldPosition position, MoveMode moveMode)
+        protected override List<Position> GetBaseMoves(Position position, MoveMode moveMode)
         {
-            var availablePositions = new List<FieldPosition>();
+            var availablePositions = new List<Position>();
 
             AddAvailableDiagonalMoves(position, availablePositions, moveMode, 1);
             AddAvailableLineMoves(position, availablePositions, moveMode, 1);
 
             var enemyPositions = position.Field.GetPositionsWithPiece(Side.Invert());
-            var notAttackedPositions = new List<FieldPosition>();
+            var notAttackedPositions = new List<Position>();
             foreach (var pos in availablePositions)
             {
-                var isSafetyMove = KingMoveNotAttack(new List<FieldPosition> { pos }, enemyPositions, MoveMode.NotRules);
+                var isSafetyMove = KingMoveNotAttack(new List<Position> { pos }, enemyPositions, MoveMode.NotRules);
                 if (isSafetyMove)
                 {
                     notAttackedPositions.Add(pos);
@@ -52,7 +52,7 @@ namespace Bg.Chess.Domain
         /// <remarks>
         /// https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0
         /// </remarks>
-        private void AddAvailableCastling(FieldPosition position, List<FieldPosition> enemyPositions, List<FieldPosition> availablePositions)
+        private void AddAvailableCastling(Position position, List<Position> enemyPositions, List<Position> availablePositions)
         {
             var field = position.Field;
             if (IsInStartPosition)
@@ -83,7 +83,7 @@ namespace Bg.Chess.Domain
                         var sectorClear = СastlingSectorClear(position, field, rookPosition);
                         if (sectorClear)
                         {
-                            var checkPositions = new List<FieldPosition>();
+                            var checkPositions = new List<Position>();
                             if (rookPosition.X > position.X)
                             {
                                 checkPositions.Add(field[position.X + 1, position.Y]);
@@ -112,7 +112,7 @@ namespace Bg.Chess.Domain
         /// <returns>false - в результате рокировки пройдёт через битое поле или встанет под шах.</returns>
         //// optimisation: поидеи мы уже обсчитали, может ли король ходить влево и в право, 
         //// поэтому можно метод переоборудовать чтоб принимал, только вторую позицию, а первую обсчитывать ранее
-        private bool KingMoveNotAttack(List<FieldPosition> kingMovePositions, List<FieldPosition> enemyPositions, MoveMode moveMode)
+        private bool KingMoveNotAttack(List<Position> kingMovePositions, List<Position> enemyPositions, MoveMode moveMode)
         {
             foreach (var enemyPosition in enemyPositions)
             {
@@ -136,7 +136,7 @@ namespace Bg.Chess.Domain
         /// Проверка свободного места для рокировки
         /// </summary>
         /// <returns>false - если между королём и ладьей, предназначенными для рокировки, находится другая фигура.</returns>
-        private bool СastlingSectorClear(FieldPosition position, Field field, FieldPosition rookPosition)
+        private bool СastlingSectorClear(Position position, Field field, Position rookPosition)
         {
             int left;
             int right;

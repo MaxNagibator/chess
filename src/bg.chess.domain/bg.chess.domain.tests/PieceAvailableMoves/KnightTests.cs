@@ -46,7 +46,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         [TestCase(4, 5, 8)]
         public void KnightDefaultTest(int x, int y, int movesCount)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var piece = new Knight(Side.White);
@@ -61,13 +61,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <summary>
         /// Конь в центре, но на клетках куда он может сходить, есть две фигуры
         /// </summary>
+        [Test]
         [TestCase(1, 1)]
         [TestCase(1, -1)]
         [TestCase(-1, 1)]
         [TestCase(-1, -1)]
         public void KnightWithTeamMateTest(int first, int second)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>

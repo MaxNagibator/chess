@@ -12,13 +12,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <summary>
         /// —лон на первой и последней линии всегда имеет 7 ходов.
         /// </summary>
+        [Test]
         [TestCase(0)]
         [TestCase(7)]
         public void BishopFirstLineTest(int x)
         {
             for (var y = 0; y < 8; y++)
             {
-                var rules = new Rules();
+                var rules = new ClassicRules();
                 rules.FieldWidth = 8;
                 rules.FieldHeight = 8;
                 var piece = new Bishop(Side.White);
@@ -34,13 +35,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// <summary>
         /// ¬ разных местах доски слон имеет разное количество ходов.
         /// </summary>
+        [Test]
         [TestCase(1, 1, 9)]
         [TestCase(1, 4, 9)]
         [TestCase(3, 3, 13)]
         [TestCase(5, 5, 11)]
         public void BishopCustomPositionTest(int x, int y, int movesCount)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var piece = new Bishop(Side.White);
@@ -60,13 +62,14 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// ‘игуры на рассто€нии 2 клеток по другим направлени€м. 
         /// ≈сли они союзные, то один ход, если вражеские то два возможных хода.
         /// </remarks>
+        [Test]
         [TestCase(1, 1)]
         [TestCase(1, -1)]
         [TestCase(-1, 1)]
         [TestCase(-1, -1)]
         public void BishopWithTeamMateTest(int first, int second)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>

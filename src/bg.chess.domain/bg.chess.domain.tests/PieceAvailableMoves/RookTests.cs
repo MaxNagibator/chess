@@ -24,7 +24,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         [TestCase(5, 5)]
         public void RookDefaultTest(int x, int y)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var piece = new Rook(Side.White);
@@ -48,7 +48,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         [TestCase(-1, -1)]
         public void RookWithTeamMateTest(int first, int second)
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>

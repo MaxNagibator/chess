@@ -23,7 +23,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             for (var i = 0; i < 8; i++)
             {
                 var y = side == 1 ? 1 : 7;
-                var rules = new Rules();
+                var rules = new ClassicRules();
                 rules.FieldWidth = 8;
                 rules.FieldHeight = 8;
                 var piece = new Pawn(side == 1 ? Side.White : Side.Black);
@@ -49,7 +49,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         [Test]
         public void PawnWithEnemyTest()
         {
-            var rules = new Rules();
+            var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var piece = new Pawn(Side.White);
