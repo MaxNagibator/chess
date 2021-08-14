@@ -24,8 +24,6 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             {
                 var y = side == 1 ? 1 : 7;
                 var rules = new ClassicRules();
-                rules.FieldWidth = 8;
-                rules.FieldHeight = 8;
                 var piece = new Pawn(side == 1 ? Side.White : Side.Black);
                 rules.Positions = new List<Position> { new Position(i, y, piece) };
 

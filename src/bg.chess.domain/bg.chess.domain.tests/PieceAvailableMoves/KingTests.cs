@@ -252,7 +252,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
 
             var field = new Field(rules);
 
-            var moves = field[0, 0].GetAvailableMoves();
+            var moves = field[0, 1].GetAvailableMoves();
             Assert.AreEqual(4, moves.Count);
             Assert.AreEqual(true, moves.Any(x => x.X == 0 && x.Y == 0));
             Assert.AreEqual(true, moves.Any(x => x.X == 1 && x.Y == 0));

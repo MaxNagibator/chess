@@ -29,19 +29,20 @@ namespace Bg.Chess.Domain
             var height = position.Field.PawnTransforms;
 
             var availablePositions = new List<Position>();
-            availablePositions.Add(position.Field.GetPositionOrEmpty(position.X, position.Y + MoveMult));
 
-            // если пешка ранее не ходила, то имеет право сходить на две клетки
-            if (IsInStartPosition)
+            if (moveMode == MoveMode.WithoutKillTeammates)
             {
-                availablePositions.Add(position.Field.GetPositionOrEmpty(position.X, position.Y + MoveMult + MoveMult));
+                AddPositionIfAvailable(position.Field, availablePositions, MoveMode.WithoutKillTeammates, position.X, position.Y + MoveMult);
+
+                // если пешка ранее не ходила, то имеет право сходить на две клетки
+                if (IsInStartPosition)
+                {
+                    AddPositionIfAvailable(position.Field, availablePositions, MoveMode.WithoutKillTeammates, position.X, position.Y + MoveMult + MoveMult);
+                }
             }
 
-            CheckEnemyKill(position, 1, availablePositions);
-            CheckEnemyKill(position, -1, availablePositions);
-
-            //todo если пешка прекрывает фигуру, которая угрожает королю, то королю пофиг и он срубит!
-            // учеть тут MOVEMODE! написать тестик
+            CheckEnemyKill(position, 1, availablePositions, moveMode);
+            CheckEnemyKill(position, -1, availablePositions, moveMode);
 
             // todo взятие на проходе https://ru.wikipedia.org/wiki/%D0%92%D0%B7%D1%8F%D1%82%D0%B8%D0%B5_%D0%BD%D0%B0_%D0%BF%D1%80%D0%BE%D1%85%D0%BE%D0%B4%D0%B5
 
@@ -51,12 +52,22 @@ namespace Bg.Chess.Domain
         /// <summary>
         /// Проверка на возможность убить врага
         /// </summary>
-        private void CheckEnemyKill(Position position, int shiftX, List<Position> availablePositions)
+        private void CheckEnemyKill(Position position, int shiftX, List<Position> availablePositions, MoveMode moveMode)
         {
-            var pos1 = position.Field.GetPositionOrEmpty(position.X + shiftX, position.Y + MoveMult);
-            if (pos1?.IsEnemy(Side) == true)
+            var pos = position.Field.GetPositionOrEmpty(position.X + shiftX, position.Y + MoveMult);
+            if (pos != null)
             {
-                availablePositions.Add(pos1);
+                if (moveMode == MoveMode.WithoutKillTeammates)
+                {
+                    if (pos.IsEnemy(Side))
+                    {
+                        availablePositions.Add(pos);
+                    }
+                }
+                else
+                {
+                    availablePositions.Add(pos);
+                }
             }
         }
 
