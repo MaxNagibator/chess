@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Bg.Chess.Domain
+﻿namespace Bg.Chess.Domain
 {
-    /// <summary>
-    /// Шахматная фигура.
-    /// </summary>
-    public abstract class Piece
-    {
-        //// todo между Position и Piece нужно чтото третие
-        //// PieceType например, который будет описывать поведение фигуры.
-        //// а Piece будет реальной фигурой на доске
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
+    /// <summary>
+    /// Тип шахматной фигуры.
+    /// </summary>
+    /// <remarks>
+    /// Поведение фигуры на поле.
+    /// </remarks>
+    public abstract class PieceType
+    {
         /// <summary>
         /// Может ли пешка превратится в эту фигуру, если достигнет конца поля.
         /// </summary>
@@ -24,59 +23,17 @@ namespace Bg.Chess.Domain
         public abstract string Name { get; }
 
         /// <summary>
-        /// Конструктор фигуры.
+        /// Имя фигуры из одного символа.
         /// </summary>
-        /// <param name="side">Кому пренадлежит фигура.</param>
-        public Piece(Side side)
-        {
-            Side = side;
-            Positions = new List<Position>();
-        }
-
-        /// <summary>
-        /// Кому пренадлежит фигура.
-        /// </summary>
-        public Side Side;
-
-        /// <summary>
-        /// Куда будет ходить фигура.
-        /// </summary>
-        /// <remarks>
-        /// Белые идут вверх, чёрные вниз.
-        /// </remarks>
-        public int MoveMult => Side == Side.White ? 1 : -1;
-
-        /// <summary>
-        /// Фигура в результате игры не двигалась.
-        /// </summary>
-        internal bool IsInStartPosition => Positions.Count == 1;
-
-        /// <summary>
-        /// Позиции фигуры в результате игры.
-        /// </summary>
-        private List<Position> Positions { get; set; }
-
-        /// <summary>
-        /// Добавить историю движения фигуры.
-        /// </summary>
-        internal void AddPosition(Position position)
-        {
-            var lastPos = Positions.LastOrDefault();
-            if (lastPos != null)
-            {
-                position.Field.Moves.Add(new Move(lastPos, position));
-            }
-
-            Positions.Add(position);
-        }
+        public abstract char ShortName { get; }
 
         /// <summary>
         /// Получить базовый список доступных ходов.
         /// </summary>
-        /// <param name="position">Позиция на поле.</param>
+        /// <param name="piece">Фигура.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <returns>Список возможных ходов.</returns>
-        protected abstract List<Position> GetBaseMoves(Position position, MoveMode moveMode);
+        protected abstract List<Position> GetBaseMoves(Piece piece, MoveMode moveMode);
 
         /// <summary>
         /// Получить список доступных ходов.
@@ -84,10 +41,10 @@ namespace Bg.Chess.Domain
         /// <param name="position">Позиция на поле.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <returns>Список возможных ходов.</returns>
-        internal List<Position> GetAvailableMoves(Position position, MoveMode moveMode)
+        internal List<Position> GetAvailableMoves(Piece piece, MoveMode moveMode)
         {
             // todo если король под шахом, то нужно это будет учесть
-            var moves = GetBaseMoves(position, moveMode);
+            var moves = GetBaseMoves(piece, moveMode);
 
             // из базовых ходов оставим позиции где нет фигуры или фигура не наша
             moves = moves.Where(move => 217 > 0 //todo добавить проверку на мат(недоступность хода/оголение короля)
@@ -103,11 +60,12 @@ namespace Bg.Chess.Domain
         /// <param name="availablePositions">Список доступных позиций.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <param name="pieceMaxRange">Максимальная длина хода фигуры.</param>
-        protected void AddAvailableDiagonalMoves(Position position, List<Position> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
+        protected void AddAvailableDiagonalMoves(Piece piece, List<Position> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
         {
+            var position = piece.CurrentPosition;
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X + i, position.Y + i))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X + i, position.Y + i))
                 {
                     break;
                 }
@@ -115,7 +73,7 @@ namespace Bg.Chess.Domain
 
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X + i, position.Y - i))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X + i, position.Y - i))
                 {
                     break;
                 }
@@ -123,7 +81,7 @@ namespace Bg.Chess.Domain
 
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X - i, position.Y + i))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X - i, position.Y + i))
                 {
                     break;
                 }
@@ -131,7 +89,7 @@ namespace Bg.Chess.Domain
 
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X - i, position.Y - i))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X - i, position.Y - i))
                 {
                     break;
                 }
@@ -145,11 +103,12 @@ namespace Bg.Chess.Domain
         /// <param name="availablePositions">Список доступных позиций.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <param name="pieceMaxRange">Максимальная длина хода фигуры.</param>
-        protected void AddAvailableLineMoves(Position position, List<Position> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
+        protected void AddAvailableLineMoves(Piece piece, List<Position> availablePositions, MoveMode moveMode, int pieceMaxRange = int.MaxValue)
         {
+            var position = piece.CurrentPosition;
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X + i, position.Y))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X + i, position.Y))
                 {
                     break;
                 }
@@ -157,7 +116,7 @@ namespace Bg.Chess.Domain
 
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X - i, position.Y))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X - i, position.Y))
                 {
                     break;
                 }
@@ -165,7 +124,7 @@ namespace Bg.Chess.Domain
 
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X, position.Y + i))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X, position.Y + i))
                 {
                     break;
                 }
@@ -173,7 +132,7 @@ namespace Bg.Chess.Domain
 
             for (var i = 1; i <= pieceMaxRange; i++)
             {
-                if (!AddPositionIfAvailable(position.Field, availablePositions, moveMode, position.X, position.Y - i))
+                if (!AddPositionIfAvailable(piece, availablePositions, moveMode, position.X, position.Y - i))
                 {
                     break;
                 }
@@ -189,15 +148,15 @@ namespace Bg.Chess.Domain
         /// <param name="x">Координаты проверки по ширине.</param>
         /// <param name="y">Координаты проверки по высоте</param>
         /// <returns>true - если клетка существует и на ней нет союзной(или своей по требованию) фигуры.</returns>
-        protected bool AddPositionIfAvailable(Field field, List<Position> availablePositions, MoveMode moveMode, int x, int y)
+        protected bool AddPositionIfAvailable(Piece piece, List<Position> availablePositions, MoveMode moveMode, int x, int y)
         {
-            var pos = field.GetPositionOrEmpty(x, y);
+            var pos = piece.Field.GetPositionOrEmpty(x, y);
             if (pos == null)
             {
                 return false;
             }
 
-            if (moveMode == MoveMode.WithoutKillTeammates && pos.IsTeammate(Side))
+            if (moveMode == MoveMode.WithoutKillTeammates && pos.IsTeammate(piece.Side))
             {
                 return false;
             }
@@ -213,7 +172,7 @@ namespace Bg.Chess.Domain
                 return true;
             }
 
-            if (pos.IsEnemy(Side))
+            if (pos.IsEnemy(piece.Side))
             {
                 return false;
             }

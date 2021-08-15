@@ -49,7 +49,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
-            var piece = new Knight(Side.White);
+            var piece = PieceBuilder.Knight(Side.White);
             rules.Positions = new List<Position> { new Position(x, y, piece) };
 
             var field = new Field(rules);
@@ -73,9 +73,9 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>
             {
-                new Position(4, 5, new Knight(Side.White)),
-                new Position(6, 6, new Rook(first == 1 ? Side.White : Side.Black)),
-                new Position(2, 4, new Rook(second == 1 ? Side.White : Side.Black))
+                new Position(4, 5, PieceBuilder.Knight(Side.White)),
+                new Position(6, 6, PieceBuilder.Rook(first == 1 ? Side.White : Side.Black)),
+                new Position(2, 4, PieceBuilder.Rook(second == 1 ? Side.White : Side.Black))
             };
 
             var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White) - 1;

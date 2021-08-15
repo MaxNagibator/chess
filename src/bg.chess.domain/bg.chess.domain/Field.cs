@@ -38,7 +38,12 @@
         }
 
         /// <summary>
-        /// Позиции фигуры в результате игры.
+        /// Номер хода.
+        /// </summary>
+        public int MoveNumber => Moves.Count;
+
+        /// <summary>
+        /// Ходы фигур.
         /// </summary>
         public List<Move> Moves { get; internal set; }
 
@@ -79,9 +84,9 @@
         /// </summary>
         /// <param name="side">Игровая сторона, чьи фигуры мы хотим получить.</param>
         /// <returns>Список позиций.</returns>
-        public List<Position> GetPositionsWithPiece(Side side)
+        public List<Piece> GetPieces(Side side)
         {
-            return Positions.Where(x => x.Piece != null && x.Piece.Side == side).ToList();
+            return Positions.Where(x => x.Piece != null && x.Piece.Side == side).Select(x=>x.Piece).ToList();
         }
 
         /// <summary>
@@ -124,7 +129,7 @@
         internal bool CheckMate(Side checkSide)
         {
             var shah = false;
-            var enemyKing = Positions.First(x => x.Piece != null && x.Piece is King && x.Piece.Side == checkSide.Invert());
+            var enemyKing = Positions.First(x => x.Piece != null && x.Piece.Type is King && x.Piece.Side == checkSide.Invert());
             foreach (var pos in Positions)
             {
                 if (pos.Piece != null && pos.Piece.Side == checkSide)
@@ -208,7 +213,7 @@
                 throw new Exception("piece not this side");
             }
 
-            var moves = piece.GetAvailableMoves(currentPosition, MoveMode.WithoutKillTeammates);
+            var moves = piece.GetAvailableMoves(MoveMode.WithoutKillTeammates);
 
             if (moves.Any(move => move.X == toX && move.Y == toY))
             {

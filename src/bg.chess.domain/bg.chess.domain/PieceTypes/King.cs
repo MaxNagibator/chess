@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Bg.Chess.Domain
+﻿namespace Bg.Chess.Domain
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Фигура "Король"
     /// </summary>
-    public class King : Piece
+    public class King : PieceType
     {
         /// </inheritdoc>
         public override bool IsPawnTransformAvailable => false;
@@ -14,34 +15,30 @@ namespace Bg.Chess.Domain
         /// </inheritdoc>
         public override string Name => "king";
 
-        /// <summary>
-        /// Конструктор фигуры.
-        /// </summary>
-        /// <param name="side">Кому пренадлежит фигура.</param>
-        public King(Side side) : base(side)
-        {
-        }
+        /// </inheritdoc>
+        public override char ShortName => 'k';
 
         /// </inheritdoc>
-        protected override List<Position> GetBaseMoves(Position position, MoveMode moveMode)
+        protected override List<Position> GetBaseMoves(Piece piece, MoveMode moveMode)
         {
+            var king = piece;
             var availablePositions = new List<Position>();
 
-            AddAvailableDiagonalMoves(position, availablePositions, moveMode, 1);
-            AddAvailableLineMoves(position, availablePositions, moveMode, 1);
+            AddAvailableDiagonalMoves(piece, availablePositions, moveMode, 1);
+            AddAvailableLineMoves(piece, availablePositions, moveMode, 1);
 
-            var enemyPositions = position.Field.GetPositionsWithPiece(Side.Invert());
+            var enemyPieces = piece.CurrentPosition.Field.GetPieces(piece.Side.Invert());
             var notAttackedPositions = new List<Position>();
             foreach (var pos in availablePositions)
             {
-                var isSafetyMove = KingMoveNotAttack(new List<Position> { pos }, enemyPositions, MoveMode.NotRules);
+                var isSafetyMove = KingMoveNotAttack(new List<Position> { pos }, enemyPieces, MoveMode.NotRules);
                 if (isSafetyMove)
                 {
                     notAttackedPositions.Add(pos);
                 }
             }
 
-            AddAvailableCastling(position, enemyPositions, notAttackedPositions);
+            AddAvailableCastling(king, enemyPieces, notAttackedPositions);
 
             return notAttackedPositions;
         }
@@ -52,18 +49,19 @@ namespace Bg.Chess.Domain
         /// <remarks>
         /// https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0
         /// </remarks>
-        private void AddAvailableCastling(Position position, List<Position> enemyPositions, List<Position> availablePositions)
+        private void AddAvailableCastling(Piece king, List<Piece> enemyPieces, List<Position> availablePositions)
         {
-            var field = position.Field;
-            if (IsInStartPosition)
+            var field = king.Field;
+            var position = king.CurrentPosition;
+            if (king.IsInStartPosition)
             {
                 // обсчитать, что король не под шахом
                 var hasShah = false;
 
                 // optimization: было бы красиво yeald возвращать и останавливая перебор тормозим всё
-                foreach (var enemyPosition in enemyPositions)
+                foreach (var enemyPiece in enemyPieces.Where(x => x.Type is King == false))
                 {
-                    var attackPositions = enemyPosition.GetAvailableMoves();
+                    var attackPositions = enemyPiece.GetAvailableMoves(MoveMode.WithoutKillTeammates);
                     if (attackPositions.Any(x => x.X == position.X && x.Y == position.Y))
                     {
                         hasShah = true;
@@ -74,17 +72,17 @@ namespace Bg.Chess.Domain
                 if (!hasShah)
                 {
                     // получили союзные ладьи, с нами на одной линии, которые не двигались
-                    var rookPositions = field.GetPositionsWithPiece(Side).Where(x => x.Piece is Rook
-                        && x.Piece.IsInStartPosition
+                    var rooks = field.GetPieces(king.Side).Where(x => x.Type is Rook
+                        && x.IsInStartPosition
                         // проверим, что они находятся на одной линии (ну у нас может быть произвольная расстановка и мало ли)
-                        && x.Y == position.Y).ToList();
-                    foreach (var rookPosition in rookPositions)
+                        && x.CurrentPosition.Y == position.Y).ToList();
+                    foreach (var rook in rooks)
                     {
-                        var sectorClear = СastlingSectorClear(position, field, rookPosition);
+                        var sectorClear = СastlingSectorClear(king, position, field, rook.CurrentPosition);
                         if (sectorClear)
                         {
                             var checkPositions = new List<Position>();
-                            if (rookPosition.X > position.X)
+                            if (rook.CurrentPosition.X > position.X)
                             {
                                 checkPositions.Add(field[position.X + 1, position.Y]);
                                 checkPositions.Add(field[position.X + 2, position.Y]);
@@ -95,7 +93,7 @@ namespace Bg.Chess.Domain
                                 checkPositions.Add(field[position.X - 2, position.Y]);
                             }
 
-                            var moveSafety = KingMoveNotAttack(checkPositions, enemyPositions, MoveMode.WithoutKillTeammates);
+                            var moveSafety = KingMoveNotAttack(checkPositions, enemyPieces, MoveMode.WithoutKillTeammates);
                             if (moveSafety)
                             {
                                 availablePositions.Add(checkPositions[1]);
@@ -112,19 +110,31 @@ namespace Bg.Chess.Domain
         /// <returns>false - в результате рокировки пройдёт через битое поле или встанет под шах.</returns>
         //// optimisation: поидеи мы уже обсчитали, может ли король ходить влево и в право, 
         //// поэтому можно метод переоборудовать чтоб принимал, только вторую позицию, а первую обсчитывать ранее
-        private bool KingMoveNotAttack(List<Position> kingMovePositions, List<Position> enemyPositions, MoveMode moveMode)
+        private bool KingMoveNotAttack(List<Position> kingMovePositions, List<Piece> enemyPieces, MoveMode moveMode)
         {
-            foreach (var enemyPosition in enemyPositions)
+            foreach (var enemyPiece in enemyPieces)
             {
-                // optimization: мы уже получали шаги и можно повторно не расчитывать
-                // возможно даже обсчёт ходов "кэшировать", если на игровом поле ничего не поменялось возвращаем старый результат
-                // и сбрасывать кэш при "шагах"
-                var attackPositions = enemyPosition.GetAvailableMoves(moveMode);
-                foreach (var kingMovePosition in kingMovePositions)
+                // особая обработка взаимодействия королей, так как зацикливается метод "доступных ходов"
+                if(enemyPiece.Type is King)
                 {
-                    if (attackPositions.Any(x => x.X == kingMovePosition.X && x.Y == kingMovePosition.Y))
+                    foreach (var kingMovePosition in kingMovePositions)
                     {
-                        return false;
+                        if (Math.Abs(kingMovePosition.X - enemyPiece.CurrentPosition.X) < 2 
+                            && Math.Abs(kingMovePosition.Y - enemyPiece.CurrentPosition.Y) < 2)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    var attackPositions = enemyPiece.GetAvailableMoves(moveMode);
+                    foreach (var kingMovePosition in kingMovePositions)
+                    {
+                        if (attackPositions.Any(x => x.X == kingMovePosition.X && x.Y == kingMovePosition.Y))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -136,7 +146,7 @@ namespace Bg.Chess.Domain
         /// Проверка свободного места для рокировки
         /// </summary>
         /// <returns>false - если между королём и ладьей, предназначенными для рокировки, находится другая фигура.</returns>
-        private bool СastlingSectorClear(Position position, Field field, Position rookPosition)
+        private bool СastlingSectorClear(Piece king, Position position, Field field, Position rookPosition)
         {
             int left;
             int right;
@@ -160,11 +170,6 @@ namespace Bg.Chess.Domain
             }
 
             return true;
-        }
-
-        public override string ToString()
-        {
-            return "K";
         }
     }
 }

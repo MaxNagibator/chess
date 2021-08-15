@@ -24,7 +24,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             {
                 var y = side == 1 ? 1 : 7;
                 var rules = new ClassicRules();
-                var piece = new Pawn(side == 1 ? Side.White : Side.Black);
+                var piece = PieceBuilder.Pawn(side == 1 ? Side.White : Side.Black);
                 rules.Positions = new List<Position> { new Position(i, y, piece) };
 
                 var field = new Field(rules);
@@ -50,9 +50,9 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
-            var piece = new Pawn(Side.White);
-            var pieceEnemyLeft = new Pawn(Side.Black);
-            var pieceEnemyRight = new Pawn(Side.Black);
+            var piece = PieceBuilder.Pawn(Side.White);
+            var pieceEnemyLeft = PieceBuilder.Pawn(Side.Black);
+            var pieceEnemyRight = PieceBuilder.Pawn(Side.Black);
             rules.Positions = new List<Position>
             {
                 new Position(5, 5, piece),

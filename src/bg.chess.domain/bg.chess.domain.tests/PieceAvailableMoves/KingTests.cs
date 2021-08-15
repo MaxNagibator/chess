@@ -36,7 +36,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
-            var piece = new King(Side.White);
+            var piece = PieceBuilder.King(Side.White);
             rules.Positions = new List<Position> { new Position(x, y, piece) };
 
             var field = new Field(rules);
@@ -64,9 +64,9 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             rules.FieldHeight = 8;
             rules.Positions = new List<Position>
             {
-                new Position(4, 5, new King(Side.White)),
-                new Position(4, 6, new Knight(right == 1 ? Side.White : Side.Black)),
-                new Position(3, 4, new Knight(leftDown == 1 ? Side.White : Side.Black))
+                new Position(4, 5, PieceBuilder.King(Side.White)),
+                new Position(4, 6, PieceBuilder.Knight(right == 1 ? Side.White : Side.Black)),
+                new Position(3, 4, PieceBuilder.Knight(leftDown == 1 ? Side.White : Side.Black))
             };
 
             var field = new Field(rules);
@@ -92,9 +92,9 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var lineIndex = side == Side.White ? 0 : 7;
             rules.Positions = new List<Position>
             {                
-                new Position(0, lineIndex, new Rook(side)),
-                new Position(4, lineIndex, new King(side)),
-                new Position(7, lineIndex, new Rook(side)),
+                new Position(0, lineIndex, PieceBuilder.Rook(side)),
+                new Position(4, lineIndex, PieceBuilder.King(side)),
+                new Position(7, lineIndex, PieceBuilder.Rook(side)),
             };
 
             var field = new Field(rules);
@@ -127,11 +127,11 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var attackLineIndex = side == Side.White ? 7 : 0;
             rules.Positions = new List<Position>
             {
-                new Position(0, lineIndex, new Rook(side)),
-                new Position(4, lineIndex, new King(side)),
-                new Position(7, lineIndex, new Rook(side)),
+                new Position(0, lineIndex, PieceBuilder.Rook(side)),
+                new Position(4, lineIndex, PieceBuilder.King(side)),
+                new Position(7, lineIndex, PieceBuilder.Rook(side)),
 
-                new Position(attackVerticalLine, attackLineIndex, new Rook(side.Invert())),
+                new Position(attackVerticalLine, attackLineIndex, PieceBuilder.Rook(side.Invert())),
             };
 
             var field = new Field(rules);
@@ -168,11 +168,11 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var attackLineIndex = side == Side.White ? 7 : 0;
             rules.Positions = new List<Position>
             {
-                new Position(0, lineIndex, new Rook(side)),
-                new Position(4, lineIndex, new King(side)),
-                new Position(7, lineIndex, new Rook(side)),
+                new Position(0, lineIndex, PieceBuilder.Rook(side)),
+                new Position(4, lineIndex, PieceBuilder.King(side)),
+                new Position(7, lineIndex, PieceBuilder.Rook(side)),
 
-                new Position(4, attackLineIndex, new Rook(side.Invert())),
+                new Position(4, attackLineIndex, PieceBuilder.Rook(side.Invert())),
             };
 
             var field = new Field(rules);
@@ -195,17 +195,43 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var lineIndex = side == Side.White ? 0 : 7;
             rules.Positions = new List<Position>
             {
-                new Position(0, lineIndex, new Rook(side)),
-                new Position(1, lineIndex, new Knight(side)),
-                new Position(4, lineIndex, new King(side)),
-                new Position(6, lineIndex, new Knight(side)),
-                new Position(7, lineIndex, new Rook(side)),
+                new Position(0, lineIndex, PieceBuilder.Rook(side)),
+                new Position(1, lineIndex, PieceBuilder.Knight(side)),
+                new Position(4, lineIndex, PieceBuilder.King(side)),
+                new Position(6, lineIndex, PieceBuilder.Knight(side)),
+                new Position(7, lineIndex, PieceBuilder.Rook(side)),
             };
 
             var field = new Field(rules);
 
             var moves = field[4, lineIndex].GetAvailableMoves();
             Assert.AreEqual(5, moves.Count);
+        }
+
+        /// <summary>
+        /// Король мешает делать рокировку другому королю.
+        /// </summary>
+        /// <param name="side">король на 4, другой король на 6 и на клетку выше/ниже, ладья первого на 7.</param>
+        [Test]
+        [TestCase(Side.White)]
+        [TestCase(Side.Black)]
+        public void KingCastlingBlockedByKingTest(Side side)
+        {
+            var rules = new ClassicRules();
+            rules.FieldWidth = 8;
+            rules.FieldHeight = 8;
+            var lineIndex = side == Side.White ? 0 : 7;
+            rules.Positions = new List<Position>
+            {
+                new Position(4, lineIndex, PieceBuilder.King(side)),
+                new Position(7, lineIndex, PieceBuilder.Rook(side)),
+                new Position(6, lineIndex, PieceBuilder.King(side.Invert())),
+            };
+
+            var field = new Field(rules);
+
+            var moves = field[4, lineIndex].GetAvailableMoves();
+            Assert.AreEqual(3, moves.Count);
         }
 
         /// <summary>
@@ -220,9 +246,9 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(0, 0, new King(Side.White)),
-                new Position(1, 1, new Pawn(Side.Black)),
-                new Position(2, 2, new Pawn(Side.Black))
+                new Position(0, 0, PieceBuilder.King(Side.White)),
+                new Position(1, 1, PieceBuilder.Pawn(Side.Black)),
+                new Position(2, 2, PieceBuilder.Pawn(Side.Black))
             };
 
             var field = new Field(rules);
@@ -245,9 +271,9 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(0, 1, new King(Side.White)),
-                new Position(1, 1, new Knight(Side.Black)),
-                new Position(2, 2, new Pawn(Side.Black))
+                new Position(0, 1, PieceBuilder.King(Side.White)),
+                new Position(1, 1, PieceBuilder.Knight(Side.Black)),
+                new Position(2, 2, PieceBuilder.Pawn(Side.Black))
             };
 
             var field = new Field(rules);

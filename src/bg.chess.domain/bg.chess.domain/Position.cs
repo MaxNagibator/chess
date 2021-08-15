@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Bg.Chess.Domain
+﻿namespace Bg.Chess.Domain
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Позиция.
     /// </summary>
@@ -120,7 +120,7 @@ namespace Bg.Chess.Domain
                 return new List<Position>();
             }
 
-            return Piece.GetAvailableMoves(this, moveMode);
+            return Piece.GetAvailableMoves(moveMode);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Bg.Chess.Domain
             }
 
             var isTransform = false;
-            if (Piece is Pawn)
+            if (Piece.Type is Pawn)
             {
                 // если дошли до края поля, то выбираем новую фигуру
                 if (Piece.MoveMult == 1 && newPosition.Y == Field.FieldHeight - 1
@@ -167,12 +167,13 @@ namespace Bg.Chess.Domain
                     newPosition.Piece = newPiece;
                 }
 
-                var pawn = Piece as Pawn;
-                if (pawn.EnPassant(this, 1) != null)
+                var pawn = Piece.Type as Pawn;
+                // мб взятие на проходе поместить внутрь фигуры?
+                if (pawn.EnPassant(Piece, 1) != null)
                 {
                     Field[this.X + 1, this.Y].Piece = null;
                 }
-                if (pawn.EnPassant(this, -1) != null)
+                if (pawn.EnPassant(Piece, -1) != null)
                 {
                     Field[this.X - 1, this.Y].Piece = null;
                 }

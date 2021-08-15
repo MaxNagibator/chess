@@ -1,10 +1,12 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Bg.Chess.Domain.Tests
 {
-    public class GameTests
+    // эти тесты уже не первый раз не хотят запускаться !!!!!????
+    public class ClassicGame
     {
         /// <summary>
         /// Простой тест, что мы умеем ходить.
@@ -25,7 +27,13 @@ namespace Bg.Chess.Domain.Tests
         {
             var game = new Game();
             game.Init();
-            game.Move(Side.White, "d2", "d4");
+            try
+            {
+                game.Move(Side.White, "d2", "d4");
+            }catch(Exception ex)
+            {
+                var asd = ex;
+            }
             game.Move(Side.Black, "d7", "d5");
             game.Move(Side.White, "c2", "c4");
             game.Move(Side.Black, "c7", "c6");

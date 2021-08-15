@@ -12,8 +12,8 @@ namespace Bg.Chess.Domain.Tests
             var field = new Field().WithDefaultRules();
             string fieldText = GetFieldText(field);
             var expected =
-@"RNBQKBNR
-PPPPPPPP
+@"rnbqkbnr
+pppppppp
         
         
         
@@ -24,13 +24,13 @@ RNBQKBNR";
         }
 
         [Test]
-        [TestCase(3, 3, @"  K
+        [TestCase(3, 3, @"  k
    
 K  ")]
-        [TestCase(5, 3, @"    K
+        [TestCase(5, 3, @"    k
      
 K    ")]
-        [TestCase(3, 5, @"  K
+        [TestCase(3, 5, @"  k
    
    
    
@@ -42,8 +42,8 @@ K  ")]
             rules.FieldHeight = height;
             rules.Positions = new List<Position>
             {
-                new Position(0, 0, new King(Side.White)),
-                new Position(width-1, height-1, new King(Side.Black)),
+                new Position(0, 0, PieceBuilder.King(Side.White)),
+                new Position(width-1, height-1, PieceBuilder.King(Side.Black)),
             };
 
             var field = new Field(rules);
@@ -59,7 +59,23 @@ K  ")]
             {
                 for (var w = 0; w < field.FieldWidth; w++)
                 {
-                    sb.Append(field[w, h].Piece?.ToString() ?? " ");
+                    var piece = field[w, h].Piece;
+                    if (piece == null)
+                    {
+                        sb.Append(" ");
+                    }
+                    else
+                    {
+                        var name = piece.Type.ShortName;
+                        if (piece.Side == Side.White)
+                        {
+                            sb.Append(name.ToString().ToUpper());
+                        }
+                        else
+                        {
+                            sb.Append(name);
+                        }
+                    }
                 }
 
                 if (h > 0)

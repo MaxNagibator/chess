@@ -19,8 +19,8 @@ namespace Bg.Chess.Domain.PieceMoves
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(1, 1, new Pawn(Side.White)),
-                new Position(2, 5, new Knight(Side.Black))
+                new Position(1, 1, PieceBuilder.Pawn(Side.White)),
+                new Position(2, 5, PieceBuilder.Knight(Side.Black))
             };
 
             var field = new Field(rules);
@@ -42,7 +42,7 @@ namespace Bg.Chess.Domain.PieceMoves
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(1, 1, new Pawn(Side.White)),
+                new Position(1, 1, PieceBuilder.Pawn(Side.White)),
             };
 
             var field = new Field(rules);
@@ -64,8 +64,8 @@ namespace Bg.Chess.Domain.PieceMoves
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(1, 1, new Pawn(Side.White)),
-                new Position(1, 2, new Knight(Side.White)),
+                new Position(1, 1, PieceBuilder.Pawn(Side.White)),
+                new Position(1, 2, PieceBuilder.Knight(Side.White)),
             };
 
             var field = new Field(rules);
@@ -78,16 +78,16 @@ namespace Bg.Chess.Domain.PieceMoves
         /// Ходим пешкой и получаем другую фигуру
         /// </summary>
         [Test]
-        [TestCase("queen", typeof(Queen))]
-        [TestCase("rook", typeof(Rook))]
-        [TestCase("knight", typeof(Knight))]
-        [TestCase("bishop", typeof(Bishop))]
-        public void PawnTransformToQueen(string name, Type pieceType)
+        [TestCase("queen")]
+        [TestCase("rook")]
+        [TestCase("knight")]
+        [TestCase("bishop")]
+        public void PawnTransformToQueen(string name)
         {
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(1, 6, new Pawn(Side.White))
+                new Position(1, 6, PieceBuilder.Pawn(Side.White))
             };
 
             var field = new Field(rules);
@@ -95,7 +95,7 @@ namespace Bg.Chess.Domain.PieceMoves
             field.Move(Side.White, 1, 6, 1, 7, name);
 
             Assert.AreEqual(Side.White, field[1, 7].Piece.Side);
-            Assert.AreEqual(pieceType, field[1, 7].Piece.GetType());
+            Assert.AreEqual(name, field[1, 7].Piece.Type.Name);
         }
 
         /// <summary>
@@ -113,9 +113,9 @@ namespace Bg.Chess.Domain.PieceMoves
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(4, 6, new Pawn(Side.Black)),
-                new Position(4 + shift, 4, new Pawn(Side.White)),
-                new Position(4 + shift, 5, new Knight(Side.White)),
+                new Position(4, 6, PieceBuilder.Pawn(Side.Black)),
+                new Position(4 + shift, 4, PieceBuilder.Pawn(Side.White)),
+                new Position(4 + shift, 5, PieceBuilder.Knight(Side.White)),
             };
 
             var field = new Field(rules);
