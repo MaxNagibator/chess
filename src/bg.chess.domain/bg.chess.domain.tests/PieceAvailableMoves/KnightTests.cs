@@ -1,9 +1,10 @@
-using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Bg.Chess.Domain.PieceAvailableMoves
+namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
 {
+    using NUnit.Framework;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Набор тестов на доступные ходы коня.
     /// </summary>
@@ -49,8 +50,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             var rules = new ClassicRules();
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
-            var piece = PieceBuilder.Knight(Side.White);
-            rules.Positions = new List<Position> { new Position(x, y, piece) };
+            rules.Positions = new List<Position> 
+            { 
+                new Position(x, y, PieceBuilder.Knight(Side.White)),
+                new Position(x.Shift(7), y.Shift(7), PieceBuilder.King(Side.White)),
+                new Position(x.Shift(5), y.Shift(7), PieceBuilder.King(Side.Black)),
+            };
 
             var field = new Field(rules);
 
@@ -75,10 +80,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             {
                 new Position(4, 5, PieceBuilder.Knight(Side.White)),
                 new Position(6, 6, PieceBuilder.Rook(first == 1 ? Side.White : Side.Black)),
-                new Position(2, 4, PieceBuilder.Rook(second == 1 ? Side.White : Side.Black))
+                new Position(2, 4, PieceBuilder.Rook(second == 1 ? Side.White : Side.Black)),
+                new Position(0, 7, PieceBuilder.King(Side.Black)),
+                new Position(7, 7, PieceBuilder.King(Side.White)),
             };
 
-            var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White) - 1;
+            var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White && x?.Piece.Type is Rook);
 
             var field = new Field(rules);
 

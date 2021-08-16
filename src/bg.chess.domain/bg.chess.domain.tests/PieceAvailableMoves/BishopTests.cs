@@ -1,8 +1,9 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bg.Chess.Domain.PieceAvailableMoves
+namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
 {
     /// <summary>
     /// Набор тестов на доступные ходы слона.
@@ -23,7 +24,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
                 rules.FieldWidth = 8;
                 rules.FieldHeight = 8;
                 var piece = PieceBuilder.Bishop(Side.White);
-                rules.Positions = new List<Position> { new Position(x, y, piece) };
+                rules.Positions = new List<Position>
+                {
+                    new Position(x, y, piece),
+                    new Position(x.Invert(), 4, PieceBuilder.King(Side.White)),
+                    new Position(x.Invert(), 5, PieceBuilder.King(Side.Black)),
+                };
 
                 var field = new Field(rules);
 
@@ -46,7 +52,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             rules.FieldWidth = 8;
             rules.FieldHeight = 8;
             var piece = PieceBuilder.Bishop(Side.White);
-            rules.Positions = new List<Position> { new Position(x, y, piece) };
+            rules.Positions = new List<Position>
+            {
+                new Position(x, y, piece),
+                new Position(4, 0, PieceBuilder.King(Side.White)),
+                new Position(4, 7, PieceBuilder.King(Side.Black)),
+            };
 
             var field = new Field(rules);
 
@@ -58,7 +69,7 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         /// Слон в центре поля, но на клетках куда она может сходить, есть две фигуры
         /// </summary>
         /// <remarks>
-        /// 3 + 3 хода у коня по незанятым направлениям.
+        /// 3 + 3 хода у слон по незанятым направлениям.
         /// Фигуры на расстоянии 2 клеток по другим направлениям. 
         /// Если они союзные, то один ход, если вражеские то два возможных хода.
         /// </remarks>
@@ -76,10 +87,12 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             {
                 new Position(4, 4, PieceBuilder.Bishop(Side.White)),
                 new Position(6, 6, PieceBuilder.Pawn(first == 1 ? Side.White : Side.Black)),
-                new Position(2, 2, PieceBuilder.Pawn(second == 1 ? Side.White : Side.Black))
+                new Position(2, 2, PieceBuilder.Pawn(second == 1 ? Side.White : Side.Black)),
+                new Position(4, 0, PieceBuilder.King(Side.White)),
+                new Position(4, 7, PieceBuilder.King(Side.Black)),
             };
 
-            var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White) - 1;
+            var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White && x?.Piece.Type is Pawn);
 
             var field = new Field(rules);
 

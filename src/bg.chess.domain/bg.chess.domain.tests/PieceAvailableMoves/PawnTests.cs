@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bg.Chess.Domain.PieceAvailableMoves
+namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
 {
     /// <summary>
     /// Ќабор тестов на доступные ходы пешки.
@@ -22,10 +22,15 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
         {
             for (var i = 0; i < 8; i++)
             {
-                var y = side == 1 ? 1 : 7;
+                var y = side == 1 ? 1 : 6;
                 var rules = new ClassicRules();
                 var piece = PieceBuilder.Pawn(side == 1 ? Side.White : Side.Black);
-                rules.Positions = new List<Position> { new Position(i, y, piece) };
+                rules.Positions = new List<Position> 
+                { 
+                    new Position(i, y, piece),
+                    new Position(4, 0, PieceBuilder.King(Side.Black)),
+                    new Position(4, 7, PieceBuilder.King(Side.White)),
+                };
 
                 var field = new Field(rules);
 
@@ -57,7 +62,9 @@ namespace Bg.Chess.Domain.PieceAvailableMoves
             {
                 new Position(5, 5, piece),
                 new Position(4, 6, pieceEnemyLeft),
-                new Position(6, 6, pieceEnemyRight)
+                new Position(6, 6, pieceEnemyRight),
+                new Position(4, 0, PieceBuilder.King(Side.Black)),
+                new Position(4, 7, PieceBuilder.King(Side.White)),
             };
 
             var field = new Field(rules);

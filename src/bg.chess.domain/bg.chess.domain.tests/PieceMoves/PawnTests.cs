@@ -1,10 +1,8 @@
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Bg.Chess.Domain.PieceMoves
+namespace Bg.Chess.Domain.Tests.PieceMoves
 {
+    using NUnit.Framework;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Набор тестов на передвижение пешки.
     /// </summary>
@@ -20,7 +18,9 @@ namespace Bg.Chess.Domain.PieceMoves
             rules.Positions = new List<Position>
             {
                 new Position(1, 1, PieceBuilder.Pawn(Side.White)),
-                new Position(2, 5, PieceBuilder.Knight(Side.Black))
+                new Position(2, 5, PieceBuilder.Knight(Side.Black)),
+                new Position(4, 0, PieceBuilder.King(Side.White)),
+                new Position(4, 7, PieceBuilder.King(Side.Black)),
             };
 
             var field = new Field(rules);
@@ -43,6 +43,8 @@ namespace Bg.Chess.Domain.PieceMoves
             rules.Positions = new List<Position>
             {
                 new Position(1, 1, PieceBuilder.Pawn(Side.White)),
+                new Position(4, 0, PieceBuilder.King(Side.White)),
+                new Position(4, 7, PieceBuilder.King(Side.Black)),
             };
 
             var field = new Field(rules);
@@ -66,6 +68,8 @@ namespace Bg.Chess.Domain.PieceMoves
             {
                 new Position(1, 1, PieceBuilder.Pawn(Side.White)),
                 new Position(1, 2, PieceBuilder.Knight(Side.White)),
+                new Position(4, 0, PieceBuilder.King(Side.White)),
+                new Position(4, 7, PieceBuilder.King(Side.Black)),
             };
 
             var field = new Field(rules);
@@ -87,7 +91,9 @@ namespace Bg.Chess.Domain.PieceMoves
             var rules = new ClassicRules();
             rules.Positions = new List<Position>
             {
-                new Position(1, 6, PieceBuilder.Pawn(Side.White))
+                new Position(1, 6, PieceBuilder.Pawn(Side.White)),
+                new Position(4, 0, PieceBuilder.King(Side.White)),
+                new Position(4, 7, PieceBuilder.King(Side.Black)),
             };
 
             var field = new Field(rules);
@@ -116,6 +122,8 @@ namespace Bg.Chess.Domain.PieceMoves
                 new Position(4, 6, PieceBuilder.Pawn(Side.Black)),
                 new Position(4 + shift, 4, PieceBuilder.Pawn(Side.White)),
                 new Position(4 + shift, 5, PieceBuilder.Knight(Side.White)),
+                new Position(4, 0, PieceBuilder.King(Side.White)),
+                new Position(4, 7, PieceBuilder.King(Side.Black)),
             };
 
             var field = new Field(rules);

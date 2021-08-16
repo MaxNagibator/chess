@@ -44,6 +44,12 @@
         internal List<Position> GetAvailableMoves(Piece piece, MoveMode moveMode)
         {
             // todo если король под шахом, то нужно это будет учесть
+            var myKing = piece.Field.GetPieces(piece.Side).FirstOrDefault(x => x.Type is King);
+            if (myKing == null)
+            {
+                throw new Exception("my king death");
+            }
+
             var moves = GetBaseMoves(piece, moveMode);
 
             // из базовых ходов оставим позиции где нет фигуры или фигура не наша
@@ -56,7 +62,7 @@
         /// <summary>
         /// Получить возможные ходы по диагонали.
         /// </summary>
-        /// <param name="position">Позиция обсчёта.</param>
+        /// <param name="piece">Фигура.</param>
         /// <param name="availablePositions">Список доступных позиций.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <param name="pieceMaxRange">Максимальная длина хода фигуры.</param>
@@ -99,7 +105,7 @@
         /// <summary>
         /// Получить список ходов по горизонтали/вертикали
         /// </summary>
-        /// <param name="position">Позиция обсчёта.</param>
+        /// <param name="piece">Фигура.</param>
         /// <param name="availablePositions">Список доступных позиций.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <param name="pieceMaxRange">Максимальная длина хода фигуры.</param>
@@ -142,7 +148,7 @@
         /// <summary>
         /// Добавить позицию в списох доступных, если она существует, а так же пустая или содержит вражескую(или свою по требованию) фигуру.
         /// </summary>
-        /// <param name="field">Игровое поле.</param>
+        /// <param name="piece">Фигура.</param>
         /// <param name="availablePositions">Список доступных позиций.</param>
         /// <param name="moveMode">Режим обсчёта ходов.</param>
         /// <param name="x">Координаты проверки по ширине.</param>
