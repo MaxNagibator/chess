@@ -61,7 +61,7 @@
                 // optimization: было бы красиво yeald возвращать и останавливая перебор тормозим всё
                 foreach (var enemyPiece in enemyPieces.Where(x => x.Type is King == false))
                 {
-                    var attackPositions = enemyPiece.GetAvailableMoves(MoveMode.WithoutKillTeammates);
+                    var attackPositions = enemyPiece.GetAvailableMoves(MoveMode.WithoutKillTeammates | MoveMode.IndifferentKingDeath);
                     if (attackPositions.Any(x => x.X == position.X && x.Y == position.Y))
                     {
                         hasShah = true;
@@ -128,7 +128,7 @@
                 }
                 else
                 {
-                    var attackPositions = enemyPiece.GetAvailableMoves(moveMode);
+                    var attackPositions = enemyPiece.GetAvailableMoves(moveMode | MoveMode.IndifferentKingDeath);
                     foreach (var kingMovePosition in kingMovePositions)
                     {
                         if (attackPositions.Any(x => x.X == kingMovePosition.X && x.Y == kingMovePosition.Y))

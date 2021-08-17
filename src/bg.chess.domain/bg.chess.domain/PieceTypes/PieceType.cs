@@ -43,7 +43,6 @@
         /// <returns>Список возможных ходов.</returns>
         internal List<Position> GetAvailableMoves(Piece piece, MoveMode moveMode)
         {
-            // todo если король под шахом, то нужно это будет учесть
             var myKing = piece.Field.GetPieces(piece.Side).FirstOrDefault(x => x.Type is King);
             if (myKing == null)
             {
@@ -51,12 +50,29 @@
             }
 
             var moves = GetBaseMoves(piece, moveMode);
+            List<Position> availableMoves;
+            if (moveMode.HasFlag(MoveMode.IndifferentKingDeath))
+            {
+                availableMoves = moves;
+            }
+            else
+            {
+                availableMoves = new List<Position>();
+                foreach (var move in moves)
+                {
+                    piece.CurrentPosition.Move(move, false);
 
-            // из базовых ходов оставим позиции где нет фигуры или фигура не наша
-            moves = moves.Where(move => 217 > 0 //todo добавить проверку на мат(недоступность хода/оголение короля)
-            ).ToList();
+                    // проверим, что после моего хода, враг имеет возможность убить нашего короля
+                    if (!piece.CurrentPosition.Field.CheckKingAlert(piece.Side.Invert()))
+                    {
+                        availableMoves.Add(move);
+                    }
 
-            return moves;
+                    piece.CurrentPosition.RevertMove(move);
+                }
+            }
+
+            return availableMoves;
         }
 
         /// <summary>
@@ -162,13 +178,13 @@
                 return false;
             }
 
-            if (moveMode == MoveMode.WithoutKillTeammates && pos.IsTeammate(piece.Side))
+            if (moveMode.HasFlag(MoveMode.WithoutKillTeammates) && pos.IsTeammate(piece.Side))
             {
                 return false;
             }
 
             availablePositions.Add(pos);
-            if (moveMode == MoveMode.NotRules)
+            if (moveMode.HasFlag(MoveMode.NotRules))
             {
                 if (pos.Piece != null)
                 {

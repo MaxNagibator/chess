@@ -127,8 +127,9 @@
         /// Передвинуть фигуру с текущего поля на новую позицию.
         /// </summary>
         /// <param name="newPosition">Новая позиция.</param>
+        /// <param name="transformEnable">Нужно ли трансформировать пешку в какуюто фигуру.</param>
         /// <param name="pawnTransformPiece">Имя фигуры для трансформации пешки.</param>
-        internal void Move(Position newPosition, string pawnTransformPiece = null)
+        internal void Move(Position newPosition, bool transformEnable = true, string pawnTransformPiece = null)
         {
             if (Piece == null)
             {
@@ -143,49 +144,84 @@
                 }
             }
 
+            var move = new Move(Piece, Piece.CurrentPosition, newPosition);
+
             var isTransform = false;
             if (Piece.Type is Pawn)
             {
                 // если дошли до края поля, то выбираем новую фигуру
-                if (Piece.MoveMult == 1 && newPosition.Y == Field.FieldHeight - 1
-                    || Piece.MoveMult == -1 && newPosition.Y == 0)
+                if (transformEnable)
                 {
-                    if (pawnTransformPiece == null)
+                    if (Piece.MoveMult == 1 && newPosition.Y == Field.FieldHeight - 1
+                        || Piece.MoveMult == -1 && newPosition.Y == 0)
                     {
-                        throw new Exception("need transform piece");
-                    }
+                        if (pawnTransformPiece == null)
+                        {
+                            throw new Exception("need transform piece");
+                        }
 
-                    Func<Side, Piece> transformAction;
-                    if (!Field.PawnTransforms.TryGetValue(pawnTransformPiece, out transformAction))
-                    {
-                        throw new Exception("transform for " + pawnTransformPiece + " not available");
-                    }
+                        Func<Side, Piece> transformAction;
+                        if (!Field.PawnTransforms.TryGetValue(pawnTransformPiece, out transformAction))
+                        {
+                            throw new Exception("transform for " + pawnTransformPiece + " not available");
+                        }
 
-                    var newPiece = transformAction(Piece.Side);
-                    // возможно стоит перекинуть историю на новую фигуру
-                    isTransform = true;
-                    newPosition.Piece = newPiece;
+                        var newPiece = transformAction(Piece.Side);
+                        // возможно стоит перекинуть историю на новую фигуру
+                        isTransform = true;
+                        move.KillEnemy = newPosition.Piece;
+                        newPosition.Piece = newPiece;
+                    }
                 }
 
                 var pawn = Piece.Type as Pawn;
                 // мб взятие на проходе поместить внутрь фигуры?
                 if (pawn.EnPassant(Piece, 1) != null)
                 {
+                    move.KillEnemy = Field[this.X + 1, this.Y].Piece;
                     Field[this.X + 1, this.Y].Piece = null;
                 }
                 if (pawn.EnPassant(Piece, -1) != null)
                 {
+                    move.KillEnemy = Field[this.X - 1, this.Y].Piece;
                     Field[this.X - 1, this.Y].Piece = null;
+                }
+            }
+
+            if(Piece.Type is King)
+            {
+                if(newPosition.X - Piece.CurrentPosition.X == 2)
+                {
+                    var rook = Piece.Field[7, Piece.CurrentPosition.Y].Piece;
+                    var castlingMove = new Move(rook, Piece.Field[7, Piece.CurrentPosition.Y], Piece.Field[newPosition.X - 1, Piece.CurrentPosition.Y]);
+                    move.AdditionalMove = castlingMove;
+                    Piece.Field[newPosition.X - 1, Piece.CurrentPosition.Y].Piece = Piece.Field[7, Piece.CurrentPosition.Y].Piece;
+                    Piece.Field[7, Piece.CurrentPosition.Y].Piece = null;
+                }
+                if (newPosition.X - Piece.CurrentPosition.X == -2)
+                {
+                    var rook = Piece.Field[0, Piece.CurrentPosition.Y].Piece;
+                    var castlingMove = new Move(rook, Piece.Field[0, Piece.CurrentPosition.Y], Piece.Field[newPosition.X + 1, Piece.CurrentPosition.Y]);
+                    move.AdditionalMove = castlingMove;
+                    Piece.Field[newPosition.X + 1, Piece.CurrentPosition.Y].Piece = Piece.Field[0, Piece.CurrentPosition.Y].Piece;
+                    Piece.Field[0, Piece.CurrentPosition.Y].Piece = null;
                 }
             }
 
             if (isTransform == false)
             {
+                move.KillEnemy = newPosition.Piece;
                 newPosition.Piece = Piece;
             }
 
+            Piece.Field.Moves.Add(move);
             Piece.AddPosition(newPosition);
             Piece = null;
+        }
+
+        internal void RevertMove(Position move)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -122,8 +122,8 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
                 new Position(4, 6, PieceBuilder.Pawn(Side.Black)),
                 new Position(4 + shift, 4, PieceBuilder.Pawn(Side.White)),
                 new Position(4 + shift, 5, PieceBuilder.Knight(Side.White)),
-                new Position(4, 0, PieceBuilder.King(Side.White)),
-                new Position(4, 7, PieceBuilder.King(Side.Black)),
+                new Position(0, 0, PieceBuilder.King(Side.White)),
+                new Position(0, 7, PieceBuilder.King(Side.Black)),
             };
 
             var field = new Field(rules);

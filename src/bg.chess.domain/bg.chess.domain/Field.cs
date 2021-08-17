@@ -119,6 +119,34 @@
         }
 
         /// <summary>
+        /// Проверка на шах.
+        /// </summary>
+        /// <param name="checkSide">Проверяющая сторона.</param>
+        /// <remarks>
+        /// Если белые проверяют на шах, то нам надо проверить вражеского короля.
+        /// </remarks>
+        /// <returns>true - если шах.</returns>
+        internal bool CheckKingAlert(Side checkSide)
+        {
+            var enemyKing = Positions.First(x => x.Piece != null && x.Piece.Type is King && x.Piece.Side == checkSide.Invert());
+            foreach (var pos in Positions)
+            {
+                if (pos.Piece != null && pos.Piece.Side == checkSide)
+                {
+                    var moves = pos.GetAvailableMoves(MoveMode.IndifferentKingDeath);
+                    //var moves = pos.GetAvailableMoves(MoveMode.WithoutKillTeammates | MoveMode.IndifferentKingDeath);
+                    if (moves.Any(x => x.X == enemyKing.X && x.Y == enemyKing.Y))
+                    {
+                        //шах!
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Проверка на мат.
         /// </summary>
         /// <param name="checkSide">Проверяющая сторона.</param>
@@ -128,7 +156,7 @@
         /// <returns>true - если мат.</returns>
         internal bool CheckMate(Side checkSide)
         {
-            var shah = false;
+            var kingAlert = false;
             var enemyKing = Positions.First(x => x.Piece != null && x.Piece.Type is King && x.Piece.Side == checkSide.Invert());
             foreach (var pos in Positions)
             {
@@ -138,14 +166,15 @@
                     if (moves.Any(x => x.X == enemyKing.X && x.Y == enemyKing.Y))
                     {
                         //шах!
-                        shah = true;
-
+                        kingAlert = true;
+                        break;
                     }
                 }
             }
-            if (shah)
+            if (kingAlert)
             {
                 var kingMoves = enemyKing.GetAvailableMoves();
+                // todo метод неверный, так как можно срубить например угрожающего или ещё чего
                 if (kingMoves.Count == 0)
                 {
                     return true;
@@ -217,7 +246,7 @@
 
             if (moves.Any(move => move.X == toX && move.Y == toY))
             {
-                currentPosition.Move(this[toX, toY], pawnTransformPiece);
+                currentPosition.Move(this[toX, toY], true, pawnTransformPiece);
             }
             else
             {

@@ -102,7 +102,7 @@
             var pos = position.Field.GetPositionOrEmpty(position.X + shiftX, position.Y + piece.MoveMult);
             if (pos != null)
             {
-                if (moveMode == MoveMode.WithoutKillTeammates)
+                if (moveMode.HasFlag(MoveMode.WithoutKillTeammates))
                 {
                     if (pos.IsEnemy(piece.Side))
                     {

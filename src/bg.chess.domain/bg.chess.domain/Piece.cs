@@ -62,11 +62,6 @@
         /// </summary>
         internal void AddPosition(Position position)
         {
-            if (CurrentPosition != null)
-            {
-                position.Field.Moves.Add(new Move(CurrentPosition, position));
-            }
-
             CurrentPosition = position;
             Positions.Add(position);
         }

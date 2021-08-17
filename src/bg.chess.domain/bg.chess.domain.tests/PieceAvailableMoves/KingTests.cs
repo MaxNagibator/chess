@@ -96,6 +96,7 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
                 new Position(0, lineIndex, PieceBuilder.Rook(side)),
                 new Position(4, lineIndex, PieceBuilder.King(side)),
                 new Position(7, lineIndex, PieceBuilder.Rook(side)),
+                new Position(4, lineIndex.Invert(), PieceBuilder.King(side.Invert())),
             };
 
             var field = new Field(rules);
