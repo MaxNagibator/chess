@@ -28,19 +28,10 @@
             AddAvailableLineMoves(piece, availablePositions, moveMode, 1);
 
             var enemyPieces = piece.CurrentPosition.Field.GetPieces(piece.Side.Invert());
-            var notAttackedPositions = new List<Position>();
-            foreach (var pos in availablePositions)
-            {
-                var isSafetyMove = KingMoveNotAttack(new List<Position> { pos }, enemyPieces, MoveMode.NotRules);
-                if (isSafetyMove)
-                {
-                    notAttackedPositions.Add(pos);
-                }
-            }
 
-            AddAvailableCastling(king, enemyPieces, notAttackedPositions);
+            AddAvailableCastling(king, enemyPieces, availablePositions);
 
-            return notAttackedPositions;
+            return availablePositions;
         }
 
         /// <summary>

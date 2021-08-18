@@ -121,6 +121,7 @@ namespace Bg.Chess.Domain.Tests.PieceMoves
             {
                 new Position(4, 6, PieceBuilder.Pawn(Side.Black)),
                 new Position(4 + shift, 4, PieceBuilder.Pawn(Side.White)),
+                // конь, чтоб нельзя было ходить вперёд и остался тока ход "взятие на проходе"
                 new Position(4 + shift, 5, PieceBuilder.Knight(Side.White)),
                 new Position(0, 0, PieceBuilder.King(Side.White)),
                 new Position(0, 7, PieceBuilder.King(Side.Black)),

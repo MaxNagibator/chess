@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Позиция.
@@ -167,9 +168,13 @@
                         }
 
                         var newPiece = transformAction(Piece.Side);
+                        newPiece.AddPosition(newPosition);
+
+                        var castlingMove = new Move(newPiece, null, newPosition);
+                        move.AdditionalMove = castlingMove;
+
                         // возможно стоит перекинуть историю на новую фигуру
                         isTransform = true;
-                        move.KillEnemy = newPosition.Piece;
                         newPosition.Piece = newPiece;
                     }
                 }
@@ -195,7 +200,8 @@
                     var rook = Piece.Field[7, Piece.CurrentPosition.Y].Piece;
                     var castlingMove = new Move(rook, Piece.Field[7, Piece.CurrentPosition.Y], Piece.Field[newPosition.X - 1, Piece.CurrentPosition.Y]);
                     move.AdditionalMove = castlingMove;
-                    Piece.Field[newPosition.X - 1, Piece.CurrentPosition.Y].Piece = Piece.Field[7, Piece.CurrentPosition.Y].Piece;
+                    rook.AddPosition(Piece.Field[newPosition.X - 1, Piece.CurrentPosition.Y]);
+                    Piece.Field[newPosition.X - 1, Piece.CurrentPosition.Y].Piece = rook;
                     Piece.Field[7, Piece.CurrentPosition.Y].Piece = null;
                 }
                 if (newPosition.X - Piece.CurrentPosition.X == -2)
@@ -203,25 +209,49 @@
                     var rook = Piece.Field[0, Piece.CurrentPosition.Y].Piece;
                     var castlingMove = new Move(rook, Piece.Field[0, Piece.CurrentPosition.Y], Piece.Field[newPosition.X + 1, Piece.CurrentPosition.Y]);
                     move.AdditionalMove = castlingMove;
-                    Piece.Field[newPosition.X + 1, Piece.CurrentPosition.Y].Piece = Piece.Field[0, Piece.CurrentPosition.Y].Piece;
+                    rook.AddPosition(Piece.Field[newPosition.X + 1, Piece.CurrentPosition.Y]);
+                    Piece.Field[newPosition.X + 1, Piece.CurrentPosition.Y].Piece = rook;
                     Piece.Field[0, Piece.CurrentPosition.Y].Piece = null;
                 }
             }
 
             if (isTransform == false)
             {
-                move.KillEnemy = newPosition.Piece;
                 newPosition.Piece = Piece;
             }
 
-            Piece.Field.Moves.Add(move);
+            Field.Moves.Add(move);
             Piece.AddPosition(newPosition);
             Piece = null;
         }
 
-        internal void RevertMove(Position move)
+        internal void RevertLastMove()
         {
-            throw new NotImplementedException();
+            var move = Field.Moves.Last();
+            RevertMove(move);
+
+            Field.Moves.Remove(move);
+        }
+
+        private void RevertMove(Move move)
+        {
+            Field[move.To.X, move.To.Y].Piece = null;
+            if (move.KillEnemy != null)
+            {
+                var pos = move.KillEnemy.CurrentPosition;
+                Field[pos.X, pos.Y].Piece = move.KillEnemy;
+            }
+
+            if (move.From != null)
+            {
+                Field[move.From.X, move.From.Y].Piece = move.Runner;
+                move.Runner.RemoveLastPosition();
+            }
+
+            if (move.AdditionalMove != null)
+            {
+                RevertMove(move.AdditionalMove);
+            }
         }
     }
 }

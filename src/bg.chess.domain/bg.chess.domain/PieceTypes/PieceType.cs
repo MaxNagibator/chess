@@ -68,7 +68,7 @@
                         availableMoves.Add(move);
                     }
 
-                    piece.CurrentPosition.RevertMove(move);
+                    piece.CurrentPosition.RevertLastMove();
                 }
             }
 

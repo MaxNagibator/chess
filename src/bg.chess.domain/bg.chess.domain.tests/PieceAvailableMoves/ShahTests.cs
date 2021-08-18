@@ -8,13 +8,13 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
     /// <summary>
     /// Набор тестов на доступные ходы слона.
     /// </summary>
-    public class ShahTests
+    public class KingAlertTests
     {
         /// <summary>
         /// Если король под шахом, то нельзя походить пешкой.
         /// </summary>
         [Test]
-        public void PawnDontMoveIfKingShahTest()
+        public void PawnDontMoveIfKingHasKingAlertTest()
         {
             for (var y = 0; y < 8; y++)
             {
@@ -43,7 +43,7 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
         /// Пешка ранее не ходила, но ход на 2 клетки не доступен, так как нужно прикрыть короля.
         /// </remarks>
         [Test]
-        public void PawnMoveForKingShahDisableTest()
+        public void PawnMoveForKingHasKingAlertDisableTest()
         {
             for (var y = 0; y < 8; y++)
             {
@@ -63,7 +63,7 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
                 var moves = field[5, 1].GetAvailableMoves();
                 Assert.AreEqual(1, moves.Count);
                 Assert.AreEqual(5, moves[0].X);
-                Assert.AreEqual(3, moves[0].Y);
+                Assert.AreEqual(2, moves[0].Y);
             }
         }
 

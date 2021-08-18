@@ -28,7 +28,7 @@
 
             var availablePositions = new List<Position>();
 
-            if (moveMode == MoveMode.WithoutKillTeammates)
+            if (moveMode.HasFlag(MoveMode.WithoutKillTeammates))
             {
                 var pos = position.Field.GetPositionOrEmpty(position.X, position.Y + piece.MoveMult);
                 if (pos?.Piece == null)

@@ -71,7 +71,7 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
         /// Ферзь в центре поля, но на клетках куда она может сходить, есть две фигуры по горизонтали
         /// </summary>
         /// <remarks>
-        /// 3 + 3 хода у коня по незанятым диагональным направлениям. и 14 по горизонтали/вертикали
+        /// 3 + 3 хода у ферзя по незанятым диагональным направлениям. и 14 по горизонтали/вертикали
         /// Фигуры на расстоянии 2 клеток по другим направлениям. 
         /// Если они союзные, то один ход, если вражеские то два возможных хода.
         /// </remarks>
@@ -91,7 +91,7 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
                 new Position(6, 6, PieceBuilder.Pawn(first == 1 ? Side.White : Side.Black)),
                 new Position(2, 2, PieceBuilder.Pawn(second == 1 ? Side.White : Side.Black)),
                 new Position(4, 0, PieceBuilder.King(Side.White)),
-                new Position(4, 7, PieceBuilder.King(Side.Black)),
+                new Position(0, 1, PieceBuilder.King(Side.Black)),
             };
 
             var teammateCount = rules.Positions.Count(x => x?.Piece.Side == Side.White) - 1;

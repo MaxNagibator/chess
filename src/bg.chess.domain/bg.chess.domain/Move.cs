@@ -44,6 +44,7 @@ namespace Bg.Chess.Domain
             Runner = runner;
             From = from;
             To = to;
+            KillEnemy = to.Piece;
         }
     }
 }

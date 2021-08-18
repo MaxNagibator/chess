@@ -162,7 +162,7 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
         [Test]
         [TestCase(Side.White)]
         [TestCase(Side.Black)]
-        public void KingCastlingWithShahTest(Side side)
+        public void KingCastlingWithKingAlertTest(Side side)
         {
             var rules = new ClassicRules();
             rules.FieldWidth = 8;

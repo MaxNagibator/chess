@@ -27,7 +27,7 @@ namespace Bg.Chess.Domain.Tests.PieceAvailableMoves
                 rules.Positions = new List<Position>
                 {
                     new Position(x, y, piece),
-                    new Position(x.Invert(), 4, PieceBuilder.King(Side.White)),
+                    new Position(x.Invert(), 3, PieceBuilder.King(Side.White)),
                     new Position(x.Invert(), 5, PieceBuilder.King(Side.Black)),
                 };
 

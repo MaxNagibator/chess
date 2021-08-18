@@ -1,6 +1,8 @@
 ﻿namespace Bg.Chess.Domain
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Фигура.
@@ -66,6 +68,15 @@
             Positions.Add(position);
         }
 
+        /// <summary>
+        /// Удалить последний элемент истории движения фигуры.
+        /// </summary>
+        internal void RemoveLastPosition()
+        {
+            Positions.RemoveAt(Positions.Count - 1);
+            CurrentPosition = Positions.LastOrDefault();
+        }
+
         private Dictionary<MoveMode, List<Position>> _availableMoves = new Dictionary<MoveMode, List<Position>>();
         private Dictionary<MoveMode, int> _fieldMoveNumber = new Dictionary<MoveMode, int>();
         
@@ -77,17 +88,24 @@
         /// <remarks>Использовать аккуратно, может привести к зациклевания при обсчёте королей.</remarks>
         internal List<Position> GetAvailableMoves(MoveMode moveMode)
         {
-            if (_fieldMoveNumber.ContainsKey(moveMode))
+            var cacheNotWorkedAfterRevertMoveAndDisable = true;
+            if (cacheNotWorkedAfterRevertMoveAndDisable == false)
             {
-                if (_fieldMoveNumber[moveMode] == Field.MoveNumber)
+                if (_fieldMoveNumber.ContainsKey(moveMode))
                 {
-                    return _availableMoves[moveMode];
+                    if (_fieldMoveNumber[moveMode] == Field.MoveNumber)
+                    {
+                        return _availableMoves[moveMode];
+                    }
                 }
             }
 
             var availableMoves = Type.GetAvailableMoves(this, moveMode);
-            _availableMoves[moveMode] = availableMoves;
-            _fieldMoveNumber[moveMode] = Field.MoveNumber;
+            if (cacheNotWorkedAfterRevertMoveAndDisable == false)
+            {
+                _availableMoves[moveMode] = availableMoves;
+                _fieldMoveNumber[moveMode] = Field.MoveNumber;
+            }
             return availableMoves;
         }
 
