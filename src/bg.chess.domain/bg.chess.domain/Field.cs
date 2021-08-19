@@ -154,58 +154,34 @@
         /// Если белые проверяют на мат, то нам надо проверить вражеского короля.
         /// </remarks>
         /// <returns>true - если мат.</returns>
-        internal bool CheckMate(Side checkSide)
+        internal CheckMateResult CheckMate(Side checkSide)
         {
-            var kingAlert = false;
-            var enemyKing = Positions.First(x => x.Piece != null && x.Piece.Type is King && x.Piece.Side == checkSide.Invert());
-            foreach (var pos in Positions)
+            var enemiesPositions = Positions.Where(x => x.Piece != null && x.Piece.Side == checkSide.Invert()).ToList();
+            var kingAlertExists = CheckKingAlert(checkSide);
+            foreach (var enemyPos in enemiesPositions)
             {
-                if (pos.Piece != null && pos.Piece.Side == checkSide)
+                var moves = enemyPos.GetAvailableMoves();
+
+                foreach (var move in moves)
                 {
-                    var moves = pos.GetAvailableMoves();
-                    if (moves.Any(x => x.X == enemyKing.X && x.Y == enemyKing.Y))
+                    enemyPos.Move(move, false);
+
+                    // проверим, что после моего хода, враг имеет возможность убить нашего короля
+                    if (!CheckKingAlert(checkSide))
                     {
-                        //шах!
-                        kingAlert = true;
-                        break;
+                        return CheckMateResult.None;
                     }
                 }
             }
-            if (kingAlert)
+            
+            // если король не под шахом и мы выше не вышли из этого метода, 
+            // означает, что ходов нет и это пат!
+            if(kingAlertExists == false)
             {
-                var kingMoves = enemyKing.GetAvailableMoves();
-                // todo метод неверный, так как можно срубить например угрожающего или ещё чего
-                if (kingMoves.Count == 0)
-                {
-                    return true;
-                }
-
-                foreach (var pos in Positions)
-                {
-                    if (pos.Piece != null && pos.Piece.Side == checkSide)
-                    {
-                        var moves = pos.GetAvailableMoves(MoveMode.NotRules);
-                        var kingMovesCount = kingMoves.Count;
-                        for (int i = 0; i < kingMovesCount; i++)
-                        {
-                            Position kingMove = kingMoves[i];
-                            var kingBlockedMove = moves.FirstOrDefault(x => x.X == kingMove.X && x.Y == kingMove.Y);
-                            if (kingBlockedMove != null)
-                            {
-                                kingMoves.Remove(kingBlockedMove);
-                                i--;
-                                kingMovesCount--;
-                                if (kingMoves.Count == 0)
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
+                return CheckMateResult.DrawByEnemyDontHasMoves;
             }
 
-            return false;
+            return CheckMateResult.Mate;
         }
 
         /// <summary>

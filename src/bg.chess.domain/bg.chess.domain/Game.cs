@@ -41,6 +41,16 @@
             }
 
             _field = field;
+            var whiteKing = _field.Positions.Count(x => x.Piece != null && x.Piece.Type is King && x.Piece.Side == Side.White);
+            var blackKing = _field.Positions.Count(x => x.Piece != null && x.Piece.Type is King && x.Piece.Side == Side.Black);
+            if (whiteKing != 1)
+            {
+                throw new Exception("need one white king");
+            }
+            if (blackKing != 1)
+            {
+                throw new Exception("need one black king");
+            }
             State = GameState.InProgress;
         }
 
@@ -95,9 +105,9 @@
 
             // над теперь реализовать какойнить бомжатский MVP для окончания игры
             var mate = _field.CheckMate(StepSide);
-            if (mate)
+            if (mate == CheckMateResult.Mate)
             {
-                if(StepSide == Side.White)
+                if (StepSide == Side.White)
                 {
                     State = GameState.WinWhite;
                 }
@@ -107,7 +117,14 @@
                 }
                 return;
             }
-            StepSide = StepSide.Invert();
+            else if (mate == CheckMateResult.None)
+            {
+                StepSide = StepSide.Invert();
+            }
+            else
+            {
+                State = GameState.Draw;
+            }
         }
 
         /// <summary>
