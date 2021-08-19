@@ -1,8 +1,8 @@
-﻿namespace Bg.Chess.Domain.Tests
+﻿namespace Bg.Chess.Domain.Tests.GameTests
 {
     using NUnit.Framework;
 
-    public class ClassicGame
+    public class ClassicGameTests
     {
         /// <summary>
         /// Простой тест, что мы умеем ходить.

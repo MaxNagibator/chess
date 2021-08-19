@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Text;
 
     /// <summary>
     /// Игра.
@@ -132,44 +133,134 @@
         /// </summary>
         /// <remarks>
         /// https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
+        /// https://ru.wikipedia.org/wiki/%D0%9D%D0%BE%D1%82%D0%B0%D1%86%D0%B8%D1%8F_%D0%A4%D0%BE%D1%80%D1%81%D0%B0%D0%B9%D1%82%D0%B0_%E2%80%94_%D0%AD%D0%B4%D0%B2%D0%B0%D1%80%D0%B4%D1%81%D0%B0
         /// </remarks>
         /// <returns>Растановка фигур на доске.</returns>
-        public string GetNotation()
+        public string GetForsythEdwardsNotation()
         {
-            // денёк слишком короткий остался, поэтому сайтец мы начнём набрасывать как нить в другой раз)
-            throw new NotImplementedException("сделаем скоро");
-            //todo нам понадобится этот метод, чтоб выплёвывать это на фронт и там уже по ней можно будет рисовать доску
-            //изначально планировался обычный json (сериализованная dto-шка какаянить. но потом я наткнулся на это)
+            var notationSb = new StringBuilder();
+            for (var i = _field.FieldHeight - 1; i >= 0; i--)
+            {
+                if (i < _field.FieldHeight - 1)
+                {
+                    notationSb.Append("/");
+                }
+                var lineEmptyCount = 0;
+                for (var j = 0; j < _field.FieldWidth; j++)
+                {
+                    var posPiece = _field[j, i].Piece;
+                    if (posPiece != null)
+                    {
+                        if (lineEmptyCount > 0)
+                        {
+                            notationSb.Append(lineEmptyCount);
+                            lineEmptyCount = 0;
+                        }
 
-            // Нотация Форсайта — Эдвардса
-            ////Пример
-            ////rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-            ////Начальная позиция
-            ////Запись позиций с помощью нотации Форсайта—Эдвардса(FEN)
+                        var pieceName = posPiece.Type.ShortName;
+                        if (posPiece.Side == Side.White)
+                        {
+                            notationSb.Append(pieceName.ToString().ToUpper());
+                        }
+                        else
+                        {
+                            notationSb.Append(pieceName);
+                        }
+                    }
+                    else
+                    {
+                        lineEmptyCount++;
+                    }
+                }
 
-            ////Начальная позиция шахматной партии:
-            ////rnbqkbnr / pppppppp / 8 / 8 / 8 / 8 / PPPPPPPP / RNBQKBNR w KQkq -0 1
+                if (lineEmptyCount > 0)
+                {
+                    notationSb.Append(lineEmptyCount);
+                }
+            }
 
-            ////rnbqkbnr — расположение фигур на 8 - й горизонтали слева направо,
-            ///// — разделитель,
-            ////pppppppp — расположение фигур на 7 - й горизонтали,
-            ////8 / 8 / 8 / 8 — пустые 6 - 5 - 4 - 3 - я горизонтали,
-            ////PPPPPPPP — расположение фигур на 2 - й горизонтали,
-            ////RNBQKBNR — расположение фигур на 1 - й горизонтали,
-            ////w — предстоит ход белых,
-            ////KQkq — возможны короткие и длинные рокировки белых и чёрных,
-            ////- — не было предыдущего хода пешкой на два поля,
-            ////0 — последних ходов без взятий или движения пешек не было,
-            ////1 — предстоит первый ход.
+            notationSb.Append(" ");
+            if (StepSide == Side.White)
+            {
+                notationSb.Append("w");
+            }
+            else
+            {
+                notationSb.Append("b");
+            }
 
-            ////Позиция после хода 1.e4: rnbqkbnr / pppppppp / 8 / 8 / 4P3 / 8 / PPPP1PPP / RNBQKBNR b KQkq e3 0 1
+            var whiteKing = _field.GetPieces(Side.White).Where(x => x.Type is King).First();
+            var whiteRooks = _field.GetPieces(Side.White).Where(x => x.Type is Rook).ToList();
 
-            ////После хода 1. ... d5: rnbqkbnr / ppp1pppp / 8 / 3p4 / 4P3 / 8 / PPPP1PPP / RNBQKBNR w KQkq d6 0 2
+            var castlingString = string.Empty;
+            if (whiteKing.IsInStartPosition)
+            {
+                var rightRookInStart = whiteRooks.Any(x => x.CurrentPosition.X == 7 && x.IsInStartPosition);
+                if (rightRookInStart)
+                {
+                    castlingString += "K";
+                }
+                var leftRookInStart = whiteRooks.Any(x => x.CurrentPosition.X == 0 && x.IsInStartPosition);
+                if (leftRookInStart)
+                {
+                    castlingString += "Q";
+                }
+            }
+            var blackKing = _field.GetPieces(Side.Black).Where(x => x.Type is King).First();
+            var blackRooks = _field.GetPieces(Side.Black).Where(x => x.Type is Rook).ToList();
+            if (blackKing.IsInStartPosition)
+            {
+                var rightRookInStart = blackRooks.Any(x => x.CurrentPosition.X == 7 && x.IsInStartPosition);
+                if (rightRookInStart)
+                {
+                    castlingString += "k";
+                }
+                var leftRookInStart = blackRooks.Any(x => x.CurrentPosition.X == 0 && x.IsInStartPosition);
+                if (leftRookInStart)
+                {
+                    castlingString += "q";
+                }
+            }
+            if (string.IsNullOrEmpty(castlingString))
+            {
+                castlingString = "-";
+            }
+            notationSb.Append(" " + castlingString);
 
-            ////После хода 2.Nf3: rnbqkbnr / ppp1pppp / 8 / 3p4 / 4P3 / 5N2 / PPPP1PPP / RNBQKB1R b KQkq -1 2
-
-            ////После хода 2. ... Kd7: rnbq1bnr / pppkpppp / 8 / 3p4 / 4P3 / 5N2 / PPPP1PPP / RNBQKB1R w KQ -2 3
-            return "";
+            var lastMove = _field.Moves.LastOrDefault();
+            if (lastMove != null && lastMove.Runner.Type is Pawn && Math.Abs(lastMove.To.Y - lastMove.From.Y) == 2)
+            {
+                var toX = widthSymbols[lastMove.To.X];
+                int toY;
+                if (lastMove.To.Y > lastMove.From.Y)
+                {
+                    toY = lastMove.To.Y - 1;
+                }
+                else
+                {
+                    toY = lastMove.To.Y + 1;
+                }
+                notationSb.Append(" " + toX + heightSymbols[toY]);
+            }
+            else
+            {
+                notationSb.Append(" -");
+            }
+            var withoutKillAndPawnMoveCount = 0;
+            for (var i = _field.Moves.Count - 1; i >= 0; i--)
+            {
+                if(_field.Moves[i].Runner.Type is Pawn || _field.Moves[i].KillEnemy != null)
+                {
+                    break;
+                }
+                else
+                {
+                    withoutKillAndPawnMoveCount++;
+                }
+            }
+            notationSb.Append(" " + withoutKillAndPawnMoveCount);
+            notationSb.Append(" " + ((_field.Moves.Count / 2) + 1));
+            return notationSb.ToString();
         }
     }
 }

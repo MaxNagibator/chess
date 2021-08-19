@@ -169,8 +169,11 @@
                     // проверим, что после моего хода, враг имеет возможность убить нашего короля
                     if (!CheckKingAlert(checkSide))
                     {
+                        enemyPos.RevertLastMove();
                         return CheckMateResult.None;
                     }
+
+                    enemyPos.RevertLastMove();
                 }
             }
             

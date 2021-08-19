@@ -76,9 +76,6 @@
             Positions.RemoveAt(Positions.Count - 1);
             CurrentPosition = Positions.LastOrDefault();
         }
-
-        private Dictionary<MoveMode, List<Position>> _availableMoves = new Dictionary<MoveMode, List<Position>>();
-        private Dictionary<MoveMode, int> _fieldMoveNumber = new Dictionary<MoveMode, int>();
         
         /// <summary>
         /// Получить список доступных ходов.
@@ -88,24 +85,7 @@
         /// <remarks>Использовать аккуратно, может привести к зациклевания при обсчёте королей.</remarks>
         internal List<Position> GetAvailableMoves(MoveMode moveMode)
         {
-            var cacheNotWorkedAfterRevertMoveAndDisable = true;
-            if (cacheNotWorkedAfterRevertMoveAndDisable == false)
-            {
-                if (_fieldMoveNumber.ContainsKey(moveMode))
-                {
-                    if (_fieldMoveNumber[moveMode] == Field.MoveNumber)
-                    {
-                        return _availableMoves[moveMode];
-                    }
-                }
-            }
-
             var availableMoves = Type.GetAvailableMoves(this, moveMode);
-            if (cacheNotWorkedAfterRevertMoveAndDisable == false)
-            {
-                _availableMoves[moveMode] = availableMoves;
-                _fieldMoveNumber[moveMode] = Field.MoveNumber;
-            }
             return availableMoves;
         }
 

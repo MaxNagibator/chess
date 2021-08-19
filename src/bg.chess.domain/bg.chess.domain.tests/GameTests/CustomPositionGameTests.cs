@@ -1,9 +1,9 @@
-﻿namespace Bg.Chess.Domain.Tests
+﻿namespace Bg.Chess.Domain.Tests.GameTests
 {
     using NUnit.Framework;
     using System.Collections.Generic;
 
-    public class CustomPositionGame
+    public class CustomPositionGameTests
     {
         /// <summary>
         /// На поле будет две ладьи, которые не оставят королю ходов и будет пат
