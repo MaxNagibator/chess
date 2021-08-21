@@ -1,4 +1,5 @@
-﻿using Bg.Chess.Web.Models;
+﻿using Bg.Chess.Domain;
+using Bg.Chess.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,6 +17,20 @@ namespace Bg.Chess.Web.Controllers
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+        }
+
+        public IActionResult Field()
+        {
+            return View("Field");
+        }
+
+        [HttpGet]
+        public JsonResult GetField()
+        {
+            var game = new Game();
+            game.Init();
+            var notation = game.GetForsythEdwardsNotation();
+            return Json(new { Notation = notation});
         }
 
         public IActionResult Index()

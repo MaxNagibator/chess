@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Field";
+}
+
+
+<style>
+    #field {
+        border: solid;
+        border-width: 2px;
+        border-color: black;
+        display: inline-block;
+    }
+    .line {
+        /* display: inline-block;*/
+        height: 50px;
+    }
+    .column {
+        display: inline-block;
+        height: 50px;
+        width: 50px;
+    }
+    .position-black{
+        background-color: black;
+    }
+    .position-white{
+        background-color: white;
+    }
+</style>
+<div id="field">
+
+</div>
+<script>
+
+    window.onload = function () {
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", '/Home/GetField', false);
+        xmlHttp.send(null);
+        var response = xmlHttp.responseText;
+        var data = JSON.parse(response);
+        initField(data.notation);
+    };
+
+    function initField(notation) {
+        console.log(notation);
+        var target = document.querySelector("#field");
+        for (let i = 8; i > 0; i--) {
+            // $('#field').append('div');
+            var divLine = document.createElement('div');
+            divLine.classList.add('line');
+            target.appendChild(divLine);
+            for (let j = 0; j < 8; j++) {
+                var div = document.createElement('div');
+                div.classList.add('column');
+                if ((j + i) % 2 === 0) {
+                    div.classList.add('position-white');
+                } else {
+                    div.classList.add('position-black');
+                }
+                divLine.appendChild(div);
+                // $('#field').append('div');
+            }
+        }
+    }
+</script>
