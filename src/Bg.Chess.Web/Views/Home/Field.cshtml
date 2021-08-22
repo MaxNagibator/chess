@@ -10,20 +10,34 @@
         border-color: black;
         display: inline-block;
     }
+
     .line {
         /* display: inline-block;*/
         height: 50px;
     }
+
     .column {
         display: inline-block;
         height: 50px;
         width: 50px;
     }
-    .position-black{
-        background-color: black;
+
+    .position-black {
+        background-color: lightslategray;
     }
-    .position-white{
-        background-color: white;
+
+    .position-white {
+        background-color: whitesmoke;
+    }
+
+    .piece {
+        fill: red;
+    }
+
+    .column img {
+        width: 46px;
+        display: block;
+        margin: 2px;
     }
 </style>
 <div id="field">
@@ -41,24 +55,107 @@
         initField(data.notation);
     };
 
+    const PieceTypes = {
+        Bishop: 'Bishop',
+        King: 'King',
+        Knight: 'Knight',
+        Pawn: 'Pawn',
+        Queen: 'Queen',
+        Rook: 'Rook'
+    }
+
+    const Side = {
+        White: 'White',
+        Black: 'Black'
+    }
+
     function initField(notation) {
+
         console.log(notation);
+
+        //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+
+        let notationParts = notation.split(' ');
+        let pieceLocation = notationParts[0];
+        let pieceLocationLines = pieceLocation.split('/');
+        let cellColorIndex = 0;
         var target = document.querySelector("#field");
+
         for (let i = 8; i > 0; i--) {
-            // $('#field').append('div');
+            let line = pieceLocationLines[i - 1];
             var divLine = document.createElement('div');
             divLine.classList.add('line');
             target.appendChild(divLine);
-            for (let j = 0; j < 8; j++) {
-                var div = document.createElement('div');
-                div.classList.add('column');
-                if ((j + i) % 2 === 0) {
-                    div.classList.add('position-white');
+            for (let posIndex = 0; posIndex < line.length; posIndex++) {
+                let pos = line[posIndex];
+                var emptyFields = pos * 1;
+                if (Number.isInteger(emptyFields)) {
+                    for (let cellsCount = emptyFields; cellsCount > 0; cellsCount--) {
+                        var div = document.createElement('div');
+                        div.classList.add('column');
+                        if (cellColorIndex % 2 === 0) {
+                            div.classList.add('position-white');
+                        } else {
+                            div.classList.add('position-black');
+                        }
+
+                        divLine.appendChild(div);
+                        cellColorIndex++;
+                    }
+
                 } else {
-                    div.classList.add('position-black');
+                    var div = document.createElement('div');
+                    divLine.appendChild(div);
+                    div.classList.add('column');
+                    if (cellColorIndex % 2 === 0) {
+                        div.classList.add('position-white');
+                    } else {
+                        div.classList.add('position-black');
+                    }
+
+                    divLine.appendChild(div);
+                    cellColorIndex++;
+                    let piece = getPieceByNotation(pos);
+                        var img = document.createElement('img');
+                        var imgSrcName = piece.Type + "-" + piece.Side + '.png';
+                        img.src = '/Content/Images/Piece/' + imgSrcName;
+                        div.appendChild(img);
+
                 }
-                divLine.appendChild(div);
-                // $('#field').append('div');
+            }
+
+            cellColorIndex++;
+            var target = document.querySelector("#field");
+        }
+
+        function getPieceByNotation(pos) {
+            var toUpper = pos.toUpperCase();
+
+            var piece = {
+                Side: pos === toUpper ? Side.White : Side.Black,
+                Type: GetTypeByChar(toUpper),
+            };
+
+            return piece;
+        }
+
+        function GetTypeByChar(char) {
+            switch (char) {
+                case 'R':
+                    return PieceTypes.Rook;
+                case 'N':
+                    return PieceTypes.Knight;
+                case 'B':
+                    return PieceTypes.Bishop;
+                case 'Q':
+                    return PieceTypes.Queen;
+                case 'K':
+                    return PieceTypes.King;
+                case 'P':
+                    return PieceTypes.Pawn;
+                default:
+                    console.error('type not recognized: ' + char);
+                    return null;
             }
         }
     }
