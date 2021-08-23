@@ -3,43 +3,6 @@
 }
 
 
-<style>
-    #field {
-        border: solid;
-        border-width: 2px;
-        border-color: black;
-        display: inline-block;
-    }
-
-    .line {
-        /* display: inline-block;*/
-        height: 50px;
-    }
-
-    .column {
-        display: inline-block;
-        height: 50px;
-        width: 50px;
-    }
-
-    .position-black {
-        background-color: lightslategray;
-    }
-
-    .position-white {
-        background-color: whitesmoke;
-    }
-
-    .piece {
-        fill: red;
-    }
-
-    .column img {
-        width: 46px;
-        display: block;
-        margin: 2px;
-    }
-</style>
 <div id="field">
 
 </div>
@@ -52,7 +15,9 @@
         xmlHttp.send(null);
         var response = xmlHttp.responseText;
         var data = JSON.parse(response);
-        initField(data.notation);
+        console.log(data.notation);
+        console.log(data.availableMoves);
+        initField(data.notation, data.availableMoves);
     };
 
     const PieceTypes = {
@@ -69,7 +34,7 @@
         Black: 'Black'
     }
 
-    function initField(notation) {
+    function initField(notation, availableMoves) {
 
         console.log(notation);
 
@@ -81,16 +46,22 @@
         let cellColorIndex = 0;
         var target = document.querySelector("#field");
 
-        for (let i = 8; i > 0; i--) {
-            let line = pieceLocationLines[i - 1];
+        var draggables = [];
+        var dropZones = [];
+
+        for (let i = 0; i < 8; i++) {
+            let line = pieceLocationLines[i];
             var divLine = document.createElement('div');
             divLine.classList.add('line');
             target.appendChild(divLine);
+            var posX = 0;
             for (let posIndex = 0; posIndex < line.length; posIndex++) {
+                var posY = 7 - i;
                 let pos = line[posIndex];
                 var emptyFields = pos * 1;
                 if (Number.isInteger(emptyFields)) {
                     for (let cellsCount = emptyFields; cellsCount > 0; cellsCount--) {
+                        // todo обобщить с дублированием снизу
                         var div = document.createElement('div');
                         div.classList.add('column');
                         if (cellColorIndex % 2 === 0) {
@@ -98,9 +69,13 @@
                         } else {
                             div.classList.add('position-black');
                         }
+                        div.setAttribute('data-position-x', posX);
+                        div.setAttribute('data-position-y', posY);
 
                         divLine.appendChild(div);
+                        dropZones.push(div);
                         cellColorIndex++;
+                        posX++;
                     }
 
                 } else {
@@ -112,21 +87,139 @@
                     } else {
                         div.classList.add('position-black');
                     }
+                    div.setAttribute('data-position-x', posX);
+                    div.setAttribute('data-position-y', posY);
 
                     divLine.appendChild(div);
                     cellColorIndex++;
                     let piece = getPieceByNotation(pos);
-                        var img = document.createElement('img');
-                        var imgSrcName = piece.Type + "-" + piece.Side + '.png';
-                        img.src = '/Content/Images/Piece/' + imgSrcName;
-                        div.appendChild(img);
-
+                    var img = document.createElement('img');
+                    var imgSrcName = piece.Type + "-" + piece.Side + '.png';
+                    img.src = '/Content/Images/Piece/' + imgSrcName;
+                    div.appendChild(img);
+                    dropZones.push(div);
+                    draggables.push(img);
+                    posX++;
                 }
             }
 
             cellColorIndex++;
             var target = document.querySelector("#field");
         }
+
+        let dnd_successful;
+        for (let i = 0; i < draggables.length; i++) {
+            draggables[i].addEventListener('dragstart', function (event) {
+                event.target.classList.add('piece-select');
+
+                let posX = event.target.parentElement.getAttribute('data-position-x');
+                let posY = event.target.parentElement.getAttribute('data-position-y');
+                var moves = getMoves(availableMoves, posX, posY);
+                var cells = document.getElementsByClassName('column');
+                for (let moveIndex = 0; moveIndex < moves.length; moveIndex++) {
+                    for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
+                        if (cells[cellIndex].getAttribute('data-position-x') == moves[moveIndex].x
+                            && cells[cellIndex].getAttribute('data-position-y') == moves[moveIndex].y) {
+                            cells[cellIndex].classList.add('piece-move-target-good');
+                        }
+                    }
+                }
+                /* Allow specific type of transfers */
+                event.dataTransfer.effectAllowed = "move";
+
+                /*
+                 * Set the data to send to the dropzone.
+                 * Two cases :
+                 * 1 - it is a picture, make a text/html data string.
+                 * 2 - it is plain text, make a simple text/plain data string.
+                 */
+                ////var src = event.target.getAttribute('src');
+                ////var alt = event.target.getAttribute('alt');
+                ////if (null !== src) //Case 1
+                ////    event.dataTransfer.setData("text/html", '<img src="' + src + '" alt="' + alt + '"/>');
+                ////else //Case 2
+                ////    event.dataTransfer.setData("text/plain", event.target.innerText || event.target.textContent);
+
+                dnd_successful = false;
+            });
+
+            draggables[i].addEventListener('dragend', function (event) {
+                if (dnd_successful) {
+                    if (event.target.parentElement != placeForDropPiece) {
+                        placeForDropPiece.appendChild(event.target);
+                    }
+                } else {
+                }
+                event.target.classList.remove('piece-select');
+
+                var cells = document.getElementsByClassName('column');
+                for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
+                    cells[cellIndex].classList.remove('piece-move-target-good');
+                }
+            });
+        }
+
+        function getMoves(availableMoves, x, y) {
+            for (let i = 0; i < availableMoves.length; i++) {
+                if (availableMoves[i].from.x == x
+                    && availableMoves[i].from.y == y) {
+                    return availableMoves[i].to;
+                }
+            }
+            console.error('not found moves for piece in ' + x + '/' + y);
+        }
+
+        let placeForDropPiece;
+        for (let i = 0; i < dropZones.length; i++) {
+            dropZones[i].addEventListener('dragenter', function (event) {
+                //event.target.style.background = "#CCCCCC";
+                event.target.classList.add('piece-move-target-good');
+                event.preventDefault();
+            });
+
+            dropZones[i].addEventListener('dragleave', function (event) {
+                event.target.classList.remove('piece-move-target-good');
+                //event.target.style.background = "white";
+            });
+
+            dropZones[i].addEventListener('dragover', function (event) {
+                event.dataTransfer.dropEffect = "move";
+                event.preventDefault();
+                return false;
+            });
+
+            dropZones[i].addEventListener('drop', function (event) {
+                event.target.classList.remove('piece-move-target-good');
+
+                //let piece = getPieceByNotation('P');
+                //var img = document.createElement('img');
+                //var imgSrcName = piece.Type + "-" + piece.Side + '.png';
+                //img.src = '/Content/Images/Piece/' + imgSrcName;
+                //event.target.appendChild(img);
+                placeForDropPiece = event.target;
+                //event.target.appendChild(event.dataTransfer);
+                //var mylist = document.getElementById('mylist');
+                //mylist.style.visibility = "visible";
+
+                //var html = event.dataTransfer.getData("text/html");
+                //if ("" !== html) //Case 1
+                //{
+                //    mylist.innerHTML += html;
+                //}
+                //else {
+                //    var span = document.createElement('span');
+                //    span.innerHTML = event.dataTransfer.getData("text/plain");
+                //    mylist.appendChild(span);
+                //}
+
+                //event.target.style.background = 'white';
+                dnd_successful = true;
+
+                event.preventDefault(); //Prevent Firefox from redirecting the page
+            });
+        }
+
+
 
         function getPieceByNotation(pos) {
             var toUpper = pos.toUpperCase();

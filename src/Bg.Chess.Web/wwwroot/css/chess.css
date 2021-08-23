@@ -1,0 +1,48 @@
+﻿
+#field {
+    border: solid;
+    border-width: 2px;
+    border-color: black;
+    display: inline-block;
+}
+
+.line {
+    /* display: inline-block;*/
+    height: 50px;
+}
+
+.column {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+}
+
+.position-black {
+    background-color: lightslategray;
+}
+
+.position-white {
+    background-color: whitesmoke;
+}
+
+.piece {
+    fill: red;
+}
+
+.column img {
+    width: 46px;
+    display: block;
+    margin: 2px;
+}
+
+.column .piece-select {
+    border: 2px solid #FF66F2
+}
+
+.piece-move-target-good {
+    border: 2px solid #62EF80
+}
+
+.piece-move-target-bad {
+    border: 2px solid #ED1F1C
+}

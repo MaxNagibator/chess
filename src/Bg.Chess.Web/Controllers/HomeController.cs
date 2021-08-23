@@ -30,13 +30,14 @@ namespace Bg.Chess.Web.Controllers
             var game = new Game();
             game.Init();
             var notation = game.GetForsythEdwardsNotation();
-            return Json(new { Notation = notation});
+            var moves = game.AvailableMove();
+            // todo сделать dto
+            return Json(new { Notation = notation, AvailableMoves = moves });
         }
 
         public IActionResult Index()
         {
             // todo 1) прикрутить сборку с логикой шахматишек 
-            // todo 2) сделать стартовую бомж страницу с отрисовкой поля
             // todo 3) фигуры могут ходить
             // todo 4) добавить игроков
             // todo 5) добавить "поиск игры"

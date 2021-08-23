@@ -1,6 +1,7 @@
 ﻿namespace Bg.Chess.Domain
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
 
@@ -53,6 +54,20 @@
                 throw new Exception("need one black king");
             }
             State = GameState.InProgress;
+        }
+
+        public List<AvailableMove> AvailableMove()
+        {
+            var pieces = _field.GetPieces(StepSide);
+            var availableMoves = new List<AvailableMove>();
+            foreach (var piece in pieces)
+            {
+                var moves = piece.GetAvailableMoves(MoveMode.NotRules);
+                var to = moves.Select(move => new AvailableMove.Position(move.X, move.Y)).ToList();
+                availableMoves.Add(new AvailableMove(new AvailableMove.Position(piece.CurrentPosition.X, piece.CurrentPosition.Y), to));
+            }
+
+            return availableMoves;
         }
 
         /// <summary>
