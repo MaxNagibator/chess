@@ -124,37 +124,44 @@
                         }
                     }
                 }
-                /* Allow specific type of transfers */
                 event.dataTransfer.effectAllowed = "move";
-
-                /*
-                 * Set the data to send to the dropzone.
-                 * Two cases :
-                 * 1 - it is a picture, make a text/html data string.
-                 * 2 - it is plain text, make a simple text/plain data string.
-                 */
-                ////var src = event.target.getAttribute('src');
-                ////var alt = event.target.getAttribute('alt');
-                ////if (null !== src) //Case 1
-                ////    event.dataTransfer.setData("text/html", '<img src="' + src + '" alt="' + alt + '"/>');
-                ////else //Case 2
-                ////    event.dataTransfer.setData("text/plain", event.target.innerText || event.target.textContent);
-
                 dnd_successful = false;
             });
 
             draggables[i].addEventListener('dragend', function (event) {
                 if (dnd_successful) {
-                    if (event.target.parentElement != placeForDropPiece) {
-                        placeForDropPiece.appendChild(event.target);
-                    }
-                } else {
+                    let fromX = event.target.parentElement.getAttribute('data-position-x');
+                    let fromY = event.target.parentElement.getAttribute('data-position-y');
+
+                    let toX = placeForDropPiece.getAttribute('data-position-x');
+                    let toY = placeForDropPiece.getAttribute('data-position-y');
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", '/Home/Move', true);
+                    xhr.setRequestHeader('Content-Type', "application/x-www-form-urlencoded");
+                    xhr.onreadystatechange = function () {
+                        if (this.readyState != 4) {
+                            return;
+                        }
+                        if (this.status == 200) {
+                            var data = JSON.parse(this.responseText);
+                            var field = document.getElementById('field');
+                            field.innerHTML = '';
+                            initField(data.notation, data.availableMoves);
+                            // placeForDropPiece.appendChild(event.target);
+                        } else {
+                            alert('shadow bolt');
+                        }
+                    };
+                    xhr.send('fromX=' + fromX + "&" + 'fromY=' + fromY + "&" + 'toX=' + toX + "&" + 'toY=' + toY);
+                }
+                else {
                 }
                 event.target.classList.remove('piece-select');
 
                 var cells = document.getElementsByClassName('column');
                 for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
                     cells[cellIndex].classList.remove('piece-move-target-good');
+                    cells[cellIndex].classList.remove('piece-move-target-bad');
                 }
             });
         }
@@ -172,14 +179,18 @@
         let placeForDropPiece;
         for (let i = 0; i < dropZones.length; i++) {
             dropZones[i].addEventListener('dragenter', function (event) {
-                //event.target.style.background = "#CCCCCC";
-                event.target.classList.add('piece-move-target-good');
+                if (event.target.classList.contains('column') &&
+                    !event.target.classList.contains('piece-move-target-good')) {
+                    event.target.classList.add('piece-move-target-bad');
+                }
                 event.preventDefault();
             });
 
             dropZones[i].addEventListener('dragleave', function (event) {
-                event.target.classList.remove('piece-move-target-good');
-                //event.target.style.background = "white";
+                if (event.target.classList.contains('column') &&
+                    !event.target.classList.contains('piece-move-target-good')) {
+                    event.target.classList.remove('piece-move-target-bad');
+                }
             });
 
             dropZones[i].addEventListener('dragover', function (event) {
@@ -189,33 +200,22 @@
             });
 
             dropZones[i].addEventListener('drop', function (event) {
-                event.target.classList.remove('piece-move-target-good');
 
-                //let piece = getPieceByNotation('P');
-                //var img = document.createElement('img');
-                //var imgSrcName = piece.Type + "-" + piece.Side + '.png';
-                //img.src = '/Content/Images/Piece/' + imgSrcName;
-                //event.target.appendChild(img);
-                placeForDropPiece = event.target;
-                //event.target.appendChild(event.dataTransfer);
-                //var mylist = document.getElementById('mylist');
-                //mylist.style.visibility = "visible";
+                //todo переименовать column в cell/position/...
+                if ((event.target.classList.contains('column')
+                    && event.target.classList.contains('piece-move-target-good'))
 
-                //var html = event.dataTransfer.getData("text/html");
-                //if ("" !== html) //Case 1
-                //{
-                //    mylist.innerHTML += html;
-                //}
-                //else {
-                //    var span = document.createElement('span');
-                //    span.innerHTML = event.dataTransfer.getData("text/plain");
-                //    mylist.appendChild(span);
-                //}
-
-                //event.target.style.background = 'white';
-                dnd_successful = true;
-
-                event.preventDefault(); //Prevent Firefox from redirecting the page
+                    || (event.target.parentElement.classList.contains('column')
+                        && event.target.parentElement.classList.contains('piece-move-target-good'))
+                ) {
+                    //event.target.classList.remove('piece-move-target-good');
+                    placeForDropPiece = event.target;
+                    if (!placeForDropPiece.classList.contains('column')) {
+                        placeForDropPiece = placeForDropPiece.parentElement;
+                    }
+                    dnd_successful = true;
+                    event.preventDefault();
+                }
             });
         }
 

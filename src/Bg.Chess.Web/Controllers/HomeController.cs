@@ -13,6 +13,19 @@ namespace Bg.Chess.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private static Game game;
+        private static Game Game 
+        { 
+            get
+            {
+                if(game == null)
+                {
+                    game = new Game();
+                    game.Init();
+                }
+                return game;
+            } 
+        }
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -27,11 +40,18 @@ namespace Bg.Chess.Web.Controllers
         [HttpGet]
         public JsonResult GetField()
         {
-            var game = new Game();
-            game.Init();
-            var notation = game.GetForsythEdwardsNotation();
-            var moves = game.AvailableMove();
+            var notation = Game.GetForsythEdwardsNotation();
+            var moves = Game.AvailableMove();
             // todo сделать dto
+            return Json(new { Notation = notation, AvailableMoves = moves });
+        }
+
+        [HttpPost]
+        public JsonResult Move(int fromX, int fromY, int toX, int toY)
+        {
+            Game.Move(Game.StepSide, fromX, fromY, toX, toY);
+            var notation = Game.GetForsythEdwardsNotation();
+            var moves = Game.AvailableMove();
             return Json(new { Notation = notation, AvailableMoves = moves });
         }
 
