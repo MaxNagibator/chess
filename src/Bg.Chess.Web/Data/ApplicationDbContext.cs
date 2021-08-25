@@ -11,6 +11,10 @@ namespace Bg.Chess.Web.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            //Database.EnsureDeleted();   // удаляем бд со старой схемой
+            //Database.EnsureCreated();   // создаем бд с новой схемой
         }
+
+        public DbSet<ChessPlayer> ChessPlayers { get; set; }
     }
 }

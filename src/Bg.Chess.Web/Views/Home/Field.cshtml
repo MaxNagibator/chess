@@ -17,6 +17,7 @@
         var data = JSON.parse(response);
         console.log(data.notation);
         console.log(data.availableMoves);
+        alert('privet ' + data.player);
         initField(data.notation, data.availableMoves);
     };
 

@@ -1,4 +1,5 @@
 using Bg.Chess.Web.Data;
+using Bg.Chess.Web.Repo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -48,6 +49,9 @@ namespace Bg.Chess.Web
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 3;
             });
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPlayerRepo, PlayerRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

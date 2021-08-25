@@ -1,5 +1,6 @@
 ﻿using Bg.Chess.Domain;
 using Bg.Chess.Web.Models;
+using Bg.Chess.Web.Repo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,6 +14,8 @@ namespace Bg.Chess.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IPlayerRepo _playerRepo;
+
         private static Game game;
         private static Game Game 
         { 
@@ -27,9 +30,10 @@ namespace Bg.Chess.Web.Controllers
             } 
         }
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IPlayerRepo playerRepo)
         {
             _logger = logger;
+            _playerRepo = playerRepo;
         }
 
         public IActionResult Field()
@@ -40,10 +44,11 @@ namespace Bg.Chess.Web.Controllers
         [HttpGet]
         public JsonResult GetField()
         {
+            var player = _playerRepo.GetPlayer();
             var notation = Game.GetForsythEdwardsNotation();
             var moves = Game.AvailableMove();
             // todo сделать dto
-            return Json(new { Notation = notation, AvailableMoves = moves });
+            return Json(new { Notation = notation, AvailableMoves = moves, Player = player.Name });
         }
 
         [HttpPost]
@@ -58,7 +63,6 @@ namespace Bg.Chess.Web.Controllers
         public IActionResult Index()
         {
             // todo 1) прикрутить сборку с логикой шахматишек 
-            // todo 3) фигуры могут ходить
             // todo 4) добавить игроков
             // todo 5) добавить "поиск игры"
             // todo 6) реализовать "живое обновление", в первой версии на Ф5 пусть жмут (signalR/websocket)
