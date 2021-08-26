@@ -136,24 +136,25 @@
 
                     let toX = placeForDropPiece.getAttribute('data-position-x');
                     let toY = placeForDropPiece.getAttribute('data-position-y');
-                    let xhr = new XMLHttpRequest();
-                    xhr.open("POST", '/Home/Move', true);
-                    xhr.setRequestHeader('Content-Type', "application/x-www-form-urlencoded");
-                    xhr.onreadystatechange = function () {
-                        if (this.readyState != 4) {
-                            return;
-                        }
-                        if (this.status == 200) {
-                            var data = JSON.parse(this.responseText);
+                    SendRequest({
+                        url: '/Home/Move',
+                        method: 'POST',
+                        body: {
+                            fromX: fromX,
+                            fromY: fromY,
+                            toX: toX,
+                            toY: toY,
+                        },
+                        success: function (data) {
+                            var data2 = JSON.parse(data.responseText);
                             var field = document.getElementById('field');
                             field.innerHTML = '';
-                            initField(data.notation, data.availableMoves);
-                            // placeForDropPiece.appendChild(event.target);
-                        } else {
+                            initField(data2.notation, data2.availableMoves);
+                        },
+                        error: function () {
                             alert('shadow bolt');
                         }
-                    };
-                    xhr.send('fromX=' + fromX + "&" + 'fromY=' + fromY + "&" + 'toX=' + toX + "&" + 'toY=' + toY);
+                    });
                 }
                 else {
                 }
