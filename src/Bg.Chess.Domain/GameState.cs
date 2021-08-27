@@ -1,7 +1,7 @@
 ﻿namespace Bg.Chess.Domain
 {
     /// <summary>
-    /// Игровые стороны.
+    /// Статус игры.
     /// </summary>
     public enum GameState
     {

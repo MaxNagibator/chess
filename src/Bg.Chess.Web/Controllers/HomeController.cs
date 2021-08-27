@@ -1,5 +1,4 @@
-﻿using Bg.Chess.Domain;
-using Bg.Chess.Web.Models;
+﻿using Bg.Chess.Web.Models;
 using Bg.Chess.Web.Repo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,14 +15,14 @@ namespace Bg.Chess.Web.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IPlayerRepo _playerRepo;
 
-        private static Game game;
-        private static Game Game 
+        private static Bg.Chess.Domain.Game game;
+        private static Bg.Chess.Domain.Game Game 
         { 
             get
             {
                 if(game == null)
                 {
-                    game = new Game();
+                    game = new Bg.Chess.Domain.Game();
                     game.Init();
                 }
                 return game;

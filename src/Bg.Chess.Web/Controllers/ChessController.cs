@@ -1,16 +1,15 @@
-﻿using Bg.Chess.Domain;
-using Bg.Chess.Web.Models;
-using Bg.Chess.Web.Repo;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bg.Chess.Web.Controllers
+﻿namespace Bg.Chess.Web.Controllers
 {
+    using Bg.Chess.Web.Models;
+    using Bg.Chess.Web.Repo;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class ChessController : Controller
     {
         private readonly ILogger<ChessController> _logger;
@@ -30,7 +29,6 @@ namespace Bg.Chess.Web.Controllers
 
         public JsonResult SearchGame()
         {
-            // todo создать GameHolder/SearchQueue
             searchId = Guid.NewGuid().ToString("N");
             game = null;
             currentCheck = 0;
@@ -42,7 +40,7 @@ namespace Bg.Chess.Web.Controllers
             if (currentCheck > 5)
             {
                 var gameId = Guid.NewGuid().ToString("N");
-                game = new Game();
+                game = new Bg.Chess.Domain.Game();
                 game.Init();
                 return Json(new { gameId = gameId });
             }
@@ -54,14 +52,14 @@ namespace Bg.Chess.Web.Controllers
             return Json(new { waitpliz = true });
         }
 
-        private static Game game;
-        private static Game Game
+        private static Bg.Chess.Domain.Game game;
+        private static Bg.Chess.Domain.Game Game
         {
             get
             {
                 if (game == null)
                 {
-                    game = new Game();
+                    game = new Bg.Chess.Domain.Game();
                     game.Init();
                 }
                 return game;
