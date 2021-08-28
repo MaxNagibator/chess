@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{D1FC6827
 		..\worklog.txt = ..\worklog.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bg.Chess.Game.Tests", "Bg.Chess.Game.Tests\Bg.Chess.Game.Tests.csproj", "{B854335B-9A87-4F15-92A0-7F3AB123E389}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{3C60DB56-A69B-4474-B058-7E12191448FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C60DB56-A69B-4474-B058-7E12191448FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C60DB56-A69B-4474-B058-7E12191448FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B854335B-9A87-4F15-92A0-7F3AB123E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B854335B-9A87-4F15-92A0-7F3AB123E389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B854335B-9A87-4F15-92A0-7F3AB123E389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B854335B-9A87-4F15-92A0-7F3AB123E389}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

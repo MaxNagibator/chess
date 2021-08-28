@@ -9,10 +9,11 @@
         string Id { get; }
         int WhitePlayerId { get; }
         int BlackPlayerId { get; }
+        bool IsMyGame(int playerId);
         void Init(string id, int whitePlayerId, int blackPlayerId);
 
         //todo можно просто геттер сделать
-        GameState GetState();
+        GameState State { get; }
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
         void ConfirmStart(int playerId);
     }
@@ -33,6 +34,11 @@
             Id = id;
             WhitePlayerId = whitePlayerId;
             BlackPlayerId = blackPlayerId;
+        }
+
+        public bool IsMyGame(int playerId)
+        {
+            return BlackPlayerId == playerId || WhitePlayerId == playerId;
         }
 
         /// <summary>
@@ -102,25 +108,28 @@
             return game.GetForsythEdwardsNotation();
         }
 
-        public GameState GetState()
+        public GameState State
         {
-            if (game == null)
+            get
             {
-                return GameState.WaitStart;
-            }
+                if (game == null)
+                {
+                    return GameState.WaitStart;
+                }
 
-            switch (game.State)
-            {
-                case Domain.GameState.InProgress:
-                    return GameState.InProgress;
-                case Domain.GameState.WinWhite:
-                    return GameState.WinWhite;
-                case Domain.GameState.WinBlack:
-                    return GameState.WinBlack;
-                case Domain.GameState.Draw:
-                    return GameState.Draw;
-                default:
-                    throw new Exception("state unrecognized " + game.State);
+                switch (game.State)
+                {
+                    case Domain.GameState.InProgress:
+                        return GameState.InProgress;
+                    case Domain.GameState.WinWhite:
+                        return GameState.WinWhite;
+                    case Domain.GameState.WinBlack:
+                        return GameState.WinBlack;
+                    case Domain.GameState.Draw:
+                        return GameState.Draw;
+                    default:
+                        throw new Exception("state unrecognized " + game.State);
+                }
             }
         }
     }

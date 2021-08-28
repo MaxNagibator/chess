@@ -1,3 +1,4 @@
+using Bg.Chess.Game;
 using Bg.Chess.Web.Data;
 using Bg.Chess.Web.Repo;
 using Microsoft.AspNetCore.Builder;
@@ -52,6 +53,9 @@ namespace Bg.Chess.Web
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPlayerRepo, PlayerRepo>();
+            
+            services.AddSingleton<IGameHolder, GameHolder>();
+            services.AddSingleton<ISearchManager, SearchManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

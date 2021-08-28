@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Bg.Chess.Game
 {
     public interface IGameHolder
     {
-        public void StartGame(int playerId);
-
         void AddGame(string gameId, int whitePlayerId, int blackPlayerId);
+        GameState StartGame(int playerId);
+        IGameInfo GetMyPlayingGame(int playerId);
     }
 
     public class GameHolder : IGameHolder
@@ -17,21 +16,33 @@ namespace Bg.Chess.Game
 
         public void AddGame(string gameId, int whitePlayerId, int blackPlayerId)
         {
-            var game = GetGame();
+            var game = InitObj();
             game.Init(gameId, whitePlayerId, blackPlayerId);
             games.Add(game);
         }
 
-        private IGameInfo GetGame()
+        private IGameInfo InitObj()
         {
             return new GameInfo();
         }
 
-        public GameState StartGame(string gameId, int playerId)
+        // gameId избыточен
+        public GameState StartGame(int playerId)
         {
-            var game = games.First(x => x.Id == gameId);
+            var game = games.First(x => x.State == GameState.WaitStart && x.IsMyGame(playerId));
             game.ConfirmStart(playerId);
-            return game.GetState();
+            return game.State;
+        }
+
+        public IGameInfo GetMyPlayingGame(int playerId)
+        {
+            var game = games.FirstOrDefault(x => x.IsMyGame(playerId) && x.State == GameState.InProgress);
+            if (game == null)
+            {
+                throw new BusinessException("Не найдено игр в процессе");
+            }
+
+            return game;
         }
     }
 }
