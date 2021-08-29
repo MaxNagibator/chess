@@ -1,6 +1,7 @@
 ﻿namespace Bg.Chess.Game
 {
     using System;
+    using System.Collections.Generic;
     using Bg.Chess.Domain;
     using DomainGame = Bg.Chess.Domain.Game;
 
@@ -16,6 +17,10 @@
         GameState State { get; }
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
         void ConfirmStart(int playerId);
+        string GetForsythEdwardsNotation();
+
+        //todo AvailableMove это класс из другой сборки, переложить
+        List<AvailableMove> AvailableMove();
     }
 
     public class GameInfo : IGameInfo
@@ -106,6 +111,11 @@
         public string GetForsythEdwardsNotation()
         {
             return game.GetForsythEdwardsNotation();
+        }
+
+        public List<AvailableMove> AvailableMove()
+        {
+            return game.AvailableMove();
         }
 
         public GameState State

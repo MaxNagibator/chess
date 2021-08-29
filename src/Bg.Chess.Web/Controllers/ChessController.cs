@@ -1,5 +1,6 @@
 ﻿namespace Bg.Chess.Web.Controllers
 {
+    using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
     using Bg.Chess.Web.Repo;
     using Microsoft.AspNetCore.Mvc;
@@ -8,14 +9,22 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
 
     public class ChessController : Controller
     {
         private readonly ILogger<ChessController> _logger;
+        private ISearchManager _searchManager;
+        private IGameHolder _gameHolder;
+        private IPlayerService _playerService;
 
-        public ChessController(ILogger<HomeController> logger)
+        public ChessController(ILogger<ChessController> logger, ISearchManager searchManager, IGameHolder gameHolder, IPlayerService playerService)
         {
+            _logger = logger;
+            _searchManager = searchManager;
+            _gameHolder = gameHolder;
+            _playerService = playerService;
         }
 
         [HttpGet]
@@ -24,56 +33,50 @@
             return View();
         }
 
-        private static string searchId { get; set; }
-        private static int currentCheck { get; set; }
-
-        public JsonResult SearchGame()
+        [HttpPost]
+        public JsonResult StartSearch()
         {
-            searchId = Guid.NewGuid().ToString("N");
-            game = null;
-            currentCheck = 0;
-            return Json(new { searchId = searchId });
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = this.User.FindFirstValue(ClaimTypes.Name);
+            var player = _playerService.GetOrCreatePlayer(userId, userName);
+            _searchManager.Start(player.Id);
+            return Json(new { error = false });
         }
 
-        public JsonResult CheckSearch(string searchId)
+        [HttpPost]
+        public JsonResult CheckSearch()
         {
-            if (currentCheck > 5)
-            {
-                var gameId = Guid.NewGuid().ToString("N");
-                game = new Bg.Chess.Domain.Game();
-                game.Init();
-                return Json(new { gameId = gameId });
-            }
-            else
-            {
-                currentCheck++;
-            }
-
-            return Json(new { waitpliz = true });
+            var playerId = GetPlayerId();
+            var status = _searchManager.Check(playerId);
+            return Json(new { status = status.ToString() });
         }
 
-        private static Bg.Chess.Domain.Game game;
-        private static Bg.Chess.Domain.Game Game
+        [HttpPost]
+        public JsonResult ConfirmSearch()
         {
-            get
-            {
-                if (game == null)
-                {
-                    game = new Bg.Chess.Domain.Game();
-                    game.Init();
-                }
-                return game;
-            }
+            var playerId = GetPlayerId();
+            var status = _searchManager.Confirm(playerId);
+            return Json(new { status = status.ToString() });
         }
 
-        [HttpGet]
-        [Route("Chess/Game/{gameId}")]
-        public JsonResult GetGame(string gameId)
+        [HttpPost]
+        public JsonResult StopSearch()
         {
-            var notation = Game.GetForsythEdwardsNotation();
-            var moves = Game.AvailableMove();
+            var playerId = GetPlayerId();
+            _searchManager.Stop(playerId);
+            return Json(new { error = false });
+        }
 
-            return Json(new { Notation = notation, AvailableMoves = moves });
+        [HttpPost]
+        public JsonResult GetGame()
+        {
+            var playerId = GetPlayerId();
+            var game = _gameHolder.GetMyPlayingGame(playerId);
+            var notation = game.GetForsythEdwardsNotation();
+            var moves = game.AvailableMove();
+            var side = game.WhitePlayerId == playerId ? "white" : "black";
+
+            return Json(new { Notation = notation, AvailableMoves = moves, side = side });
         }
 
         //[HttpGet]
@@ -86,13 +89,23 @@
         //    return Json(new { Notation = notation, AvailableMoves = moves, Player = player.Name });
         //}
 
-        //[HttpPost]
-        //public JsonResult Move(int fromX, int fromY, int toX, int toY)
-        //{
-        //    Game.Move(Game.StepSide, fromX, fromY, toX, toY);
-        //    var notation = Game.GetForsythEdwardsNotation();
-        //    var moves = Game.AvailableMove();
-        //    return Json(new { Notation = notation, AvailableMoves = moves });
-        //}
+        [HttpPost]
+        public JsonResult Move(int fromX, int fromY, int toX, int toY)
+        {
+            var playerId = GetPlayerId();
+            var game = _gameHolder.GetMyPlayingGame(playerId);
+            game.Move(playerId, fromX, fromY, toX, toY);
+            var notation = game.GetForsythEdwardsNotation();
+            var moves = game.AvailableMove();
+            return Json(new { Notation = notation, AvailableMoves = moves });
+        }
+
+        private int GetPlayerId()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var player = _playerService.GetPlayer(userId);
+            return player.Id;
+        }
+
     }
 }

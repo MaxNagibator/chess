@@ -53,7 +53,8 @@ namespace Bg.Chess.Web
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPlayerRepo, PlayerRepo>();
-            
+            services.AddScoped<IPlayerService, PlayerService>();
+
             services.AddSingleton<IGameHolder, GameHolder>();
             services.AddSingleton<ISearchManager, SearchManager>();
         }
