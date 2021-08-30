@@ -6,6 +6,13 @@
     display: inline-block;
 }
 
+    #field.side-black {
+        transform: rotate( 180deg );
+    }
+        #field.side-black .column img {
+            transform: rotate( 180deg );
+        }
+
 .line {
     /* display: inline-block;*/
     height: 50px;
@@ -45,4 +52,16 @@
 
 .piece-move-target-bad {
     border: 2px solid #ED1F1C
+}
+
+.show-is-search {
+    display: none;
+}
+
+.in-process .show-is-search {
+    display: block;
+}
+
+.in-process .hide-is-search {
+    display: none;
 }

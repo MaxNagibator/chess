@@ -95,10 +95,6 @@
             {
                 throw new BusinessException("Поиск игры отсутствует");
             }
-            if (search.Status == SearchStatus.InProcess)
-            {
-                throw new BusinessException("Противник не найден");
-            }
 
             if (search.Status == SearchStatus.NeedConfirm)
             {
@@ -127,8 +123,26 @@
 
         public void Stop(int playerId)
         {
-            //todo сделать отмену поиска
-            throw new NotImplementedException();
+            var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
+            if (search == null)
+            {
+                return;
+            }
+            if (search.Status == SearchStatus.Finish)
+            {
+                throw new Exception("this status " + search.Status + " bad");
+            }
+
+            lock (lockSearchList)
+            {
+                _gameHolder.StopGame(search.PlayerId);
+                var twoSearch = searchList.FirstOrDefault(x => x.GameId == search.GameId && x.PlayerId != search.PlayerId);
+                if (twoSearch != null)
+                {
+                    twoSearch.Status = SearchStatus.InProcess;
+                }
+                searchList.Remove(search);
+            }
         }
     }
 }

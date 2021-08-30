@@ -17,6 +17,7 @@
         GameState State { get; }
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
         void ConfirmStart(int playerId);
+        void StopStart(int playerId);
         string GetForsythEdwardsNotation();
 
         //todo AvailableMove это класс из другой сборки, переложить
@@ -29,8 +30,8 @@
         public int WhitePlayerId { get; private set; }
         public int BlackPlayerId { get; private set; }
 
-        private bool whiteConfirm;
-        private bool blackConfirm;
+        public bool whiteConfirm;
+        public bool blackConfirm;
 
         private DomainGame game;
 
@@ -55,6 +56,8 @@
             Side side = GetSide(playerId);
             if (side == Side.White)
             {
+                // todo зачем вообще знать, кто там подтвердил игру, пусть за это поисковик отвечает
+                // удалить confirmStart/stopStart
                 whiteConfirm = true;
             }
             if (side == Side.Black)
@@ -66,6 +69,18 @@
             {
                 game = new DomainGame();
                 game.Init();
+            }
+        }
+        public void StopStart(int playerId)
+        {
+            Side side = GetSide(playerId);
+            if (side == Side.White)
+            {
+                whiteConfirm = false;
+            }
+            if (side == Side.Black)
+            {
+                blackConfirm = false;
             }
         }
 

@@ -7,6 +7,7 @@ namespace Bg.Chess.Game
     {
         void AddGame(string gameId, int whitePlayerId, int blackPlayerId);
         GameState StartGame(int playerId);
+        GameState StopGame(int playerId);
         IGameInfo GetMyPlayingGame(int playerId);
     }
 
@@ -26,11 +27,17 @@ namespace Bg.Chess.Game
             return new GameInfo();
         }
 
-        // gameId избыточен
         public GameState StartGame(int playerId)
         {
             var game = games.First(x => x.State == GameState.WaitStart && x.IsMyGame(playerId));
             game.ConfirmStart(playerId);
+            return game.State;
+        }
+
+        public GameState StopGame(int playerId)
+        {
+            var game = games.First(x => x.State == GameState.WaitStart && x.IsMyGame(playerId));
+            game.StopStart(playerId);
             return game.State;
         }
 
