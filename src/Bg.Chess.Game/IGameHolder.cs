@@ -43,10 +43,10 @@ namespace Bg.Chess.Game
 
         public IGameInfo GetMyPlayingGame(int playerId)
         {
-            var game = games.FirstOrDefault(x => x.IsMyGame(playerId) && x.State == GameState.InProgress);
+            var game = games.FirstOrDefault(x => x.IsMyGame(playerId));// && x.State == GameState.InProgress);
             if (game == null)
             {
-                throw new BusinessException("Не найдено игр в процессе");
+                return null;// throw new BusinessException("Не найдено игр в процессе");
             }
 
             return game;

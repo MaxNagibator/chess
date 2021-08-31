@@ -56,7 +56,7 @@
             State = GameState.InProgress;
         }
 
-        public List<AvailableMove> AvailableMove()
+        public List<AvailableMove> AvailableMoves()
         {
             var pieces = _field.GetPieces(StepSide);
             var availableMoves = new List<AvailableMove>();

@@ -72,22 +72,8 @@
         {
             var playerId = GetPlayerId();
             var game = _gameHolder.GetMyPlayingGame(playerId);
-            var notation = game.GetForsythEdwardsNotation();
-            var moves = game.AvailableMove();
-            var side = game.WhitePlayerId == playerId ? "white" : "black";
-
-            return Json(new { Notation = notation, AvailableMoves = moves, side = side });
+            return InitFieldResponse(playerId, game);
         }
-
-        //[HttpGet]
-        //public JsonResult GetField()
-        //{
-        //    var player = _playerRepo.GetPlayer();
-        //    var notation = Game.GetForsythEdwardsNotation();
-        //    var moves = Game.AvailableMove();
-        //    // todo сделать dto
-        //    return Json(new { Notation = notation, AvailableMoves = moves, Player = player.Name });
-        //}
 
         [HttpPost]
         public JsonResult Move(int fromX, int fromY, int toX, int toY)
@@ -95,9 +81,17 @@
             var playerId = GetPlayerId();
             var game = _gameHolder.GetMyPlayingGame(playerId);
             game.Move(playerId, fromX, fromY, toX, toY);
+            return InitFieldResponse(playerId, game);
+        }
+
+        private JsonResult InitFieldResponse(int playerId, IGameInfo game)
+        {
             var notation = game.GetForsythEdwardsNotation();
-            var moves = game.AvailableMove();
-            return Json(new { Notation = notation, AvailableMoves = moves });
+            var moves = game.AvailableMoves();
+            var side = game.WhitePlayerId == playerId ? "white" : "black";
+            var stepSide = game.StepSide == GameSide.White ? "white" : "black";
+
+            return Json(new { Notation = notation, AvailableMoves = moves, Side = side, StepSide = stepSide });
         }
 
         private int GetPlayerId()

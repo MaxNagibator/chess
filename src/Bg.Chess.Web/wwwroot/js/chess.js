@@ -6,6 +6,9 @@
     Finish: 'Finish'
 }
 
+let checkEnemyStep = -1;
+let checkEnemyStepInProcess = false;
+
 let searchRequestInProcess = false;
 function startSearch() {
     if (searchRequestInProcess) {
@@ -121,17 +124,25 @@ function stopSearch() {
 }
 
 let mySide;
+let stepSide;
 
-function goGame() {
-    document.getElementById('searchBlock').classList.remove('in-process');
-
+function goGame(alwaysCallback) {
     SendRequest({
         url: '/Chess/GetGame',
         method: 'POST',
         success: function (data) {
             var data2 = JSON.parse(data.responseText);
             mySide = data2.side;
+            stepSide = data2.stepSide;
+            if (mySide != stepSide) {
+                checkEnemyStep = 217;
+            }
             initField(data2.notation, data2.availableMoves);
+        },
+        always: function () {
+            if (alwaysCallback != undefined) {
+                alwaysCallback();
+            }
         }
     });
 }
@@ -162,7 +173,7 @@ function initField(notation, availableMoves) {
     let cellColorIndex = 0;
     var target = document.querySelector("#field");
     target.innerHTML = '';
-    target.classList.add('side-'+mySide);
+    target.classList.add('side-' + mySide);
     var draggables = [];
     var dropZones = [];
 
@@ -251,28 +262,9 @@ function initField(notation, availableMoves) {
             if (dnd_successful) {
                 let fromX = event.target.parentElement.getAttribute('data-position-x');
                 let fromY = event.target.parentElement.getAttribute('data-position-y');
-
                 let toX = placeForDropPiece.getAttribute('data-position-x');
                 let toY = placeForDropPiece.getAttribute('data-position-y');
-                SendRequest({
-                    url: '/Chess/Move',
-                    method: 'POST',
-                    body: {
-                        fromX: fromX,
-                        fromY: fromY,
-                        toX: toX,
-                        toY: toY,
-                    },
-                    success: function (data) {
-                        var data2 = JSON.parse(data.responseText);
-                        var field = document.getElementById('field');
-                        field.innerHTML = '';
-                        initField(data2.notation, data2.availableMoves);
-                    },
-                    error: function () {
-                        alert('shadow bolt');
-                    }
-                });
+                move(fromX, fromY, toX, toY);
             }
             else {
             }
@@ -286,15 +278,6 @@ function initField(notation, availableMoves) {
         });
     }
 
-    function getMoves(availableMoves, x, y) {
-        for (let i = 0; i < availableMoves.length; i++) {
-            if (availableMoves[i].from.x == x
-                && availableMoves[i].from.y == y) {
-                return availableMoves[i].to;
-            }
-        }
-        console.error('not found moves for piece in ' + x + '/' + y);
-    }
 
     let placeForDropPiece;
     for (let i = 0; i < dropZones.length; i++) {
@@ -338,37 +321,90 @@ function initField(notation, availableMoves) {
             }
         });
     }
+}
 
+function move(fromX, fromY, toX, toY) {
+    SendRequest({
+        url: '/Chess/Move',
+        method: 'POST',
+        body: {
+            fromX: fromX,
+            fromY: fromY,
+            toX: toX,
+            toY: toY,
+        },
+        success: function (data) {
+            var data2 = JSON.parse(data.responseText);
+            var field = document.getElementById('field');
+            field.innerHTML = '';
+            initField(data2.notation, data2.availableMoves);
+            checkEnemyStep = 217;
+        },
+        error: function () {
+            alert('shadow bolt');
+        }
+    });
+}
 
-
-    function getPieceByNotation(pos) {
-        var toUpper = pos.toUpperCase();
-
-        var piece = {
-            Side: pos === toUpper ? Side.White : Side.Black,
-            Type: GetTypeByChar(toUpper),
-        };
-
-        return piece;
+setInterval(function () {
+    if (checkEnemyStep == -1) {
+        // заполнить статус лейбл, ваш ход
+        return;
+    } else {
+        // заполнить статус лейбл "ход оппонента"
     }
 
-    function GetTypeByChar(char) {
-        switch (char) {
-            case 'R':
-                return PieceTypes.Rook;
-            case 'N':
-                return PieceTypes.Knight;
-            case 'B':
-                return PieceTypes.Bishop;
-            case 'Q':
-                return PieceTypes.Queen;
-            case 'K':
-                return PieceTypes.King;
-            case 'P':
-                return PieceTypes.Pawn;
-            default:
-                console.error('type not recognized: ' + char);
-                return null;
+    if (checkEnemyStepInProcess) {
+        return;
+    }
+
+    checkEnemyStepInProcess = true;
+
+    goGame(function () {
+        if (mySide == stepSide) {
+            checkEnemyStep = -1;
         }
+        checkEnemyStepInProcess = false;
+    });
+}, 1000);
+
+function getMoves(availableMoves, x, y) {
+    for (let i = 0; i < availableMoves.length; i++) {
+        if (availableMoves[i].from.x == x
+            && availableMoves[i].from.y == y) {
+            return availableMoves[i].to;
+        }
+    }
+    console.error('not found moves for piece in ' + x + '/' + y);
+}
+
+function getPieceByNotation(pos) {
+    var toUpper = pos.toUpperCase();
+
+    var piece = {
+        Side: pos === toUpper ? Side.White : Side.Black,
+        Type: GetTypeByChar(toUpper),
+    };
+
+    return piece;
+}
+
+function GetTypeByChar(char) {
+    switch (char) {
+        case 'R':
+            return PieceTypes.Rook;
+        case 'N':
+            return PieceTypes.Knight;
+        case 'B':
+            return PieceTypes.Bishop;
+        case 'Q':
+            return PieceTypes.Queen;
+        case 'K':
+            return PieceTypes.King;
+        case 'P':
+            return PieceTypes.Pawn;
+        default:
+            console.error('type not recognized: ' + char);
+            return null;
     }
 }
