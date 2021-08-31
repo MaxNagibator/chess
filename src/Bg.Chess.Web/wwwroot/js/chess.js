@@ -6,6 +6,28 @@
     Finish: 'Finish'
 }
 
+const GameStatus = {
+    Draw: 'Draw',
+    InProgress: 'InProgress',
+    WaitStart: 'WaitStart',
+    WinBlack: 'WinBlack',
+    WinWhite: 'WinWhite'
+}
+
+const PieceTypes = {
+    Bishop: 'Bishop',
+    King: 'King',
+    Knight: 'Knight',
+    Pawn: 'Pawn',
+    Queen: 'Queen',
+    Rook: 'Rook'
+}
+
+const Side = {
+    White: 'White',
+    Black: 'Black'
+}
+
 let checkEnemyStep = -1;
 let checkEnemyStepInProcess = false;
 
@@ -123,8 +145,31 @@ function stopSearch() {
     });
 }
 
-let mySide;
-let stepSide;
+let game = {
+    mySide: null,
+    stepSide: null,
+    status: null
+};
+
+function move(fromX, fromY, toX, toY) {
+    SendRequest({
+        url: '/Chess/Move',
+        method: 'POST',
+        body: {
+            fromX: fromX,
+            fromY: fromY,
+            toX: toX,
+            toY: toY,
+        },
+        success: function (data) {
+            var data2 = JSON.parse(data.responseText);
+            initGame(data2);
+        },
+        error: function () {
+            alert('shadow bolt');
+        }
+    });
+}
 
 function goGame(alwaysCallback) {
     SendRequest({
@@ -132,12 +177,7 @@ function goGame(alwaysCallback) {
         method: 'POST',
         success: function (data) {
             var data2 = JSON.parse(data.responseText);
-            mySide = data2.side;
-            stepSide = data2.stepSide;
-            if (mySide != stepSide) {
-                checkEnemyStep = 217;
-            }
-            initField(data2.notation, data2.availableMoves);
+            initGame(data2);
         },
         always: function () {
             if (alwaysCallback != undefined) {
@@ -147,22 +187,72 @@ function goGame(alwaysCallback) {
     });
 }
 
-const PieceTypes = {
-    Bishop: 'Bishop',
-    King: 'King',
-    Knight: 'Knight',
-    Pawn: 'Pawn',
-    Queen: 'Queen',
-    Rook: 'Rook'
-}
+function initGame(data2) {
+    game.mySide = data2.side;
+    game.stepSide = data2.stepSide;
+    game.status = data2.status;
 
-const Side = {
-    White: 'White',
-    Black: 'Black'
+    if (game.status == GameStatus.InProgress) {
+        initField(data2.notation, data2.availableMoves);
+        if (game.mySide == game.stepSide) {
+            checkEnemyStep = -1;
+        } else {
+            checkEnemyStep = 217;
+        }
+    } else {
+        checkEnemyStep = -1;
+        if (game.status == GameStatus.WaitStart) {
+            console.log('wow, bad status ' + game.status);
+        } else if (game.status == GameStatus.WinWhite) {
+            if (game.mySide == Side.White) {
+                alert('you won!');
+            } else {
+                alert('you lose!');
+            }
+        } else if (game.status == GameStatus.WinBlack) {
+            if (game.mySide == Side.Black) {
+                alert('you won!');
+            } else {
+                alert('you lose!');
+            }
+        } else if (game.status == GameStatus.Draw) {
+            alert('draw!');
+        }
+    }
 }
 
 function initField(notation, availableMoves) {
 
+    function getPieceByNotation(pos) {
+        function getTypeByChar(char) {
+            switch (char) {
+                case 'R':
+                    return PieceTypes.Rook;
+                case 'N':
+                    return PieceTypes.Knight;
+                case 'B':
+                    return PieceTypes.Bishop;
+                case 'Q':
+                    return PieceTypes.Queen;
+                case 'K':
+                    return PieceTypes.King;
+                case 'P':
+                    return PieceTypes.Pawn;
+                default:
+                    console.error('type not recognized: ' + char);
+                    return null;
+            }
+        }
+
+        var toUpper = pos.toUpperCase();
+
+        var piece = {
+            Side: pos === toUpper ? Side.White : Side.Black,
+            Type: getTypeByChar(toUpper),
+        };
+
+        return piece;
+    }
     console.log(notation);
 
     //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -173,7 +263,7 @@ function initField(notation, availableMoves) {
     let cellColorIndex = 0;
     var target = document.querySelector("#field");
     target.innerHTML = '';
-    target.classList.add('side-' + mySide);
+    target.classList.add('side-' + game.mySide.toLowerCase());
     var draggables = [];
     var dropZones = [];
 
@@ -226,7 +316,7 @@ function initField(notation, availableMoves) {
                 img.src = '/Content/Images/Piece/' + imgSrcName;
                 div.appendChild(img);
                 dropZones.push(div);
-                if (mySide.toLowerCase() == piece.Side.toLowerCase()) {
+                if (game.mySide == piece.Side) {
                     draggables.push(img);
                 }
                 posX++;
@@ -323,29 +413,6 @@ function initField(notation, availableMoves) {
     }
 }
 
-function move(fromX, fromY, toX, toY) {
-    SendRequest({
-        url: '/Chess/Move',
-        method: 'POST',
-        body: {
-            fromX: fromX,
-            fromY: fromY,
-            toX: toX,
-            toY: toY,
-        },
-        success: function (data) {
-            var data2 = JSON.parse(data.responseText);
-            var field = document.getElementById('field');
-            field.innerHTML = '';
-            initField(data2.notation, data2.availableMoves);
-            checkEnemyStep = 217;
-        },
-        error: function () {
-            alert('shadow bolt');
-        }
-    });
-}
-
 setInterval(function () {
     if (checkEnemyStep == -1) {
         // заполнить статус лейбл, ваш ход
@@ -361,7 +428,7 @@ setInterval(function () {
     checkEnemyStepInProcess = true;
 
     goGame(function () {
-        if (mySide == stepSide) {
+        if (game.mySide == game.stepSide) {
             checkEnemyStep = -1;
         }
         checkEnemyStepInProcess = false;
@@ -376,35 +443,4 @@ function getMoves(availableMoves, x, y) {
         }
     }
     console.error('not found moves for piece in ' + x + '/' + y);
-}
-
-function getPieceByNotation(pos) {
-    var toUpper = pos.toUpperCase();
-
-    var piece = {
-        Side: pos === toUpper ? Side.White : Side.Black,
-        Type: GetTypeByChar(toUpper),
-    };
-
-    return piece;
-}
-
-function GetTypeByChar(char) {
-    switch (char) {
-        case 'R':
-            return PieceTypes.Rook;
-        case 'N':
-            return PieceTypes.Knight;
-        case 'B':
-            return PieceTypes.Bishop;
-        case 'Q':
-            return PieceTypes.Queen;
-        case 'K':
-            return PieceTypes.King;
-        case 'P':
-            return PieceTypes.Pawn;
-        default:
-            console.error('type not recognized: ' + char);
-            return null;
-    }
 }

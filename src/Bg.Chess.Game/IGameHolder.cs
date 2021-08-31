@@ -6,8 +6,8 @@ namespace Bg.Chess.Game
     public interface IGameHolder
     {
         void AddGame(string gameId, int whitePlayerId, int blackPlayerId);
-        GameState StartGame(int playerId);
-        GameState StopGame(int playerId);
+        GameStatus StartGame(int playerId);
+        GameStatus StopGame(int playerId);
         IGameInfo GetMyPlayingGame(int playerId);
     }
 
@@ -17,6 +17,17 @@ namespace Bg.Chess.Game
 
         public void AddGame(string gameId, int whitePlayerId, int blackPlayerId)
         {
+            var whiteGame = games.FirstOrDefault(x => x.IsMyGame(whitePlayerId));
+            if(whiteGame != null)
+            {
+                games.Remove(whiteGame);
+            }
+            var blackGame = games.FirstOrDefault(x => x.IsMyGame(blackPlayerId));
+            if (blackGame != null)
+            {
+                games.Remove(blackGame);
+            }
+
             var game = InitObj();
             game.Init(gameId, whitePlayerId, blackPlayerId);
             games.Add(game);
@@ -27,18 +38,18 @@ namespace Bg.Chess.Game
             return new GameInfo();
         }
 
-        public GameState StartGame(int playerId)
+        public GameStatus StartGame(int playerId)
         {
-            var game = games.First(x => x.State == GameState.WaitStart && x.IsMyGame(playerId));
+            var game = games.First(x => x.Status == GameStatus.WaitStart && x.IsMyGame(playerId));
             game.ConfirmStart(playerId);
-            return game.State;
+            return game.Status;
         }
 
-        public GameState StopGame(int playerId)
+        public GameStatus StopGame(int playerId)
         {
-            var game = games.First(x => x.State == GameState.WaitStart && x.IsMyGame(playerId));
+            var game = games.First(x => x.Status == GameStatus.WaitStart && x.IsMyGame(playerId));
             game.StopStart(playerId);
-            return game.State;
+            return game.Status;
         }
 
         public IGameInfo GetMyPlayingGame(int playerId)

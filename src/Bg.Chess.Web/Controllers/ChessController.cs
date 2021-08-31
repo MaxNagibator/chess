@@ -1,5 +1,6 @@
 ﻿namespace Bg.Chess.Web.Controllers
 {
+    using Bg.Chess.Domain;
     using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
     using Bg.Chess.Web.Repo;
@@ -86,12 +87,49 @@
 
         private JsonResult InitFieldResponse(int playerId, IGameInfo game)
         {
-            var notation = game.GetForsythEdwardsNotation();
-            var moves = game.AvailableMoves();
-            var side = game.WhitePlayerId == playerId ? "white" : "black";
-            var stepSide = game.StepSide == GameSide.White ? "white" : "black";
+            if (game == null)
+            {
+                return Json(new { error = true, message = "Game not found" });
+            }
 
-            return Json(new { Notation = notation, AvailableMoves = moves, Side = side, StepSide = stepSide });
+            string notation = null;
+            List<AvailableMove> moves = null;
+            if (game.Status == GameStatus.InProgress)
+            {
+                notation = game.GetForsythEdwardsNotation();
+                moves = game.AvailableMoves();
+            }
+            var side = game.WhitePlayerId == playerId ? "White" : "Black";
+            var stepSide = game.StepSide == GameSide.White ? "White" : "Black";
+            var status = "";
+            switch (game.Status)
+            {
+                case GameStatus.Draw:
+                    status = "Draw";
+                    break;
+                case GameStatus.InProgress:
+                    status = "InProgress";
+                    break;
+                case GameStatus.WaitStart:
+                    status = "WaitStart";
+                    break;
+                case GameStatus.WinBlack:
+                    status = "WinBlack";
+                    break;
+                case GameStatus.WinWhite:
+                    status = "WinWhite";
+                    break;
+            }
+
+
+            return Json(new
+            {
+                Notation = notation,
+                AvailableMoves = moves,
+                Side = side,
+                StepSide = stepSide,
+                Status = status
+            });
         }
 
         private int GetPlayerId()

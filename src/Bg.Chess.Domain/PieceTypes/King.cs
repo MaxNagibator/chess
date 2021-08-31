@@ -29,7 +29,10 @@
 
             var enemyPieces = piece.CurrentPosition.Field.GetPieces(piece.Side.Invert());
 
-            AddAvailableCastling(king, enemyPieces, availablePositions);
+            if (!moveMode.HasFlag(MoveMode.IndifferentKingDeath))
+            {
+                AddAvailableCastling(king, enemyPieces, availablePositions);
+            }
 
             return availablePositions;
         }

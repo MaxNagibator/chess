@@ -9,7 +9,7 @@ namespace Bg.Chess.Game
     /// <summary>
     /// Игровые стороны.
     /// </summary>
-    public enum GameState
+    public enum GameStatus
     {
         /// <summary>
         /// Ждёт начала.

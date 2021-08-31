@@ -14,8 +14,7 @@
         bool IsMyGame(int playerId);
         void Init(string id, int whitePlayerId, int blackPlayerId);
 
-        //todo можно просто геттер сделать
-        GameState State { get; }
+        GameStatus Status { get; }
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
         void ConfirmStart(int playerId);
         void StopStart(int playerId);
@@ -134,25 +133,25 @@
             return game.AvailableMoves();
         }
 
-        public GameState State
+        public GameStatus Status
         {
             get
             {
                 if (game == null)
                 {
-                    return GameState.WaitStart;
+                    return GameStatus.WaitStart;
                 }
 
                 switch (game.State)
                 {
                     case Domain.GameState.InProgress:
-                        return GameState.InProgress;
+                        return GameStatus.InProgress;
                     case Domain.GameState.WinWhite:
-                        return GameState.WinWhite;
+                        return GameStatus.WinWhite;
                     case Domain.GameState.WinBlack:
-                        return GameState.WinBlack;
+                        return GameStatus.WinBlack;
                     case Domain.GameState.Draw:
-                        return GameState.Draw;
+                        return GameStatus.Draw;
                     default:
                         throw new Exception("state unrecognized " + game.State);
                 }

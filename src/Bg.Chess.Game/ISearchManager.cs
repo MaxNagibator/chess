@@ -40,7 +40,7 @@
         {
             lock (lockSearchList)
             {
-                var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
+                var search = searchList.FirstOrDefault(x => x.PlayerId == playerId && x.Status != SearchStatus.Finish);
                 if (search != null)
                 {
                     return;
@@ -99,7 +99,7 @@
             if (search.Status == SearchStatus.NeedConfirm)
             {
                 var status = _gameHolder.StartGame(search.PlayerId);
-                if (status == GameState.InProgress)
+                if (status == GameStatus.InProgress)
                 {
                     var twoSearch = searchList.First(x => x.GameId == search.GameId && x.PlayerId != search.PlayerId);
                     var gameStartDate = DateTime.Now;
@@ -108,7 +108,7 @@
                     twoSearch.GameStart = gameStartDate;
                     twoSearch.Status = SearchStatus.Finish;
                 }
-                else if (status == GameState.WaitStart)
+                else if (status == GameStatus.WaitStart)
                 {
                     search.Status = SearchStatus.NeedConfirmOpponent;
                 }
