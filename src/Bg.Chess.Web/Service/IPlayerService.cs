@@ -1,11 +1,8 @@
-﻿using Bg.Chess.Web.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bg.Chess.Web.Repo
+﻿namespace Bg.Chess.Web.Service
 {
+    using Bg.Chess.Web.Data;
+    using Bg.Chess.Web.Repo;
+
     public interface IPlayerService
     {
         public Player GetPlayer(string userId);

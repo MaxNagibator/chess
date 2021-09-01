@@ -16,5 +16,6 @@ namespace Bg.Chess.Web.Data
         }
 
         public DbSet<ChessPlayer> ChessPlayers { get; set; }
+        public DbSet<ChessGame> ChessGames { get; set; }
     }
 }

@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Bg.Chess.Web.Service
 {
-    public class Player
+    public class SaveGameDtoV1
     {
-        public int Id { get; set; }
-
-        public string UserId { get; set; }
-
-        public string Name { get; set; }
+        public string Test { get; set; }
+        //public int Moves { get; set; }
+        //public int Pieces { get; set; }
     }
 }

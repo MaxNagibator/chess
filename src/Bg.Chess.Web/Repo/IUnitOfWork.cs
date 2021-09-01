@@ -21,6 +21,8 @@ namespace Bg.Chess.Web.Repo
         {
             Context = context;
         }
+
+        //todo сделать -> при завершении http запроса комитим
         public void Commit()
         {
             Context.SaveChanges();

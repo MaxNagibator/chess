@@ -1,6 +1,7 @@
 using Bg.Chess.Game;
 using Bg.Chess.Web.Data;
 using Bg.Chess.Web.Repo;
+using Bg.Chess.Web.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -52,8 +53,12 @@ namespace Bg.Chess.Web
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped<IPlayerRepo, PlayerRepo>();
+            services.AddScoped<IGameRepo, GameRepo>();
+
             services.AddScoped<IPlayerService, PlayerService>();
+            services.AddScoped<IGameService, GameService>();
 
             services.AddSingleton<IGameHolder, GameHolder>();
             services.AddSingleton<ISearchManager, SearchManager>();

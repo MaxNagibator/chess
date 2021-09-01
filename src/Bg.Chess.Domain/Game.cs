@@ -131,7 +131,6 @@
                 {
                     State = GameState.WinBlack;
                 }
-                return;
             }
             else if (mate == CheckMateResult.None)
             {
@@ -141,6 +140,7 @@
             {
                 State = GameState.Draw;
             }
+
         }
 
         /// <summary>

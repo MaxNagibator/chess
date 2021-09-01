@@ -4,6 +4,7 @@
     using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
     using Bg.Chess.Web.Repo;
+    using Bg.Chess.Web.Service;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using System;
@@ -19,13 +20,20 @@
         private ISearchManager _searchManager;
         private IGameHolder _gameHolder;
         private IPlayerService _playerService;
+        private IGameService _gameService;
 
-        public ChessController(ILogger<ChessController> logger, ISearchManager searchManager, IGameHolder gameHolder, IPlayerService playerService)
+        public ChessController(
+            ILogger<ChessController> logger,
+            ISearchManager searchManager,
+            IGameHolder gameHolder,
+            IPlayerService playerService,
+            IGameService gameService)
         {
             _logger = logger;
             _searchManager = searchManager;
             _gameHolder = gameHolder;
             _playerService = playerService;
+            _gameService = gameService;
         }
 
         [HttpGet]
@@ -82,6 +90,18 @@
             var playerId = GetPlayerId();
             var game = _gameHolder.GetMyPlayingGame(playerId);
             game.Move(playerId, fromX, fromY, toX, toY);
+            switch (game.Status)
+            {
+                case GameStatus.InProgress:
+                    break;
+                case GameStatus.WaitStart:
+                    break;
+                case GameStatus.Draw:
+                case GameStatus.WinBlack:
+                case GameStatus.WinWhite:
+                    _gameService.SaveGame(game);
+                    break;
+            }
             return InitFieldResponse(playerId, game);
         }
 

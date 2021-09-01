@@ -98,6 +98,7 @@
             Side side = GetSide(playerId);
 
             game.Move(side, fromX, fromY, toX, toY, pawnTransformPiece);
+
         }
 
         private Side GetSide(int playerId)

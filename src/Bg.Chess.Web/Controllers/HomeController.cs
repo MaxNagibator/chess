@@ -63,8 +63,6 @@ namespace Bg.Chess.Web.Controllers
         public IActionResult Index()
         {
             // todo 1) прикрутить сборку с логикой шахматишек 
-            // todo 4) добавить игроков
-            // todo 5) добавить "поиск игры"
             // todo 6) реализовать "живое обновление", в первой версии на Ф5 пусть жмут (signalR/websocket)
             // todo 7) удалить jquery из проэкта
             // todo 8)
