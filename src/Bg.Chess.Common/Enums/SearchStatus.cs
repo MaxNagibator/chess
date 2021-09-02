@@ -1,5 +1,6 @@
-﻿namespace Bg.Chess.Game
+﻿namespace Bg.Chess.Common.Enums
 {
+    //todo summary
     public enum SearchStatus
     {
         NotFound = 0,

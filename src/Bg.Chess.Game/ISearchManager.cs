@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Bg.Chess.Common.Enums;
+
     public interface ISearchManager
     {
         void Start(int playerId);

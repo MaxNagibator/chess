@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Bg.Chess.Common.Enums;
     using Bg.Chess.Domain;
     using DomainGame = Bg.Chess.Domain.Game;
 
@@ -22,6 +23,12 @@
 
         //todo AvailableMove это класс из другой сборки, переложить
         List<AvailableMove> AvailableMoves();
+
+        //todo Move это класс из другой сборки, переложить
+        List<Move> GetMoves();
+
+        //todo Position это класс из другой сборки, переложить
+        List<Position> GetPositions();
     }
 
     public class GameInfo : IGameInfo
@@ -132,6 +139,16 @@
         public List<AvailableMove> AvailableMoves()
         {
             return game.AvailableMoves();
+        }
+
+        public List<Move> GetMoves()
+        {
+            return game.GetMoves();
+        }
+
+        public List<Position> GetPositions()
+        {
+            return game.GetPositions();
         }
 
         public GameStatus Status

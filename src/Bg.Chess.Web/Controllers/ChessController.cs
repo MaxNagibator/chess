@@ -1,10 +1,5 @@
 ﻿namespace Bg.Chess.Web.Controllers
 {
-    using Bg.Chess.Domain;
-    using Bg.Chess.Game;
-    using Bg.Chess.Web.Models;
-    using Bg.Chess.Web.Repo;
-    using Bg.Chess.Web.Service;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using System;
@@ -13,6 +8,13 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+
+    using Bg.Chess.Domain;
+    using Bg.Chess.Game;
+    using Bg.Chess.Web.Models;
+    using Bg.Chess.Web.Repo;
+    using Bg.Chess.Common.Enums;
+    using Bg.Chess.Web.Service;
 
     public class ChessController : Controller
     {
@@ -159,5 +161,23 @@
             return player.Id;
         }
 
+        [HttpGet]
+        public ActionResult History()
+        {
+            var playerId = GetPlayerId();
+            var games = _gameService.GetGames(playerId);
+
+            var model = new HistoryModel();
+            model.Games = games.Select(x =>
+                new HistoryModel.Game
+                {
+                    Id = x.Id,
+                    BlackPlayerId = x.BlackPlayerId,
+                    WhitePlayerId = x.WhitePlayerId,
+                    Status = x.Status,
+                }).ToList();
+            model.MyPlayerId = playerId;
+            return View("History", model);
+        }
     }
 }

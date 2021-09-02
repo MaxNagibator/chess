@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Bg.Chess.Game
+﻿namespace Bg.Chess.Game
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Bg.Chess.Common.Enums;
+
     public interface IGameHolder
     {
         void AddGame(string gameId, int whitePlayerId, int blackPlayerId);

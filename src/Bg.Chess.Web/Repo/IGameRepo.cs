@@ -8,7 +8,9 @@ namespace Bg.Chess.Web.Repo
 {
     public interface IGameRepo
     {
-        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, string data);
+        ChessGame GetGame(int gameId);
+        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, int status, string data);
+        List<ChessGame> GetGames(int playerId);
     }
 
     public class GameRepo : IGameRepo
@@ -20,7 +22,20 @@ namespace Bg.Chess.Web.Repo
             _unitOfWork = unitOfWork;
         }
 
-        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, string data)
+        public ChessGame GetGame(int gameId)
+        {
+            var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.Id == gameId);
+            return dbGame;
+        }
+
+        public List<ChessGame> GetGames(int playerId)
+        {
+            var dbGames = _unitOfWork.Context.ChessGames
+                .Where(x => x.BlackPlayerId == playerId || x.WhitePlayerId == playerId).ToList();
+            return dbGames;
+        }
+
+        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, int status, string data)
         {
             var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.Id == id);
             if (dbGame == null)
@@ -31,6 +46,7 @@ namespace Bg.Chess.Web.Repo
 
             dbGame.WhitePlayerId = whitePlayerId;
             dbGame.BlackPlayerId = blackPlayerId;
+            dbGame.Status = status;
             dbGame.Data = data;
             _unitOfWork.Context.SaveChanges();
         }

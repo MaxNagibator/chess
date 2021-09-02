@@ -1,7 +1,9 @@
-using NUnit.Framework;
-
 namespace Bg.Chess.Game.Tests
 {
+    using NUnit.Framework;
+
+    using Bg.Chess.Common.Enums;
+
     public class SearchGameTests
     {
         private ISearchManager _manager;

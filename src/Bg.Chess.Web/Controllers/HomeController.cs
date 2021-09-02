@@ -13,52 +13,11 @@ namespace Bg.Chess.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IPlayerRepo _playerRepo;
 
-        private static Bg.Chess.Domain.Game game;
-        private static Bg.Chess.Domain.Game Game 
-        { 
-            get
-            {
-                if(game == null)
-                {
-                    game = new Bg.Chess.Domain.Game();
-                    game.Init();
-                }
-                return game;
-            } 
-        }
-
-        public HomeController(ILogger<HomeController> logger, IPlayerRepo playerRepo)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _playerRepo = playerRepo;
         }
-
-        //public IActionResult Field()
-        //{
-        //    return View("Field");
-        //}
-
-        //[HttpGet]
-        //public JsonResult GetField()
-        //{
-        //    return Json("
-        //    //var player = _playerRepo.GetPlayer();
-        //    var notation = Game.GetForsythEdwardsNotation();
-        //    var moves = Game.AvailableMove();
-        //    // todo сделать dto
-        //    return Json(new { Notation = notation, AvailableMoves = moves, Player = player.Name });
-        //}
-
-        //[HttpPost]
-        //public JsonResult Move(int fromX, int fromY, int toX, int toY)
-        //{
-        //    Game.Move(Game.StepSide, fromX, fromY, toX, toY);
-        //    var notation = Game.GetForsythEdwardsNotation();
-        //    var moves = Game.AvailableMove();
-        //    return Json(new { Notation = notation, AvailableMoves = moves });
-        //}
 
         public IActionResult Index()
         {

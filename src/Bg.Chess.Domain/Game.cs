@@ -277,5 +277,15 @@
             notationSb.Append(" " + ((_field.Moves.Count / 2) + 1));
             return notationSb.ToString();
         }
+
+        public List<Move> GetMoves()
+        {
+            return _field.Moves;
+        }
+
+        public List<Position> GetPositions()
+        {
+            return _field.Positions;
+        }
     }
 }

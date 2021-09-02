@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Chess";
+}
+
+@using Bg.Chess.Common.Enums
+
+@model HistoryModel
+
+<h2>
+    Ваши партии
+</h2>
+
+@if (Model?.Games != null)
+{
+    foreach (var game in Model.Games)
+    {
+        <div>
+            <label>@game.Id</label>
+            @if (game.Status == GameStatus.Draw)
+            {
+                <label>Ничья</label>
+            }
+            else if (game.WhitePlayerId == Model.MyPlayerId)
+            {
+                if (game.Status == GameStatus.WinWhite)
+                {
+                    <label>Победа</label>
+                }
+                else
+                {
+                    <label>Поражение</label>
+                }
+            }
+            else
+            {
+                if (game.Status == GameStatus.WinBlack)
+                {
+                    <label>Победа</label>
+                }
+                else
+                {
+                    <label>Поражение</label>
+                }
+            }
+
+        </div>
+    }
+}
