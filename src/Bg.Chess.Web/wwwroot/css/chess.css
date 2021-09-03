@@ -1,15 +1,16 @@
 ﻿
-#field {
+.game-field {
     border: solid;
     border-width: 2px;
     border-color: black;
     display: inline-block;
 }
 
-    #field.side-black {
+    .game-field.side-black {
         transform: rotate( 180deg );
     }
-        #field.side-black .column img {
+
+        .game-field.side-black .column img {
             transform: rotate( 180deg );
         }
 

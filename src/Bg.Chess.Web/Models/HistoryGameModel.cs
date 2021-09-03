@@ -7,9 +7,9 @@ namespace Bg.Chess.Web.Models
     {
         public int Id { get; set; }
 
-        public int WhitePlayerId { get; set; }
+        public Player WhitePlayer { get; set; }
 
-        public int BlackPlayerId { get; set; }
+        public Player BlackPlayer { get; set; }
 
         public GameStatus Status { get; set; }
 
@@ -61,6 +61,13 @@ namespace Bg.Chess.Web.Models
             /// Фигура.
             /// </summary>
             public string Piece { get; set; }
+        }
+
+        public class Player
+        {
+            public int Id { get; set; }
+
+            public string Name { get; set; }
         }
     }
 }

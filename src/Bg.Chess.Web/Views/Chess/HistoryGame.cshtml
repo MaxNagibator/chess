@@ -8,11 +8,21 @@
 
 <h2>
     Игра @Model.Id
+
+    @Model.WhitePlayer.Name VS @Model.BlackPlayer.Name
 </h2>
 
+<div id="field2" class="game-field">
 
-<div id="field2">
-
+</div>
+<div style="display: inline-block;">
+    @foreach(var move in Model.Moves)
+    {
+        var info = move.From.X + "/" + move.From.Y + " -> " + move.To.X + "/" + move.To.Y;
+        <div>
+            @info
+        </div>
+    }
 </div>
 
 <script>
@@ -24,6 +34,7 @@
         let pieceLocation = notationParts[0];
         let pieceLocationLines = pieceLocation.split('/');
         let cellColorIndex = 0;
+        var target = document.querySelector("#field2");
         for (let i = 0; i < 8; i++) {
             let line = pieceLocationLines[i];
             var divLine = document.createElement('div');
@@ -48,7 +59,6 @@
                         div.setAttribute('data-position-y', posY);
 
                         divLine.appendChild(div);
-                        dropZones.push(div);
                         cellColorIndex++;
                         posX++;
                     }
@@ -63,25 +73,20 @@
                         div.classList.add('position-black');
                     }
                     div.setAttribute('data-position-x', posX);
-                    div.setAttribute('data-position-y', posY);Model
+                    div.setAttribute('data-position-y', posY);
 
                     divLine.appendChild(div);
                     cellColorIndex++;
-                    let piece = getPieceByNotation(pos);
+                    let piece = GetPieceByNotation(pos);
                     var img = document.createElement('img');
                     var imgSrcName = piece.Type + "-" + piece.Side + '.png';
                     img.src = '/Content/Images/Piece/' + imgSrcName;
                     div.appendChild(img);
-                    dropZones.push(div);
-                    if (game.mySide == piece.Side) {
-                        draggables.push(img);
-                    }
                     posX++;
                 }
             }
 
             cellColorIndex++;
-            var target = document.querySelector("#field2");
         }
     }
 </script>

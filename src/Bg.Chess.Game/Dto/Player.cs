@@ -1,10 +1,4 @@
-﻿using Bg.Chess.Web.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bg.Chess.Web.Service
+﻿namespace Bg.Chess.Game
 {
     public class Player
     {

@@ -1,34 +1,4 @@
-﻿const SearchStatuses = {
-    NotFound: 'NotFound',
-    InProcess: 'InProcess',
-    NeedConfirm: 'NeedConfirm',
-    NeedConfirmOpponent: 'NeedConfirmOpponent',
-    Finish: 'Finish'
-}
-
-const GameStatus = {
-    Draw: 'Draw',
-    InProgress: 'InProgress',
-    WaitStart: 'WaitStart',
-    WinBlack: 'WinBlack',
-    WinWhite: 'WinWhite'
-}
-
-const PieceTypes = {
-    Bishop: 'Bishop',
-    King: 'King',
-    Knight: 'Knight',
-    Pawn: 'Pawn',
-    Queen: 'Queen',
-    Rook: 'Rook'
-}
-
-const Side = {
-    White: 'White',
-    Black: 'Black'
-}
-
-let checkEnemyStep = -1;
+﻿let checkEnemyStep = -1;
 let checkEnemyStepInProcess = false;
 
 let searchRequestInProcess = false;
@@ -223,36 +193,6 @@ function initGame(data2) {
 
 function initField(notation, availableMoves) {
 
-    function getPieceByNotation(pos) {
-        function getTypeByChar(char) {
-            switch (char) {
-                case 'R':
-                    return PieceTypes.Rook;
-                case 'N':
-                    return PieceTypes.Knight;
-                case 'B':
-                    return PieceTypes.Bishop;
-                case 'Q':
-                    return PieceTypes.Queen;
-                case 'K':
-                    return PieceTypes.King;
-                case 'P':
-                    return PieceTypes.Pawn;
-                default:
-                    console.error('type not recognized: ' + char);
-                    return null;
-            }
-        }
-
-        var toUpper = pos.toUpperCase();
-
-        var piece = {
-            Side: pos === toUpper ? Side.White : Side.Black,
-            Type: getTypeByChar(toUpper),
-        };
-
-        return piece;
-    }
     console.log(notation);
 
     //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -310,7 +250,7 @@ function initField(notation, availableMoves) {
 
                 divLine.appendChild(div);
                 cellColorIndex++;
-                let piece = getPieceByNotation(pos);
+                let piece = GetPieceByNotation(pos);
                 var img = document.createElement('img');
                 var imgSrcName = piece.Type + "-" + piece.Side + '.png';
                 img.src = '/Content/Images/Piece/' + imgSrcName;

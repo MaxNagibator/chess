@@ -1,12 +1,14 @@
 ﻿namespace Bg.Chess.Web.Service
 {
+    using Bg.Chess.Game;
     using Bg.Chess.Web.Data;
     using Bg.Chess.Web.Repo;
 
     public interface IPlayerService
     {
-        public Player GetPlayer(string userId);
-        public Player GetOrCreatePlayer(string userId, string name);
+        public Player GetPlayerByUserId(string userId);
+        public Player GetOrCreatePlayerByUserId(string userId, string name);
+        public Player GetPlayer(int id);
     }
 
     public class PlayerService : IPlayerService
@@ -18,15 +20,21 @@
             _playerRepo = playerRepo;
         }
 
-        public Player GetPlayer(string userId)
+        public Player GetPlayerByUserId(string userId)
         {
-            var dbPlayer = _playerRepo.GetPlayer(userId);
+            var dbPlayer = _playerRepo.FindPlayerByUserId(userId);
             return FillPlayerDto(dbPlayer);
         }
 
-        public Player GetOrCreatePlayer(string userId, string name)
+        public Player GetPlayer(int id)
         {
-            var dbPlayer = _playerRepo.GetPlayer(userId);
+            var dbPlayer = _playerRepo.GetPlayer(id);
+            return FillPlayerDto(dbPlayer);
+        }
+
+        public Player GetOrCreatePlayerByUserId(string userId, string name)
+        {
+            var dbPlayer = _playerRepo.FindPlayerByUserId(userId);
             if (dbPlayer == null)
             {
                 dbPlayer = _playerRepo.CreatePlayer(userId, name);

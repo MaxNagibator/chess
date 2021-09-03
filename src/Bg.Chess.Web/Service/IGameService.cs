@@ -12,8 +12,8 @@
     public interface IGameService
     {
         public void SaveGame(IGameInfo game);
-        public IHistoryGame GetGame(int gameId);
-        public IEnumerable<IHistoryGame> GetGames(int playerId);
+        public HistoryGame GetGame(int gameId);
+        public IEnumerable<HistoryGame> GetGames(int playerId);
     }
 
     //todo сервисы перевезти в сборку Game
@@ -21,10 +21,13 @@
     public class GameService : IGameService
     {
         private IGameRepo _gameRepo;
+        private IPlayerService _playerService;
 
-        public GameService(IGameRepo gameRepo)
+
+        public GameService(IPlayerService playerService, IGameRepo gameRepo)
         {
             _gameRepo = gameRepo;
+            _playerService = playerService;
         }
 
         public void SaveGame(IGameInfo game)
@@ -36,27 +39,30 @@
             _gameRepo.SaveGame(0, game.WhitePlayerId, game.BlackPlayerId, (int)game.Status, data);
         }
 
-        public IHistoryGame GetGame(int gameId)
+        public HistoryGame GetGame(int gameId)
         {
             var game = _gameRepo.GetGame(gameId);
             var gameDto = JsonConvert.DeserializeObject<SaveGameDtoV1>(game.Data);
             var gameInfo = new HistoryGame();
-            gameInfo.WhitePlayerId = game.WhitePlayerId;
-            gameInfo.BlackPlayerId = game.BlackPlayerId;
+            gameInfo.Id = gameId;
+            gameInfo.WhitePlayer = _playerService.GetPlayer(game.WhitePlayerId);
+            gameInfo.BlackPlayer = _playerService.GetPlayer(game.BlackPlayerId);
+
             gameInfo.Status = (GameStatus)game.Status;
+
             FillGameFromDtoV1(gameInfo, gameDto);
             return gameInfo;
         }
 
-        public IEnumerable<IHistoryGame> GetGames(int playerId)
+        public IEnumerable<HistoryGame> GetGames(int playerId)
         {
             var games = _gameRepo.GetGames(playerId);
 
             return games.Select(x => new HistoryGame
             {
                 Id = x.Id,
-                BlackPlayerId = x.BlackPlayerId,
-                WhitePlayerId = x.WhitePlayerId,
+                BlackPlayer = new Player { Id = x.BlackPlayerId },
+                WhitePlayer = new Player { Id = x.WhitePlayerId },
                 Status = (GameStatus)x.Status,
             }).ToList();
         }
@@ -82,7 +88,7 @@
 
         private static string FillDtoPiece(Domain.Piece piece)
         {
-            if(piece == null)
+            if (piece == null)
             {
                 return null;
             }
@@ -141,7 +147,7 @@
 
         private Move FillMove(SaveGameDtoV1.Move x)
         {
-            if(x == null)
+            if (x == null)
             {
                 return null;
             }

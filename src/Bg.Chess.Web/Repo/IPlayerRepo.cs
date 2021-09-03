@@ -8,8 +8,9 @@ namespace Bg.Chess.Web.Repo
 {
     public interface IPlayerRepo
     {
-        public ChessPlayer GetPlayer(string userId);
+        public ChessPlayer FindPlayerByUserId(string userId);
         public ChessPlayer CreatePlayer(string userId, string name);
+        public ChessPlayer GetPlayer(int id);
     }
 
     public class PlayerRepo : IPlayerRepo
@@ -21,7 +22,14 @@ namespace Bg.Chess.Web.Repo
             _unitOfWork = unitOfWork;
         }
 
-        public ChessPlayer GetPlayer(string userId)
+        public ChessPlayer GetPlayer(int id)
+        {
+            var player = _unitOfWork.Context.ChessPlayers
+                .First(x => x.Id == id);
+            return player;
+        }
+
+        public ChessPlayer FindPlayerByUserId(string userId)
         {
             var player = _unitOfWork.Context.ChessPlayers
                 .FirstOrDefault(x => x.UserId == userId);

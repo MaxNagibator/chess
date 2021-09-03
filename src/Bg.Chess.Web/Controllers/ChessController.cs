@@ -49,7 +49,7 @@
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = this.User.FindFirstValue(ClaimTypes.Name);
-            var player = _playerService.GetOrCreatePlayer(userId, userName);
+            var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
             _searchManager.Start(player.Id);
             return Json(new { error = false });
         }
@@ -157,7 +157,7 @@
         private int GetPlayerId()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var player = _playerService.GetPlayer(userId);
+            var player = _playerService.GetPlayerByUserId(userId);
             return player.Id;
         }
 
@@ -172,11 +172,21 @@
                 new HistoryModel.Game
                 {
                     Id = x.Id,
-                    BlackPlayerId = x.BlackPlayerId,
-                    WhitePlayerId = x.WhitePlayerId,
+                    BlackPlayer = FillPlayer(x.BlackPlayer),
+                    WhitePlayer = FillPlayer(x.WhitePlayer),
                     Status = x.Status,
                 }).ToList();
             model.MyPlayerId = playerId;
+
+            HistoryModel.Player FillPlayer(Player player)
+            {
+                return new HistoryModel.Player
+                {
+                    Id = player.Id,
+                    Name = player.Name,
+                };
+            }
+
             return View("History", model);
         }
 
@@ -189,10 +199,19 @@
             var model = new HistoryGameModel
             {
                 Id = game.Id,
-                BlackPlayerId = game.BlackPlayerId,
-                WhitePlayerId = game.WhitePlayerId,
+                BlackPlayer = FillPlayer(game.BlackPlayer),
+                WhitePlayer = FillPlayer(game.WhitePlayer),
                 Status = game.Status,
             };
+
+            HistoryGameModel.Player FillPlayer(Player player)
+            {
+                return new HistoryGameModel.Player
+                {
+                    Id = player.Id,
+                    Name = player.Name,
+                };
+            }
 
             model.Moves = game.Moves.Select(x =>
             {

@@ -2,6 +2,7 @@
     ViewData["Title"] = "Chess";
 }
 
+<script src="~/js/chess.js" asp-append-version="true"></script>
 <div id="searchBlock">
     <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру.</button>
     <div class="show-is-search">
@@ -14,6 +15,6 @@
         @*<label id="searchTime"></label>*@
     </div>
 </div>
-<div id="field">
+<div id="field" class="game-field">
 
 </div>
