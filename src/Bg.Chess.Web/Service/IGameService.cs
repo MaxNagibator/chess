@@ -12,7 +12,7 @@
     public interface IGameService
     {
         public void SaveGame(IGameInfo game);
-        public IGameInfo GetGame(int gameId);
+        public IHistoryGame GetGame(int gameId);
         public IEnumerable<IHistoryGame> GetGames(int playerId);
     }
 
@@ -36,11 +36,14 @@
             _gameRepo.SaveGame(0, game.WhitePlayerId, game.BlackPlayerId, (int)game.Status, data);
         }
 
-        public IGameInfo GetGame(int gameId)
+        public IHistoryGame GetGame(int gameId)
         {
             var game = _gameRepo.GetGame(gameId);
             var gameDto = JsonConvert.DeserializeObject<SaveGameDtoV1>(game.Data);
-            var gameInfo = new GameInfo();
+            var gameInfo = new HistoryGame();
+            gameInfo.WhitePlayerId = game.WhitePlayerId;
+            gameInfo.BlackPlayerId = game.BlackPlayerId;
+            gameInfo.Status = (GameStatus)game.Status;
             FillGameFromDtoV1(gameInfo, gameDto);
             return gameInfo;
         }
@@ -72,45 +75,30 @@
                 dto.Runner = FillDtoPiece(x.Runner);
                 return dto;
             }).ToList();
-            dto.Positions = game.GetPositions().Select(x =>
-            {
-                var pos = new SaveGameDtoV1.Position();
-                pos.X = x.X;
-                pos.Y = x.Y;
-                pos.Piece = FillDtoPiece(x.Piece);
-                return pos;
-            }).ToList();
+
+            var positionsStr = game.GetForsythEdwardsNotation(true);
+            dto.Positions = positionsStr;
         }
 
-        private static SaveGameDtoV1.Piece FillDtoPiece(Domain.Piece piece)
+        private static string FillDtoPiece(Domain.Piece piece)
         {
             if(piece == null)
             {
                 return null;
             }
 
-            string side;
-            switch (piece.Side)
+            var pieceName = piece.Type.ShortName;
+            if (piece.Side == Domain.Side.White)
             {
-                case Domain.Side.White:
-                    side = "white";
-                    break;
-                case Domain.Side.Black:
-                    side = "black";
-                    break;
-                default:
-                    throw new ArgumentException("side not recognized");
+                return pieceName.ToString().ToUpper();
             }
-
-            var dtoPiece = new SaveGameDtoV1.Piece
+            else
             {
-                Side = side,
-                Type = piece.Type.Name
-            };
-            return dtoPiece;
+                return pieceName.ToString();
+            }
         }
 
-        private static SaveGameDtoV1.Move FillDtoMove(Domain.Move x)
+        private SaveGameDtoV1.Move FillDtoMove(Domain.Move x)
         {
             if (x == null)
             {
@@ -133,9 +121,45 @@
             };
         }
 
-        public void FillGameFromDtoV1(IGameInfo game, SaveGameDtoV1 dto)
+        private void FillGameFromDtoV1(HistoryGame game, SaveGameDtoV1 dto)
         {
+            game.Moves = dto.Moves.Select(x =>
+            {
+                var dto = FillMove(x);
+                dto.AdditionalMove = FillMove(x.AdditionalMove);
+                if (x.KillEnemy != null)
+                {
+                    dto.KillEnemy = x.KillEnemy;
 
+                }
+                dto.Runner = x.Runner;
+                return dto;
+            }).ToList();
+
+            game.Positions = dto.Positions;
+        }
+
+        private Move FillMove(SaveGameDtoV1.Move x)
+        {
+            if(x == null)
+            {
+                return null;
+            }
+
+            return new Move()
+            {
+                From = new Position
+                {
+                    X = x.From.X,
+                    Y = x.From.Y,
+                },
+                To = new Position
+                {
+                    X = x.To.X,
+                    Y = x.To.Y,
+                },
+
+            };
         }
     }
 }

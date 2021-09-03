@@ -15,6 +15,7 @@
     foreach (var game in Model.Games)
     {
         <div>
+            <a href="/History/@game.Id">Ссылка на игру</a>
             <label>@game.Id</label>
             @if (game.Status == GameStatus.Draw)
             {

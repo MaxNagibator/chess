@@ -19,16 +19,17 @@
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
         void ConfirmStart(int playerId);
         void StopStart(int playerId);
-        string GetForsythEdwardsNotation();
+
+        string GetForsythEdwardsNotation(bool onlyPositions = false);
 
         //todo AvailableMove это класс из другой сборки, переложить
         List<AvailableMove> AvailableMoves();
 
         //todo Move это класс из другой сборки, переложить
-        List<Move> GetMoves();
+        List<Bg.Chess.Domain.Move> GetMoves();
 
         //todo Position это класс из другой сборки, переложить
-        List<Position> GetPositions();
+        List<Bg.Chess.Domain.Position> GetPositions();
     }
 
     public class GameInfo : IGameInfo
@@ -130,8 +131,9 @@
         /// <summary>
         /// Нотация Форсайта — Эдвардса / Forsyth–Edwards Notation.
         /// </summary>
+        /// <param name="onlyPositions">Только расстановка фигур.</param>
         /// <returns>Растановка фигур на доске.</returns>
-        public string GetForsythEdwardsNotation()
+        public string GetForsythEdwardsNotation(bool onlyPositions = false)
         {
             return game.GetForsythEdwardsNotation();
         }
@@ -141,12 +143,12 @@
             return game.AvailableMoves();
         }
 
-        public List<Move> GetMoves()
+        public List<Bg.Chess.Domain.Move> GetMoves()
         {
             return game.GetMoves();
         }
 
-        public List<Position> GetPositions()
+        public List<Bg.Chess.Domain.Position> GetPositions()
         {
             return game.GetPositions();
         }

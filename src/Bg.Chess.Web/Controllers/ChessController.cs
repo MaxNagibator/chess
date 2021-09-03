@@ -179,5 +179,58 @@
             model.MyPlayerId = playerId;
             return View("History", model);
         }
+
+        [HttpGet]
+        [Route("/History/{gameId}")]
+        public ActionResult HistoryGame(int gameId)
+        {
+            var game = _gameService.GetGame(gameId);
+
+            var model = new HistoryGameModel
+            {
+                Id = game.Id,
+                BlackPlayerId = game.BlackPlayerId,
+                WhitePlayerId = game.WhitePlayerId,
+                Status = game.Status,
+            };
+
+            model.Moves = game.Moves.Select(x =>
+            {
+                var dto = FillMove(x);
+                dto.AdditionalMove = FillMove(x.AdditionalMove);
+                if (x.KillEnemy != null)
+                {
+                    dto.KillEnemy = x.KillEnemy;
+
+                }
+                dto.Runner = x.Runner;
+                return dto;
+            }).ToList();
+
+            model.Positions = game.Positions;
+            return View("HistoryGame", model);
+        }
+
+        private HistoryGameModel.Move FillMove(Bg.Chess.Game.Move x)
+        {
+            if(x == null)
+            {
+                return null;
+            }
+            return new HistoryGameModel.Move()
+            {
+                From = new HistoryGameModel.Position
+                {
+                    X = x.From.X,
+                    Y = x.From.Y,
+                },
+                To = new HistoryGameModel.Position
+                {
+                    X = x.To.X,
+                    Y = x.To.Y,
+                },
+
+            };
+        }
     }
 }

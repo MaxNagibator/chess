@@ -150,8 +150,9 @@
         /// https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
         /// https://ru.wikipedia.org/wiki/%D0%9D%D0%BE%D1%82%D0%B0%D1%86%D0%B8%D1%8F_%D0%A4%D0%BE%D1%80%D1%81%D0%B0%D0%B9%D1%82%D0%B0_%E2%80%94_%D0%AD%D0%B4%D0%B2%D0%B0%D1%80%D0%B4%D1%81%D0%B0
         /// </remarks>
+        /// <param name="onlyPositions">Только расстановка фигур.</param>
         /// <returns>Растановка фигур на доске.</returns>
-        public string GetForsythEdwardsNotation()
+        public string GetForsythEdwardsNotation(bool onlyPositions = false)
         {
             var notationSb = new StringBuilder();
             for (var i = _field.FieldHeight - 1; i >= 0; i--)
@@ -194,6 +195,11 @@
                 }
             }
 
+            if (onlyPositions)
+            {
+                return notationSb.ToString();
+            }
+
             notationSb.Append(" ");
             if (StepSide == Side.White)
             {
@@ -221,6 +227,7 @@
                     castlingString += "Q";
                 }
             }
+
             var blackKing = _field.GetPieces(Side.Black).Where(x => x.Type is King).First();
             var blackRooks = _field.GetPieces(Side.Black).Where(x => x.Type is Rook).ToList();
             if (blackKing.IsInStartPosition)

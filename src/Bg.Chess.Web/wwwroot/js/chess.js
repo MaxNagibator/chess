@@ -324,7 +324,6 @@ function initField(notation, availableMoves) {
         }
 
         cellColorIndex++;
-        var target = document.querySelector("#field");
     }
 
     let dnd_successful;

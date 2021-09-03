@@ -1,13 +1,18 @@
-п»їusing Bg.Chess.Web.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bg.Chess.Web.Service
+namespace Bg.Chess.Web.Models
 {
-    public class SaveGameDtoV1
+    using Bg.Chess.Common.Enums;
+    using System.Collections.Generic;
+
+    public class HistoryGameModel
     {
+        public int Id { get; set; }
+
+        public int WhitePlayerId { get; set; }
+
+        public int BlackPlayerId { get; set; }
+
+        public GameStatus Status { get; set; }
+
         public List<Move> Moves { get; set; }
 
         public string Positions { get; set; }
@@ -15,27 +20,27 @@ namespace Bg.Chess.Web.Service
         public class Move
         {
             /// <summary>
-            /// РћС‚РєСѓРґР°.
+            /// Откуда.
             /// </summary>
             public Position From { get; set; }
 
             /// <summary>
-            /// РљСѓРґР°.
+            /// Куда.
             /// </summary>
             public Position To { get; set; }
 
             /// <summary>
-            /// РљС‚Рѕ С…РѕРґРёР».
+            /// Кто ходил.
             /// </summary>
             public string Runner { get; set; }
 
             /// <summary>
-            /// Р•СЃР»Рё РїРѕСЃР»Рµ С…РѕРґР° СѓРјРµСЂР»Р° РІСЂР°Р¶РµСЃРєР°СЏ С„РёРіСѓСЂР°.
+            /// Если после хода умерла вражеская фигура.
             /// </summary>
             public string KillEnemy { get; set; }
 
             /// <summary>
-            /// РџСЂРё С…РѕРґРµ РєРѕСЂРѕР»СЏ, РґРІРёРіР°Р»Р°СЃСЊ Рё Р»Р°РґСЊСЏ, РЅРѕ СЌС‚Рѕ РѕРґРёРЅ.
+            /// При ходе короля, двигалась и ладья, но это один.
             /// </summary>
             public Move AdditionalMove { get; set; }
         }
@@ -43,17 +48,17 @@ namespace Bg.Chess.Web.Service
         public class Position
         {
             /// <summary>
-            /// РџРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё.
+            /// По горизонтали.
             /// </summary>
             public int X { get; set; }
 
             /// <summary>
-            /// РџРѕ РІРµСЂС‚РёРєР°Р»Рё.
+            /// По вертикали.
             /// </summary>
             public int Y { get; set; }
 
             /// <summary>
-            /// Р¤РёРіСѓСЂР°.
+            /// Фигура.
             /// </summary>
             public string Piece { get; set; }
         }
