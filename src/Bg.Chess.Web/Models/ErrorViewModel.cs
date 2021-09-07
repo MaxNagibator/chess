@@ -1,5 +1,3 @@
-using System;
-
 namespace Bg.Chess.Web.Models
 {
     public class ErrorViewModel

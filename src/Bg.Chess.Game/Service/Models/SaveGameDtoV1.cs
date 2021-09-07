@@ -1,11 +1,7 @@
-﻿using Bg.Chess.Web.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bg.Chess.Web.Service
+﻿namespace Bg.Chess.Game
 {
+    using System.Collections.Generic;
+
     public class SaveGameDtoV1
     {
         public List<Move> Moves { get; set; }

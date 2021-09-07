@@ -2,19 +2,13 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Security.Claims;
-    using System.Threading.Tasks;
 
-    using Bg.Chess.Domain;
     using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
-    using Bg.Chess.Web.Repo;
     using Bg.Chess.Common.Enums;
-    using Bg.Chess.Web.Service;
 
     public class ChessController : Controller
     {

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bg.Chess.Common\Bg.Chess.Common.csproj" />
+    <ProjectReference Include="..\Bg.Chess.Data\Bg.Chess.Data.csproj" />
     <ProjectReference Include="..\Bg.Chess.Domain\Bg.Chess.Domain.csproj" />
   </ItemGroup>
 

@@ -1,11 +1,8 @@
-﻿using Bg.Chess.Web.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bg.Chess.Web.Repo
+﻿namespace Bg.Chess.Data.Repo
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public interface IGameRepo
     {
         ChessGame GetGame(int gameId);

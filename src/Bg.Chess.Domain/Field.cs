@@ -229,7 +229,7 @@
             }
             else
             {
-                throw new Exception("move not available " + toX + "/" + toY);
+                throw new Exception("move not available " + fromX + "/" + fromY + " -> " + toX + "/" + toY);
             }
         }
     }

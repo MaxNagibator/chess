@@ -1,20 +1,13 @@
 using Bg.Chess.Game;
-using Bg.Chess.Web.Data;
-using Bg.Chess.Web.Repo;
-using Bg.Chess.Web.Service;
+using Bg.Chess.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Bg.Chess.Data.Repo;
 
 namespace Bg.Chess.Web
 {
@@ -52,6 +45,7 @@ namespace Bg.Chess.Web
                 options.Password.RequiredLength = 3;
             });
 
+            // todo сделать шкатулочку зависимостей
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IPlayerRepo, PlayerRepo>();

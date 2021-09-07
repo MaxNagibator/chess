@@ -2,9 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+
     using Bg.Chess.Common.Enums;
     using Bg.Chess.Domain;
-    using DomainGame = Bg.Chess.Domain.Game;
 
     public interface IGameInfo
     {
@@ -22,14 +23,9 @@
 
         string GetForsythEdwardsNotation(bool onlyPositions = false);
 
-        //todo AvailableMove это класс из другой сборки, переложить
         List<AvailableMove> AvailableMoves();
 
-        //todo Move это класс из другой сборки, переложить
-        List<Bg.Chess.Domain.Move> GetMoves();
-
-        //todo Position это класс из другой сборки, переложить
-        List<Bg.Chess.Domain.Position> GetPositions();
+        List<Move> GetMoves();
     }
 
     public class GameInfo : IGameInfo
@@ -41,7 +37,7 @@
         public bool whiteConfirm;
         public bool blackConfirm;
 
-        private DomainGame game;
+        private Game game;
 
         public void Init(string id, int whitePlayerId, int blackPlayerId)
         {
@@ -75,7 +71,7 @@
 
             if (whiteConfirm && blackConfirm)
             {
-                game = new DomainGame();
+                game = new Game();
                 game.Init();
             }
         }
@@ -135,22 +131,64 @@
         /// <returns>Растановка фигур на доске.</returns>
         public string GetForsythEdwardsNotation(bool onlyPositions = false)
         {
-            return game.GetForsythEdwardsNotation();
+            return game.GetForsythEdwardsNotation(onlyPositions);
         }
 
         public List<AvailableMove> AvailableMoves()
         {
-            return game.AvailableMoves();
+            return game.AvailableMoves().Select(move =>
+            {
+                var dto = new AvailableMove();
+                dto.From = new Position { X = move.From.X, Y = move.From.Y };
+                dto.To = move.To.Select(to => new Position { X = to.X, Y = to.Y }).ToList();
+                return dto;
+            }).ToList();
         }
 
-        public List<Bg.Chess.Domain.Move> GetMoves()
+        public List<Move> GetMoves()
         {
-            return game.GetMoves();
+            return game.GetMoves().Select(move =>
+            {
+                var dto = Init(move);
+                return dto;
+            }).ToList();
         }
 
-        public List<Bg.Chess.Domain.Position> GetPositions()
+        private Move Init(Domain.Move move)
         {
-            return game.GetPositions();
+            if (move == null)
+            {
+                return null;
+            }
+
+            var dto = new Move
+            {
+                From = new Position { X = move.From.X, Y = move.From.Y },
+                To = new Position { X = move.To.X, Y = move.To.Y },
+                AdditionalMove = Init(move.AdditionalMove),
+                KillEnemy = FillDtoPiece(move.KillEnemy),
+                Runner = FillDtoPiece(move.Runner),
+            };
+
+            return dto;
+        }
+
+        private string FillDtoPiece(Piece piece)
+        {
+            if (piece == null)
+            {
+                return null;
+            }
+
+            var pieceName = piece.Type.ShortName;
+            if (piece.Side == Side.White)
+            {
+                return pieceName.ToString().ToUpper();
+            }
+            else
+            {
+                return pieceName.ToString();
+            }
         }
 
         public GameStatus Status

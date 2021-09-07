@@ -1,8 +1,7 @@
-﻿namespace Bg.Chess.Web.Service
+﻿namespace Bg.Chess.Game
 {
-    using Bg.Chess.Game;
-    using Bg.Chess.Web.Data;
-    using Bg.Chess.Web.Repo;
+    using Bg.Chess.Data;
+    using Bg.Chess.Data.Repo;
 
     public interface IPlayerService
     {

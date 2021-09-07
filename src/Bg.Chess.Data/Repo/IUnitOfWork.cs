@@ -1,12 +1,7 @@
-﻿using Bg.Chess.Web.Data;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bg.Chess.Web.Repo
+﻿namespace Bg.Chess.Data.Repo
 {
+    using System;
+
     public interface IUnitOfWork : IDisposable
     {
         ApplicationDbContext Context { get; }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Bg.Chess.Web.Data.Migrations
+namespace Bg.Chess.Data.Migrations
 {
     public partial class CreateGameTable : Migration
     {

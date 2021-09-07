@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Bg.Chess.Web.Data
+namespace Bg.Chess.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

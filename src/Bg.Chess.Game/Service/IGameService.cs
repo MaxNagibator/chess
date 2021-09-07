@@ -1,13 +1,12 @@
-﻿namespace Bg.Chess.Web.Service
+﻿namespace Bg.Chess.Game
 {
-    using Newtonsoft.Json;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Bg.Chess.Common.Enums;
-    using Bg.Chess.Game;
-    using Bg.Chess.Web.Repo;
+    using Bg.Chess.Data.Repo;
+
+    using Newtonsoft.Json;
 
     public interface IGameService
     {
@@ -75,10 +74,10 @@
                 dto.AdditionalMove = FillDtoMove(x.AdditionalMove);
                 if (x.KillEnemy != null)
                 {
-                    dto.KillEnemy = FillDtoPiece(x.KillEnemy);
+                    dto.KillEnemy =x.KillEnemy;
 
                 }
-                dto.Runner = FillDtoPiece(x.Runner);
+                dto.Runner = x.Runner;
                 return dto;
             }).ToList();
 
@@ -86,25 +85,7 @@
             dto.Positions = positionsStr;
         }
 
-        private static string FillDtoPiece(Domain.Piece piece)
-        {
-            if (piece == null)
-            {
-                return null;
-            }
-
-            var pieceName = piece.Type.ShortName;
-            if (piece.Side == Domain.Side.White)
-            {
-                return pieceName.ToString().ToUpper();
-            }
-            else
-            {
-                return pieceName.ToString();
-            }
-        }
-
-        private SaveGameDtoV1.Move FillDtoMove(Domain.Move x)
+        private SaveGameDtoV1.Move FillDtoMove(Move x)
         {
             if (x == null)
             {

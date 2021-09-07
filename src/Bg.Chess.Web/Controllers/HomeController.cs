@@ -1,12 +1,9 @@
 ﻿using Bg.Chess.Web.Models;
-using Bg.Chess.Web.Repo;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Bg.Chess.Web.Controllers
 {
@@ -21,14 +18,12 @@ namespace Bg.Chess.Web.Controllers
 
         public IActionResult Index()
         {
-            // todo 1) прикрутить сборку с логикой шахматишек 
-            // todo 6) реализовать "живое обновление", в первой версии на Ф5 пусть жмут (signalR/websocket)
-            // todo 7) удалить jquery из проэкта
-            // todo 8)
-            // todo 9) 
-            // todo 10) табличку с результатами игры и "рейтинг"
-            // todo 11) логи
-            // todo 12) разобраться с регистрацией и авторизаций и прочим
+            // todo 10) сделать игру комфортной, чтоб не надо было жать F5 ниразу
+            // todo 15) играть бесконечное количество игр и не жать F5 и не рестартить пул
+            // todo 20) логи
+            // todo 30) разобраться с регистрацией и авторизаций и прочим
+            // todo 40) реализовать "живое обновление", в первой версии таймер на js пойдёт (signalR/websocket)
+            // todo 50) удалить jquery из проэкта
             return View();
         }
 
