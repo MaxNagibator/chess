@@ -19,8 +19,8 @@ namespace Bg.Chess.Game.Tests
 
         private void InitEnv()
         {
-            _gameHolder = new GameHolder();
-            _manager = new SearchManager(_gameHolder);
+            _gameHolder = new GameHolder(new TestLoggerFactory());
+            _manager = new SearchManager(_gameHolder, new TestLoggerFactory());
         }
 
         [Test]

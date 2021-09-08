@@ -6,6 +6,8 @@
 
     using Bg.Chess.Common.Enums;
 
+    using Microsoft.Extensions.Logging;
+
     public interface ISearchManager
     {
         void Start(int playerId);
@@ -17,9 +19,12 @@
     public class SearchManager : ISearchManager
     {
         private IGameHolder _gameHolder;
-        public SearchManager(IGameHolder gameHolder)
+        private ILogger _logger;
+
+        public SearchManager(IGameHolder gameHolder, ILoggerFactory loggerFactory)
         {
             _gameHolder = gameHolder;
+            _logger = loggerFactory.CreateLogger("chess");
         }
 
         private class Search
@@ -40,6 +45,8 @@
 
         public void Start(int playerId)
         {
+            _logger.LogInformation("Search Start [player=" + playerId + "]");
+
             lock (lockSearchList)
             {
                 var search = searchList.FirstOrDefault(x => x.PlayerId == playerId && x.Status != SearchStatus.Finish);
@@ -62,6 +69,7 @@
             var searchs = searchList.Where(x => x.Status == SearchStatus.InProcess).Take(2);
             if (searchs.Count() == 2)
             {
+                _logger.LogInformation("Search Finish");
                 var gameId = DateTime.Now.ToString("yyyyMMddHHmmss") + Guid.NewGuid().ToString("N");
                 searchList[0].GameId = gameId;
                 searchList[0].Status = SearchStatus.NeedConfirm;
@@ -81,6 +89,7 @@
 
         public SearchStatus Check(int playerId)
         {
+            _logger.LogInformation("Search Check [player=" + playerId + "]");
             var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
             if (search == null)
             {
@@ -92,6 +101,7 @@
 
         public SearchStatus Confirm(int playerId)
         {
+            _logger.LogInformation("Search Confirm [player=" + playerId + "]");
             var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
             if (search == null)
             {
@@ -125,6 +135,7 @@
 
         public void Stop(int playerId)
         {
+            _logger.LogInformation("Search Stop [player=" + playerId + "]");
             var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
             if (search == null)
             {

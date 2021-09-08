@@ -9,23 +9,24 @@
     using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
     using Bg.Chess.Common.Enums;
+    using Microsoft.AspNetCore.Mvc.Filters;
 
     public class ChessController : Controller
     {
-        private readonly ILogger<ChessController> _logger;
+        private readonly ILogger _logger;
         private ISearchManager _searchManager;
         private IGameHolder _gameHolder;
         private IPlayerService _playerService;
         private IGameService _gameService;
 
         public ChessController(
-            ILogger<ChessController> logger,
+            ILoggerFactory loggerFactory,
             ISearchManager searchManager,
             IGameHolder gameHolder,
             IPlayerService playerService,
             IGameService gameService)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger("chess");
             _searchManager = searchManager;
             _gameHolder = gameHolder;
             _playerService = playerService;

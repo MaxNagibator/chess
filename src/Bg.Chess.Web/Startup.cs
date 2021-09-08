@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Bg.Chess.Data.Repo;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace Bg.Chess.Web
 {
@@ -56,11 +58,27 @@ namespace Bg.Chess.Web
 
             services.AddSingleton<IGameHolder, GameHolder>();
             services.AddSingleton<ISearchManager, SearchManager>();
+            services.AddLogging(loggingBuilder =>
+               {
+                   // configure Logging with NLog
+                   loggingBuilder.ClearProviders();
+                   loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                   loggingBuilder.AddNLog(Configuration);
+               });
+            //services.AddLogging(config => config
+            //    .ClearProviders()
+            //    .AddConsole()
+            //    .SetMinimumLevel(LogLevel.Trace))
+            //.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Log.Logger = new LoggerConfiguration()
+            //        .MinimumLevel.Debug().WriteTo.File("YOUR FILE PATH HERE")
+            //        .CreateLogger();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -72,9 +90,10 @@ namespace Bg.Chess.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseMiddleware<RequestLoggingMiddleware>();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
             app.UseAuthentication();

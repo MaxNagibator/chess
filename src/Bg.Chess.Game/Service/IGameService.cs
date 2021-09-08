@@ -6,6 +6,8 @@
     using Bg.Chess.Common.Enums;
     using Bg.Chess.Data.Repo;
 
+    using Microsoft.Extensions.Logging;
+
     using Newtonsoft.Json;
 
     public interface IGameService
@@ -21,12 +23,14 @@
     {
         private IGameRepo _gameRepo;
         private IPlayerService _playerService;
+        private ILogger _logger;
 
-
-        public GameService(IPlayerService playerService, IGameRepo gameRepo)
+        public GameService(IPlayerService playerService, IGameRepo gameRepo, ILoggerFactory loggerFactory)
         {
             _gameRepo = gameRepo;
             _playerService = playerService;
+            // todo сделать LogSource набор констант
+            _logger = loggerFactory.CreateLogger("chess");
         }
 
         public void SaveGame(IGameInfo game)
