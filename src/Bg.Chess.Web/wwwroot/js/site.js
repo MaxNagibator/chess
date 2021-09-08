@@ -5,7 +5,7 @@
 
 
 function SendRequest(options) {
-    let _this = this;
+    let _this = {};
     let defaultOptions = {
         method: 'POST',
     }
