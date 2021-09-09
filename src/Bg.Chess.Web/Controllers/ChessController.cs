@@ -9,26 +9,22 @@
     using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
     using Bg.Chess.Common.Enums;
-    using Microsoft.AspNetCore.Mvc.Filters;
 
     public class ChessController : Controller
     {
         private readonly ILogger _logger;
-        private ISearchManager _searchManager;
-        private IGameHolder _gameHolder;
+        private IGameManager _searchManager;
         private IPlayerService _playerService;
         private IGameService _gameService;
 
         public ChessController(
             ILoggerFactory loggerFactory,
-            ISearchManager searchManager,
-            IGameHolder gameHolder,
+            IGameManager searchManager,
             IPlayerService playerService,
             IGameService gameService)
         {
             _logger = loggerFactory.CreateLogger("chess");
             _searchManager = searchManager;
-            _gameHolder = gameHolder;
             _playerService = playerService;
             _gameService = gameService;
         }
@@ -45,7 +41,7 @@
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = this.User.FindFirstValue(ClaimTypes.Name);
             var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
-            _searchManager.Start(player.Id);
+            _searchManager.StartSearch(player.Id);
             return Json(new { error = false });
         }
 
@@ -69,7 +65,7 @@
         public JsonResult StopSearch()
         {
             var playerId = GetPlayerId();
-            _searchManager.Stop(playerId);
+            _searchManager.StopSearch(playerId);
             return Json(new { error = false });
         }
 
@@ -77,7 +73,7 @@
         public JsonResult GetGame()
         {
             var playerId = GetPlayerId();
-            var game = _gameHolder.GetMyPlayingGame(playerId);
+            var game = _searchManager.FindMyPlayingGame(playerId);
             return InitFieldResponse(playerId, game);
         }
 
@@ -85,7 +81,7 @@
         public JsonResult Move(int fromX, int fromY, int toX, int toY)
         {
             var playerId = GetPlayerId();
-            var game = _gameHolder.GetMyPlayingGame(playerId);
+            var game = _searchManager.FindMyPlayingGame(playerId);
             game.Move(playerId, fromX, fromY, toX, toY);
             switch (game.Status)
             {

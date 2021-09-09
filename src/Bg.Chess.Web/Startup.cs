@@ -55,21 +55,13 @@ namespace Bg.Chess.Web
 
             services.AddScoped<IPlayerService, PlayerService>();
             services.AddScoped<IGameService, GameService>();
-
-            services.AddSingleton<IGameHolder, GameHolder>();
-            services.AddSingleton<ISearchManager, SearchManager>();
+            services.AddSingleton<IGameManager, GameManager>();
             services.AddLogging(loggingBuilder =>
                {
-                   // configure Logging with NLog
                    loggingBuilder.ClearProviders();
                    loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
                    loggingBuilder.AddNLog(Configuration);
                });
-            //services.AddLogging(config => config
-            //    .ClearProviders()
-            //    .AddConsole()
-            //    .SetMinimumLevel(LogLevel.Trace))
-            //.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

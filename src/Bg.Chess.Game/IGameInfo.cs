@@ -9,17 +9,15 @@
 
     public interface IGameInfo
     {
-        string Id { get; }
         int WhitePlayerId { get; }
         int BlackPlayerId { get; }
         GameSide StepSide { get; }
         bool IsMyGame(int playerId);
-        void Init(string id, int whitePlayerId, int blackPlayerId);
+        void Init(int whitePlayerId, int blackPlayerId);
 
         GameStatus Status { get; }
+        bool IsFinish { get; }
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
-        void ConfirmStart(int playerId);
-        void StopStart(int playerId);
 
         string GetForsythEdwardsNotation(bool onlyPositions = false);
 
@@ -30,7 +28,6 @@
 
     public class GameInfo : IGameInfo
     {
-        public string Id { get; private set; }
         public int WhitePlayerId { get; private set; }
         public int BlackPlayerId { get; private set; }
 
@@ -39,53 +36,17 @@
 
         private Game game;
 
-        public void Init(string id, int whitePlayerId, int blackPlayerId)
+        public void Init(int whitePlayerId, int blackPlayerId)
         {
-            Id = id;
             WhitePlayerId = whitePlayerId;
             BlackPlayerId = blackPlayerId;
+            game = new Game();
+            game.Init();
         }
 
         public bool IsMyGame(int playerId)
         {
             return BlackPlayerId == playerId || WhitePlayerId == playerId;
-        }
-
-        /// <summary>
-        /// Подтвердить начало игры.
-        /// </summary>
-        /// <param name="player">Кто подтверждает.</param>
-        public void ConfirmStart(int playerId)
-        {
-            Side side = GetSide(playerId);
-            if (side == Side.White)
-            {
-                // 99921700565 зачем вообще знать, кто там подтвердил игру, пусть за это поисковик отвечает
-                // удалить confirmStart/stopStart
-                whiteConfirm = true;
-            }
-            if (side == Side.Black)
-            {
-                blackConfirm = true;
-            }
-
-            if (whiteConfirm && blackConfirm)
-            {
-                game = new Game();
-                game.Init();
-            }
-        }
-        public void StopStart(int playerId)
-        {
-            Side side = GetSide(playerId);
-            if (side == Side.White)
-            {
-                whiteConfirm = false;
-            }
-            if (side == Side.Black)
-            {
-                blackConfirm = false;
-            }
         }
 
         /// <summary>
@@ -217,5 +178,9 @@
         }
 
         public GameSide StepSide => game.StepSide == Domain.Side.White ? GameSide.White : GameSide.Black;
+
+        public bool IsFinish => game.State == GameState.WinBlack 
+                || game.State == GameState.WinWhite
+                || game.State == GameState.Draw;
     }
 }

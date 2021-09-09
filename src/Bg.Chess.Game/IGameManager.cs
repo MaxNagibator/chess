@@ -8,22 +8,22 @@
 
     using Microsoft.Extensions.Logging;
 
-    public interface ISearchManager
+    public interface IGameManager
     {
-        void Start(int playerId);
-        void Stop(int playerId);
+        void StartSearch(int playerId);
+        void StopSearch(int playerId);
         SearchStatus Check(int playerId);
         SearchStatus Confirm(int playerId);
+        IGameInfo FindMyPlayingGame(int playerId);
     }
 
-    public class SearchManager : ISearchManager
+    public class GameManager : IGameManager
     {
-        private IGameHolder _gameHolder;
         private ILogger _logger;
+        private List<IGameInfo> games = new List<IGameInfo>();
 
-        public SearchManager(IGameHolder gameHolder, ILoggerFactory loggerFactory)
+        public GameManager(ILoggerFactory loggerFactory)
         {
-            _gameHolder = gameHolder;
             _logger = loggerFactory.CreateLogger("chess");
         }
 
@@ -43,7 +43,7 @@
 
         private List<Search> searchList = new List<Search>();
 
-        public void Start(int playerId)
+        public void StartSearch(int playerId)
         {
             _logger.LogInformation("Search Start [player=" + playerId + "]");
 
@@ -52,8 +52,17 @@
                 var search = searchList.FirstOrDefault(x => x.PlayerId == playerId && x.Status != SearchStatus.Finish);
                 if (search != null)
                 {
+                    _logger.LogInformation("Search in process");
                     return;
                 }
+
+                var gameInProcess = games.Any(x => x.IsMyGame(playerId) && !x.IsFinish);
+                if (gameInProcess)
+                {
+                    throw new BusinessException("Существует незаконценная игра, поиск невозможен");
+                }
+
+                _logger.LogInformation("Search Start Success");
 
                 search = new Search();
                 search.PlayerId = playerId;
@@ -75,15 +84,6 @@
                 searchList[0].Status = SearchStatus.NeedConfirm;
                 searchList[1].GameId = gameId;
                 searchList[1].Status = SearchStatus.NeedConfirm;
-
-                if (DateTime.Now.Millisecond % 2 == 0)
-                {
-                    _gameHolder.AddGame(gameId, searchList[1].PlayerId, searchList[0].PlayerId);
-                }
-                else
-                {
-                    _gameHolder.AddGame(gameId, searchList[0].PlayerId, searchList[1].PlayerId);
-                }
             }
         }
 
@@ -110,30 +110,44 @@
 
             if (search.Status == SearchStatus.NeedConfirm)
             {
-                var status = _gameHolder.StartGame(search.PlayerId);
-                if (status == GameStatus.InProgress)
+                var twoSearch = searchList.First(x => x.GameId == search.GameId && x.PlayerId != search.PlayerId);
+                if(twoSearch.Status == SearchStatus.NeedConfirmOpponent)
                 {
-                    var twoSearch = searchList.First(x => x.GameId == search.GameId && x.PlayerId != search.PlayerId);
+                    _logger.LogInformation("Two Player Confirm Game Start");
                     var gameStartDate = DateTime.Now;
                     search.GameStart = gameStartDate;
                     search.Status = SearchStatus.Finish;
                     twoSearch.GameStart = gameStartDate;
                     twoSearch.Status = SearchStatus.Finish;
-                }
-                else if (status == GameStatus.WaitStart)
-                {
-                    search.Status = SearchStatus.NeedConfirmOpponent;
+
+                    int whitePlayerId;
+                    int blackPlayerId;
+                    if (DateTime.Now.Millisecond % 2 == 0)
+                    {
+                        whitePlayerId = searchList[1].PlayerId;
+                        blackPlayerId = searchList[0].PlayerId;
+                    }
+                    else
+                    {
+                        blackPlayerId = searchList[1].PlayerId;
+                        whitePlayerId = searchList[0].PlayerId;
+                    }
+
+                    IGameInfo game = new GameInfo();
+                    game.Init(whitePlayerId, blackPlayerId);
+                    games.Add(game);
                 }
                 else
                 {
-                    throw new Exception("this status " + status + " bad");
+                    _logger.LogInformation("Wait Game Opponent Confirm");
+                    search.Status = SearchStatus.NeedConfirmOpponent;
                 }
             }
 
             return search.Status;
         }
 
-        public void Stop(int playerId)
+        public void StopSearch(int playerId)
         {
             _logger.LogInformation("Search Stop [player=" + playerId + "]");
             var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
@@ -148,7 +162,6 @@
 
             lock (lockSearchList)
             {
-                _gameHolder.StopGame(search.PlayerId);
                 var twoSearch = searchList.FirstOrDefault(x => x.GameId == search.GameId && x.PlayerId != search.PlayerId);
                 if (twoSearch != null)
                 {
@@ -156,6 +169,12 @@
                 }
                 searchList.Remove(search);
             }
+        }
+
+        public IGameInfo FindMyPlayingGame(int playerId)
+        {
+            var gameInProcess = games.LastOrDefault(x => x.IsMyGame(playerId));
+            return gameInProcess;
         }
     }
 }

@@ -6,8 +6,7 @@ namespace Bg.Chess.Game.Tests
 
     public class SearchGameTests
     {
-        private ISearchManager _manager;
-        private IGameHolder _gameHolder;
+        private IGameManager _manager;
         private int _player1 = 217;
         private int _player2 = 999;
 
@@ -19,8 +18,7 @@ namespace Bg.Chess.Game.Tests
 
         private void InitEnv()
         {
-            _gameHolder = new GameHolder(new TestLoggerFactory());
-            _manager = new SearchManager(_gameHolder, new TestLoggerFactory());
+            _manager = new GameManager(new TestLoggerFactory());
         }
 
         [Test]
@@ -33,7 +31,7 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void CheckStateAfterStartSearchTest()
         {
-            _manager.Start(_player1);
+            _manager.StartSearch(_player1);
             var state = _manager.Check(_player1);
             Assert.AreEqual(SearchStatus.InProcess, state);
         }
@@ -41,8 +39,8 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void CheckStateAfterGameFoundTest()
         {
-            _manager.Start(_player1);
-            _manager.Start(_player2);
+            _manager.StartSearch(_player1);
+            _manager.StartSearch(_player2);
             var state1 = _manager.Check(_player1);
             var state2 = _manager.Check(_player2);
             Assert.AreEqual(SearchStatus.NeedConfirm, state1);
@@ -55,8 +53,8 @@ namespace Bg.Chess.Game.Tests
         public void CheckStateAfterOneConfirmTest(int confirmerNumber)
         {
             InitEnv();
-            _manager.Start(_player1);
-            _manager.Start(_player2);
+            _manager.StartSearch(_player1);
+            _manager.StartSearch(_player2);
 
             var confirmPlayer = confirmerNumber == 1 ? _player1 : _player2;
             var anotherPlayer = confirmerNumber == 1 ? _player2 : _player1;
@@ -70,8 +68,8 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void CheckStateAfterTwoConfirmTest()
         {
-            _manager.Start(_player1);
-            _manager.Start(_player2);
+            _manager.StartSearch(_player1);
+            _manager.StartSearch(_player2);
 
             var state1a = _manager.Confirm(_player1);
             var state2a = _manager.Confirm(_player2);
