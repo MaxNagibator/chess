@@ -14,8 +14,41 @@
             transform: rotate( 180deg );
         }
 
+
+
+        .game-field .column.column-label{
+            text-align:center;
+        }
+
+            .game-field .column.column-label.field-border-bottom {
+                border-bottom: 1px solid black;
+            }
+            .game-field .column.column-label.field-border-top {
+                border-top: 1px solid black;
+            }
+            .game-field .column.column-label.field-border-right {
+                border-right: 1px solid black;
+            }
+            .game-field .column.column-label.field-border-left {
+                border-left: 1px solid black;
+            }
+     
+    .game-field .column .field-label {
+        font-size: 37px;
+        line-height: 47px;
+    }
+    .game-field .column .field-label.reverse {
+        transform: rotate( 180deg );
+    }
+
+.field div.line:last-child {
+    border-top: solid;
+    border-width: 2px;
+    border-color: black;
+}
+
 .line {
-    /* display: inline-block;*/
+    display: flex;
     height: 50px;
 }
 

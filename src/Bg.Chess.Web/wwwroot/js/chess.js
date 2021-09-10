@@ -10,7 +10,7 @@ function startSearch() {
     SendRequest({
         url: '/Chess/StartSearch',
         success: function (data) {
-            var response = JSON.parse(data.responseText);
+            let response = JSON.parse(data.responseText);
             if (response.error) {
                 alert(response.message);
             } else {
@@ -74,7 +74,7 @@ setInterval(function () {
 }, 1000);
 
 function goConfirmAlert() {
-    var isOk = confirm("Игра найдена! Играем?");
+    let isOk = confirm("Игра найдена! Играем?");
     if (isOk) {
         SendRequest({
             url: '/Chess/ConfirmSearch',
@@ -132,7 +132,7 @@ function move(fromX, fromY, toX, toY) {
             toY: toY,
         },
         success: function (data) {
-            var data2 = JSON.parse(data.responseText);
+            let data2 = JSON.parse(data.responseText);
             initGame(data2);
         },
         error: function () {
@@ -146,7 +146,7 @@ function goGame(alwaysCallback) {
         url: '/Chess/GetGame',
         method: 'POST',
         success: function (data) {
-            var data2 = JSON.parse(data.responseText);
+            let data2 = JSON.parse(data.responseText);
             initGame(data2);
         },
         always: function () {
@@ -198,29 +198,83 @@ function initField(notation, availableMoves) {
     //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 
     let notationParts = notation.split(' ');
+
+    // todo !!!!! запомнить положение фигур и если положение фигур не менялось. не перерисовывать
     let pieceLocation = notationParts[0];
     let pieceLocationLines = pieceLocation.split('/');
     let cellColorIndex = 0;
-    var target = document.querySelector("#field");
+    let target = document.querySelector("#field");
     target.innerHTML = '';
     target.classList.add('side-' + game.mySide.toLowerCase());
-    var draggables = [];
-    var dropZones = [];
+    let draggables = [];
+    let dropZones = [];
+    let labels = {
+        vertical: "12345678",
+        horizontal: "ABCDEFGH"
+    }
+
+    function horizontalLabel(reverse) {
+        let divNumber1Line = document.createElement('div');
+        divNumber1Line.classList.add('line');
+        target.appendChild(divNumber1Line);
+        for (let i = -1; i <= 8; i++) {
+            let div = document.createElement('div');
+            div.classList.add('column');
+            div.classList.add('column-label');
+
+            let label = document.createElement('label');
+            if (reverse) {
+                label.classList.add('reverse');
+            }
+            label.classList.add('field-label');
+            if (i != -1 && i != 8) {
+                label.innerHTML = labels.horizontal[i];
+                if (reverse) {
+                    div.classList.add('field-border-bottom');
+                } else {
+                    div.classList.add('field-border-top');
+                }
+            }
+            div.appendChild(label);
+            divNumber1Line.appendChild(div);
+        }
+    }
+
+    function verticalLabel(divLine, rowIndex, reverse) {
+        let div = document.createElement('div');
+        div.classList.add('column');
+        div.classList.add('column-label');
+        if (reverse) {
+            div.classList.add('field-border-left');
+        } else {
+            div.classList.add('field-border-right');
+        }
+        let label = document.createElement('label');
+        label.classList.add('field-label');
+        label.innerHTML = labels.vertical[7 - rowIndex];
+        div.appendChild(label);
+        divLine.appendChild(div);
+    }
+
+    horizontalLabel(true);
 
     for (let i = 0; i < 8; i++) {
         let line = pieceLocationLines[i];
-        var divLine = document.createElement('div');
+        let divLine = document.createElement('div');
         divLine.classList.add('line');
         target.appendChild(divLine);
-        var posX = 0;
+        let posX = 0;
+
+        verticalLabel(divLine, i, false);
+
         for (let posIndex = 0; posIndex < line.length; posIndex++) {
-            var posY = 7 - i;
+            let posY = 7 - i;
             let pos = line[posIndex];
-            var emptyFields = pos * 1;
+            let emptyFields = pos * 1;
             if (Number.isInteger(emptyFields)) {
                 for (let cellsCount = emptyFields; cellsCount > 0; cellsCount--) {
                     // todo обобщить с дублированием снизу
-                    var div = document.createElement('div');
+                    let div = document.createElement('div');
                     div.classList.add('column');
                     if (cellColorIndex % 2 === 0) {
                         div.classList.add('position-white');
@@ -237,7 +291,7 @@ function initField(notation, availableMoves) {
                 }
 
             } else {
-                var div = document.createElement('div');
+                let div = document.createElement('div');
                 divLine.appendChild(div);
                 div.classList.add('column');
                 if (cellColorIndex % 2 === 0) {
@@ -251,8 +305,8 @@ function initField(notation, availableMoves) {
                 divLine.appendChild(div);
                 cellColorIndex++;
                 let piece = GetPieceByNotation(pos);
-                var img = document.createElement('img');
-                var imgSrcName = piece.Type + "-" + piece.Side + '.png';
+                let img = document.createElement('img');
+                let imgSrcName = piece.Type + "-" + piece.Side + '.png';
                 img.src = '/Content/Images/Piece/' + imgSrcName;
                 div.appendChild(img);
                 dropZones.push(div);
@@ -263,8 +317,12 @@ function initField(notation, availableMoves) {
             }
         }
 
+        verticalLabel(divLine, i, true);
+
         cellColorIndex++;
     }
+
+    horizontalLabel(false);
 
     let dnd_successful;
     for (let i = 0; i < draggables.length; i++) {
@@ -273,8 +331,8 @@ function initField(notation, availableMoves) {
 
             let posX = event.target.parentElement.getAttribute('data-position-x');
             let posY = event.target.parentElement.getAttribute('data-position-y');
-            var moves = getMoves(availableMoves, posX, posY);
-            var cells = document.getElementsByClassName('column');
+            let moves = getMoves(availableMoves, posX, posY);
+            let cells = document.getElementsByClassName('column');
             for (let moveIndex = 0; moveIndex < moves.length; moveIndex++) {
                 for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
                     if (cells[cellIndex].getAttribute('data-position-x') == moves[moveIndex].x
@@ -299,7 +357,7 @@ function initField(notation, availableMoves) {
             }
             event.target.classList.remove('piece-select');
 
-            var cells = document.getElementsByClassName('column');
+            let cells = document.getElementsByClassName('column');
             for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
                 cells[cellIndex].classList.remove('piece-move-target-good');
                 cells[cellIndex].classList.remove('piece-move-target-bad');

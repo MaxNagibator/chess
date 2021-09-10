@@ -17,8 +17,6 @@
         public IEnumerable<HistoryGame> GetGames(int playerId);
     }
 
-    //todo сервисы перевезти в сборку Game
-    //todo репозитории в сборку Data
     public class GameService : IGameService
     {
         private IGameRepo _gameRepo;
