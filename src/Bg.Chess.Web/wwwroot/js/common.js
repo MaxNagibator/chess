@@ -9,7 +9,6 @@
 const GameStatus = {
     Draw: 'Draw',
     InProgress: 'InProgress',
-    WaitStart: 'WaitStart',
     WinBlack: 'WinBlack',
     WinWhite: 'WinWhite'
 }

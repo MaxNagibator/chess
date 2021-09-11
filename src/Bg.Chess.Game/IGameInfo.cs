@@ -13,7 +13,6 @@
         int BlackPlayerId { get; }
         GameSide StepSide { get; }
         bool IsMyGame(int playerId);
-        void Init(int whitePlayerId, int blackPlayerId);
 
         GameStatus Status { get; }
         bool IsFinish { get; }
@@ -36,7 +35,7 @@
 
         private Game game;
 
-        public void Init(int whitePlayerId, int blackPlayerId)
+        public GameInfo(int whitePlayerId, int blackPlayerId)
         {
             WhitePlayerId = whitePlayerId;
             BlackPlayerId = blackPlayerId;
@@ -156,11 +155,6 @@
         {
             get
             {
-                if (game == null)
-                {
-                    return GameStatus.WaitStart;
-                }
-
                 switch (game.State)
                 {
                     case Domain.GameState.InProgress:
@@ -179,8 +173,8 @@
 
         public GameSide StepSide => game.StepSide == Domain.Side.White ? GameSide.White : GameSide.Black;
 
-        public bool IsFinish => game.State == GameState.WinBlack 
-                || game.State == GameState.WinWhite
-                || game.State == GameState.Draw;
+        public bool IsFinish => Status == GameStatus.WinBlack 
+                || Status == GameStatus.WinWhite
+                || Status == GameStatus.Draw;
     }
 }

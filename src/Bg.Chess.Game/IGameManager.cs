@@ -133,8 +133,7 @@
                         whitePlayerId = searchList[0].PlayerId;
                     }
 
-                    IGameInfo game = new GameInfo();
-                    game.Init(whitePlayerId, blackPlayerId);
+                    IGameInfo game = new GameInfo(whitePlayerId, blackPlayerId);
                     games.Add(game);
                 }
                 else

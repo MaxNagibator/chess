@@ -1,15 +1,10 @@
 ﻿namespace Bg.Chess.Common.Enums
 {
     /// <summary>
-    /// Игровые стороны.
+    /// Статус игры.
     /// </summary>
     public enum GameStatus
     {
-        /// <summary>
-        /// Ждёт начала.
-        /// </summary>
-        WaitStart = 0,
-
         /// <summary>
         /// В процессе.
         /// </summary>

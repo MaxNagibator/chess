@@ -87,8 +87,6 @@
             {
                 case GameStatus.InProgress:
                     break;
-                case GameStatus.WaitStart:
-                    break;
                 case GameStatus.Draw:
                 case GameStatus.WinBlack:
                 case GameStatus.WinWhite:
@@ -112,25 +110,27 @@
                 notation = game.GetForsythEdwardsNotation();
                 moves = game.AvailableMoves();
             }
+            else 
+            {
+                notation = game.GetForsythEdwardsNotation(true);
+            }
+
             var side = game.WhitePlayerId == playerId ? "White" : "Black";
             var stepSide = game.StepSide == GameSide.White ? "White" : "Black";
             var status = "";
             switch (game.Status)
             {
-                case GameStatus.Draw:
-                    status = "Draw";
-                    break;
                 case GameStatus.InProgress:
                     status = "InProgress";
-                    break;
-                case GameStatus.WaitStart:
-                    status = "WaitStart";
                     break;
                 case GameStatus.WinBlack:
                     status = "WinBlack";
                     break;
                 case GameStatus.WinWhite:
                     status = "WinWhite";
+                    break;
+                case GameStatus.Draw:
+                    status = "Draw";
                     break;
             }
 
