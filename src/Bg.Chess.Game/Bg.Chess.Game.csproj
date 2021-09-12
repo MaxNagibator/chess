@@ -5,9 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bg.Chess" Version="0.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Bg.Chess.Common\Bg.Chess.Common.csproj" />
     <ProjectReference Include="..\Bg.Chess.Data\Bg.Chess.Data.csproj" />
-    <ProjectReference Include="..\Bg.Chess.Domain\Bg.Chess.Domain.csproj" />
   </ItemGroup>
 
 </Project>

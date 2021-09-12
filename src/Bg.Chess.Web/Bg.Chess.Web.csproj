@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bg.Chess.Game\Bg.Chess.Game.csproj" />
+    <ProjectReference Include="..\bg.chess.game\Bg.Chess.Game.csproj" />
   </ItemGroup>
 
 </Project>
