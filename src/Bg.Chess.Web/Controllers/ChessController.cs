@@ -9,7 +9,9 @@
     using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
     using Bg.Chess.Common.Enums;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class ChessController : Controller
     {
         private readonly ILogger _logger;
