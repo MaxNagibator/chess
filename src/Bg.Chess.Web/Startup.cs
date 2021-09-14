@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Bg.Chess.Data.Repo;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Bg.Chess.Web
 {
@@ -33,6 +34,20 @@ namespace Bg.Chess.Web
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            var fckSpam = true;
+            var fckGrid = true;
+            if (fckSpam && !fckGrid)
+            {
+                services.AddTransient<IEmailSender, SendGridEmailSender>();
+            }
+            else
+            {
+                services.AddTransient<IEmailSender, MyEmailSender>();
+            }
+
+            services.Configure<MailSenderConfig>(Configuration.GetSection("MailSender"));
+            services.Configure<SendGridConfig>(Configuration.GetSection("SendGrid"));
 
             services.Configure<IdentityOptions>(options =>
             {

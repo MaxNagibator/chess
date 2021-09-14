@@ -16,13 +16,20 @@ namespace Bg.Chess.Web.Areas.Identity.Pages.Account
     public class RegisterConfirmationModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IEmailSender _sender;
+        private readonly IEmailSender _sender; 
 
         public RegisterConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender sender)
         {
             _userManager = userManager;
             _sender = sender;
         }
+
+        ////private readonly IOptions<MyConfig> config;
+
+        ////public HomeController(IOptions<MyConfig> config)
+        ////{
+        ////    this.config = config;
+        ////}
 
         public string Email { get; set; }
 
@@ -57,40 +64,11 @@ namespace Bg.Chess.Web.Areas.Identity.Pages.Account
                     values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                     protocol: Request.Scheme);
             //}
-            await SendMail();
+            var subject = "Подтверждение регистрации";
+            var body = "<a id = \"confirm-link\" href = \"" + EmailConfirmationUrl + "\" > Перейдите по этой ссылке, для подтверждения регистрации на chess.bob217.ru</ a > ";
+            await _sender.SendEmailAsync(email, subject, body);
 
             return Page();
-        }
-
-        private async Task SendMail()
-        {
-            var emailMessage = new MimeMessage();
-
-            emailMessage.From.Add(new MailboxAddress("Администрация шахматишек", "chess.bob217@yandex.ru"));
-            emailMessage.To.Add(new MailboxAddress("", Email));
-            emailMessage.Subject = "Подтверждение регистрации";
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = "<a id = \"confirm-link\" href = \""+EmailConfirmationUrl+"\" > Перейдите по этой ссылке, для подтверждения регистрации на chess.bob217.ru</ a > "
-            };
-
-            using (var client = new SmtpClient())
-            {
-                ////////await client.ConnectAsync("smtp.mail.ru", 25, false);//, MailKit.Security.SecureSocketOptions.StartTls);
-                ////////var test0 = "H2GAJ4rujpt$";
-                ////////var test1 = "Аутлук на домашнем компьютере";
-                ////////var test2 = "h8zSCfw60C65JSSbg5jc";
-                ////////await client.AuthenticateAsync("chess.bob217@mail.ru", test2);
-                client.Timeout = 5000;
-
-                await client.ConnectAsync("smtp.yandex.ru", 25, SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync("chess.bob217@yandex.ru", "asd1;l1m231hasd8&Asd123");
-
-                await client.SendAsync(emailMessage);
-
-                await client.DisconnectAsync(true);
-            }
-
         }
     }
 }
