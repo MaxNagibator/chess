@@ -6,7 +6,7 @@
     public interface IGameRepo
     {
         ChessGame GetGame(int gameId);
-        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, int status, string data);
+        void SaveGame(int id, int whitePlayerId, int blackPlayerId, int status, string data);
         List<ChessGame> GetGames(int playerId);
     }
 

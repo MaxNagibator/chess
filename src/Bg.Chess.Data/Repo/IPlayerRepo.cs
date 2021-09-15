@@ -5,9 +5,9 @@
 
     public interface IPlayerRepo
     {
-        public ChessPlayer FindPlayerByUserId(string userId);
-        public ChessPlayer CreatePlayer(string userId, string name);
-        public ChessPlayer GetPlayer(int id);
+        ChessPlayer FindPlayerByUserId(string userId);
+        ChessPlayer CreatePlayer(string userId, string name);
+        ChessPlayer GetPlayer(int id);
     }
 
     public class PlayerRepo : IPlayerRepo

@@ -55,6 +55,7 @@ namespace Bg.Chess.Web
                 //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
                 //options.Lockout.MaxFailedAccessAttempts = 5;
                 //options.Lockout.AllowedForNewUsers = true;
+                options.SignIn.RequireConfirmedEmail = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
@@ -65,11 +66,13 @@ namespace Bg.Chess.Web
             // todo сделать шкатулочку зависимостей
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IPlayerRepo, PlayerRepo>();
             services.AddScoped<IGameRepo, GameRepo>();
 
             services.AddScoped<IPlayerService, PlayerService>();
             services.AddScoped<IGameService, GameService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddSingleton<IGameManager, GameManager>();
             services.AddLogging(loggingBuilder =>
                {

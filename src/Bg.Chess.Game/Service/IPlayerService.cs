@@ -42,7 +42,7 @@
             return FillPlayerDto(dbPlayer);
         }
 
-        private static Player FillPlayerDto(ChessPlayer dbPlayer)
+        private Player FillPlayerDto(ChessPlayer dbPlayer)
         {
             var playerDto = new Player();
             playerDto.Id = dbPlayer.Id;

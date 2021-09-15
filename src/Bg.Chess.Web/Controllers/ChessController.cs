@@ -17,17 +17,20 @@
         private readonly ILogger _logger;
         private IGameManager _searchManager;
         private IPlayerService _playerService;
+        private IUserService _userService;
         private IGameService _gameService;
 
         public ChessController(
             ILoggerFactory loggerFactory,
             IGameManager searchManager,
             IPlayerService playerService,
+            IUserService userService,
             IGameService gameService)
         {
             _logger = loggerFactory.CreateLogger("chess");
             _searchManager = searchManager;
             _playerService = playerService;
+            _userService = userService;
             _gameService = gameService;
         }
 
@@ -42,6 +45,13 @@
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = this.User.FindFirstValue(ClaimTypes.Name);
+
+            var user = _userService.GetUser(userId);
+            if (!user.IsEmailConfirmed)
+            {
+                return Json(new { error = true, message = "Подтвердите почту, перед началом игры" });
+            }
+
             var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
             _searchManager.StartSearch(player.Id);
             return Json(new { error = false });
