@@ -2,6 +2,18 @@
     ViewData["Title"] = "Chess";
 }
 
+@{
+    var user = ViewBag.User as Bg.Chess.Web.Models.Common.User;
+    var success = user != null && user.IsEmailConfirmed;
+}
+
+@if(!success)
+{
+    <label>Для игры обязательна регистрация с подтверждением почты.</label>
+    <br />
+    <a href="/Identity/Account/Manage/Email">Перейти в настройки почты</a>
+    return;
+}
 <script src="~/js/chess.js" asp-append-version="true"></script>
 <div id="searchBlock">
     <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру.</button>

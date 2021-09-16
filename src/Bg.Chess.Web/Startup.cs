@@ -56,6 +56,7 @@ namespace Bg.Chess.Web
                 //options.Lockout.MaxFailedAccessAttempts = 5;
                 //options.Lockout.AllowedForNewUsers = true;
                 options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;

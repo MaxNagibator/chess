@@ -1,4 +1,5 @@
-﻿using Bg.Chess.Web.Models;
+﻿using Bg.Chess.Game;
+using Bg.Chess.Web.Models;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -7,13 +8,12 @@ using System.Diagnostics;
 
 namespace Bg.Chess.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(
+            ILoggerFactory loggerFactory,
+            IUserService userService) : base(loggerFactory, userService)
         {
-            _logger = logger;
         }
 
         public IActionResult Index()

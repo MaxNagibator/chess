@@ -12,7 +12,7 @@
     using Microsoft.AspNetCore.Authorization;
 
     [Authorize]
-    public class ChessController : Controller
+    public class ChessController : BaseController
     {
         private readonly ILogger _logger;
         private IGameManager _searchManager;
@@ -25,7 +25,7 @@
             IGameManager searchManager,
             IPlayerService playerService,
             IUserService userService,
-            IGameService gameService)
+            IGameService gameService) : base(loggerFactory, userService)
         {
             _logger = loggerFactory.CreateLogger("chess");
             _searchManager = searchManager;
@@ -37,6 +37,9 @@
         [HttpGet]
         public ViewResult Index()
         {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _userService.GetUser(userId);
+            
             return View();
         }
 
@@ -160,7 +163,11 @@
         private int GetPlayerId()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var player = _playerService.GetPlayerByUserId(userId);
+            var player = _playerService.FindPlayerByUserId(userId);
+            if(player == null)
+            {
+                throw new BusinessException("Ваш игровой профиль не готов");
+            }
             return player.Id;
         }
 

@@ -1,7 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
-
+@{
+    var user = ViewBag.User as Bg.Chess.Web.Models.Common.User;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Bg.Chess.Web</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.css">
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/chess.css" />
 </head>
@@ -23,16 +26,27 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (SignInManager.IsSignedIn(User))
+                        @if (user != null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Chess" asp-action="Index">Играть</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Chess" asp-action="Index">
+                                    Играть
+                                    @if (user.IsEmailConfirmed == false)
+                                    {
+                                        <i class="fa fa-lock"></i>
+                                    }
+                                </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Chess" asp-action="History">История игр</a>
-                            </li>
+                            @if (user.IsEmailConfirmed)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Chess" asp-action="History">
+                                        История игр
+                                    </a>
+                                </li>
+                            }
                         }
-                    </ul>
+                        </ul>
                     <partial name="_LoginPartial" />
                 </div>
             </div>

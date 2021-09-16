@@ -31,6 +31,7 @@ namespace Bg.Chess.Web.Areas.Identity.Pages.Account.Manage
 
         public string Username { get; set; }
 
+        [Display(Name="Почта")]
         public string Email { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
@@ -125,7 +126,7 @@ namespace Bg.Chess.Web.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
-            тут сделать оптправку письма
+
             var userId = await _userManager.GetUserIdAsync(user);
             var email = await _userManager.GetEmailAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -135,12 +136,12 @@ namespace Bg.Chess.Web.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+    
+            var subject = "Подтверждение регистрации";
+            var body = $"Перейдите по этой <a href = '{HtmlEncoder.Default.Encode(callbackUrl)}'>ссылке</a>, для подтверждения регистрации на chess.bob217.ru";
+            await _emailSender.SendEmailAsync(email, subject, body);
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "Ссылка для подтверждени почты отправлена. Проверьте вашу почту.";
             return RedirectToPage();
         }
     }
