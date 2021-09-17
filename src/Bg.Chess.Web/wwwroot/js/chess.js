@@ -121,24 +121,48 @@ let game = {
     status: null
 };
 
-function move(fromX, fromY, toX, toY) {
-    SendRequest({
-        url: '/Chess/Move',
-        method: 'POST',
-        body: {
-            fromX: fromX,
-            fromY: fromY,
-            toX: toX,
-            toY: toY,
-        },
-        success: function (data) {
-            let data2 = JSON.parse(data.responseText);
-            initGame(data2);
-        },
-        error: function () {
-            alert('shadow bolt');
+let pawnTransformPieceModalSendRequest;
+function move(pieceType, pieceSide, fromX, fromY, toX, toY) {
+    let pawnTransformPieceModalDom = document.getElementById('pawnTransformPieceModal');
+    let pawnTransformPieceModal = new bootstrap.Modal(pawnTransformPieceModalDom);
+    let sendRequest = function (pawnTransformPiece) {
+        SendRequest({
+            url: '/Chess/Move',
+            method: 'POST',
+            body: {
+                fromX: fromX,
+                fromY: fromY,
+                toX: toX,
+                toY: toY,
+                pawnTransformPiece: pawnTransformPiece
+            },
+            success: function (data) {
+                if (pawnTransformPiece != null) {
+                    pawnTransformPieceModal.hide();
+                }
+                let data2 = JSON.parse(data.responseText);
+                initGame(data2);
+            },
+            error: function () {
+                alert('shadow bolt');
+            }
+        });
+    }
+
+    if (pieceType == PieceTypes.Pawn) {
+        if ((toY == 7 && pieceSide == Side.White) || (toY == 0 && pieceSide == Side.Black)) {
+            pawnTransformPieceModalSendRequest = sendRequest;
+            document.getElementsByClassName('pawn-transform-piece-select')[0].classList.add('select-' + pieceSide.toLowerCase());
+            pawnTransformPieceModal.show();
+            return;
         }
-    });
+    }
+
+    sendRequest(null);
+}
+
+function selectPawnTransformPiece(pieceType) {
+    pawnTransformPieceModalSendRequest(pieceType);            
 }
 
 function goGame(alwaysCallback) {
@@ -312,12 +336,15 @@ function initField(notation, availableMoves) {
                 } else {
                     div.classList.add('position-black');
                 }
+
+                let piece = GetPieceByNotation(pos);
+                div.setAttribute('data-piece-type', piece.Type);
+                div.setAttribute('data-piece-side', piece.Side);
                 div.setAttribute('data-position-x', posX);
                 div.setAttribute('data-position-y', posY);
 
                 divLine.appendChild(div);
                 cellColorIndex++;
-                let piece = GetPieceByNotation(pos);
                 let img = document.createElement('img');
                 let imgSrcName = piece.Type + "-" + piece.Side + '.png';
                 img.src = '/Content/Images/Piece/' + imgSrcName;
@@ -361,11 +388,13 @@ function initField(notation, availableMoves) {
 
             draggables[i].addEventListener('dragend', function (event) {
                 if (dnd_successful) {
+                    let pieceType = event.target.parentElement.getAttribute('data-piece-type');
+                    let pieceSide = event.target.parentElement.getAttribute('data-piece-side');
                     let fromX = event.target.parentElement.getAttribute('data-position-x');
                     let fromY = event.target.parentElement.getAttribute('data-position-y');
                     let toX = placeForDropPiece.getAttribute('data-position-x');
                     let toY = placeForDropPiece.getAttribute('data-position-y');
-                    move(fromX, fromY, toX, toY);
+                    move(pieceType, pieceSide, fromX, fromY, toX, toY);
                 }
                 else {
                 }
@@ -404,14 +433,12 @@ function initField(notation, availableMoves) {
 
             dropZones[i].addEventListener('drop', function (event) {
 
-                //todo переименовать column в cell/position/...
                 if ((event.target.classList.contains('column')
                     && event.target.classList.contains('piece-move-target-good'))
 
                     || (event.target.parentElement.classList.contains('column')
                         && event.target.parentElement.classList.contains('piece-move-target-good'))
                 ) {
-                    //event.target.classList.remove('piece-move-target-good');
                     placeForDropPiece = event.target;
                     if (!placeForDropPiece.classList.contains('column')) {
                         placeForDropPiece = placeForDropPiece.parentElement;
@@ -420,16 +447,13 @@ function initField(notation, availableMoves) {
                     event.preventDefault();
                 }
             });
-            }
+        }
     }
 }
 
 setInterval(function () {
     if (checkEnemyStep == -1) {
-        // заполнить статус лейбл, ваш ход
         return;
-    } else {
-        // заполнить статус лейбл "ход оппонента"
     }
 
     if (checkEnemyStepInProcess) {

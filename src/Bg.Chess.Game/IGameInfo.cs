@@ -41,6 +41,24 @@
             BlackPlayerId = blackPlayerId;
             game = new Game();
             game.Init();
+
+            // оставлю для отладки особых случаев
+            if (false)
+            {
+                var rules = new ClassicRules();
+                rules.FieldHeight = 8;
+                rules.FieldWidth = 8;
+                rules.Positions.Remove(rules.Positions.First(x => x.X == 4 && x.Y == 6));
+                rules.Positions.Remove(rules.Positions.First(x => x.X == 7 && x.Y == 7));
+                rules.Positions.Remove(rules.Positions.First(x => x.X == 0 && x.Y == 0));
+                rules.Positions.Add(new Domain.Position(4, 6, PieceBuilder.Pawn(Side.White)));
+                rules.Positions.Add(new Domain.Position(7, 7, PieceBuilder.King(Side.Black)));
+                rules.Positions.Add(new Domain.Position(0, 0, PieceBuilder.King(Side.White)));
+                rules.Positions.Add(new Domain.Position(4, 6, PieceBuilder.Pawn(Side.White)));
+                rules.Positions.Add(new Domain.Position(7, 7, PieceBuilder.King(Side.Black)));
+                var field = new Field(rules);
+                game.Init(field);
+            }
         }
 
         public bool IsMyGame(int playerId)
@@ -125,6 +143,7 @@
             {
                 From = new Position { X = move.From.X, Y = move.From.Y },
                 To = new Position { X = move.To.X, Y = move.To.Y },
+
                 AdditionalMove = Init(move.AdditionalMove),
                 KillEnemy = FillDtoPiece(move.KillEnemy),
                 Runner = FillDtoPiece(move.Runner),

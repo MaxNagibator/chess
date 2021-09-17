@@ -9,6 +9,7 @@
     .game-field.side-black {
         transform: rotate( 180deg );
     }
+
         .game-field.side-black .column .field-label,
         .game-field.side-black .column img {
             transform: rotate( 180deg );
@@ -106,4 +107,25 @@
 
 .in-process .hide-is-search {
     display: none;
+}
+
+.pawn-transform-piece-select img {
+    width: 46px;
+    margin: 2px;
+    border: solid 2px #6B92FF;
+    cursor: pointer;
+}
+
+    .pawn-transform-piece-select img:hover {
+        border: solid 2px #4FFF63;
+    }
+
+.pawn-transform-piece-select .hidden-black,
+.pawn-transform-piece-select .hidden-white {
+    display: none;
+}
+
+.pawn-transform-piece-select.select-black .hidden-black,
+.pawn-transform-piece-select.select-white .hidden-white {
+    display: inline-block;
 }

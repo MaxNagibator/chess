@@ -38,3 +38,27 @@
     <label class="game-not-my-win hidden">Вы проиграли</label>
     <label class="game-draw hidden">Вы проиграли</label>
 </div>
+
+<div id="pawnTransformPieceModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Выберите фигуру</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body pawn-transform-piece-select">
+                <img class="hidden-black" src="~/content/images/piece/queen-black.png" onclick="selectPawnTransformPiece('queen')" >
+                <img class="hidden-black" src="~/content/images/piece/knight-black.png" onclick="selectPawnTransformPiece('knight')" >
+                <img class="hidden-black" src="~/content/images/piece/bishop-black.png" onclick="selectPawnTransformPiece('bishop')" >
+                <img class="hidden-black" src="~/content/images/piece/rook-black.png" onclick="selectPawnTransformPiece('rook')" >
+
+                <img class="hidden-white" src="~/content/images/piece/queen-white.png" onclick="selectPawnTransformPiece('queen')" >
+                <img class="hidden-white" src="~/content/images/piece/knight-white.png" onclick="selectPawnTransformPiece('knight')" >
+                <img class="hidden-white" src="~/content/images/piece/bishop-white.png" onclick="selectPawnTransformPiece('bishop')" >
+                <img class="hidden-white" src="~/content/images/piece/rook-white.png" onclick="selectPawnTransformPiece('rook')" >
+            </div>
+        </div>
+    </div>
+</div>

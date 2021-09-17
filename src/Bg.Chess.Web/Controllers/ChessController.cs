@@ -93,11 +93,11 @@
         }
 
         [HttpPost]
-        public JsonResult Move(int fromX, int fromY, int toX, int toY)
+        public JsonResult Move(int fromX, int fromY, int toX, int toY, string pawnTransformPiece)
         {
             var playerId = GetPlayerId();
             var game = _searchManager.FindMyPlayingGame(playerId);
-            game.Move(playerId, fromX, fromY, toX, toY);
+            game.Move(playerId, fromX, fromY, toX, toY, pawnTransformPiece);
             switch (game.Status)
             {
                 case GameStatus.InProgress:

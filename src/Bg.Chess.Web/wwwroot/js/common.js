@@ -57,3 +57,7 @@ function GetPieceByNotation(pos) {
 
     return piece;
 }
+
+// чтоб модалка не закрывалась, если кликнуть мимо или ESC
+$.fn.modal.prototype.constructor.Constructor.Default.keyboard = false;
+$.fn.modal.prototype.constructor.Constructor.Default.backdrop = 'static';
