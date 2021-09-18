@@ -110,7 +110,22 @@
             }
             return InitFieldResponse(playerId, game);
         }
-
+        [HttpPost]
+        public JsonResult Surrender()
+        {
+            var playerId = GetPlayerId();
+            var game = _searchManager.FindMyPlayingGame(playerId);
+            game.Surrender(playerId);
+            switch (game.Status)
+            {
+                case GameStatus.WinBlack:
+                case GameStatus.WinWhite:
+                    _gameService.SaveGame(game);
+                    break;
+            }
+            return InitFieldResponse(playerId, game);
+        }
+        
         private JsonResult InitFieldResponse(int playerId, IGameInfo game)
         {
             if (game == null)

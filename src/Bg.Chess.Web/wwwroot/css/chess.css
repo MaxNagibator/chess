@@ -129,3 +129,13 @@
 .pawn-transform-piece-select.select-white .hidden-white {
     display: inline-block;
 }
+
+.game-status-process .game-actions {
+    display: block;
+}
+.game-status-process .game-search {
+    display: none;
+}
+.game-actions {
+    display: none;
+}

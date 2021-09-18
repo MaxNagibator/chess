@@ -7,7 +7,7 @@
     var success = user != null && user.IsEmailConfirmed;
 }
 
-@if(!success)
+@if (!success)
 {
     <label>Для игры обязательна регистрация с подтверждением почты.</label>
     <br />
@@ -15,28 +15,33 @@
     return;
 }
 <script src="~/js/chess.js" asp-append-version="true"></script>
-<div id="searchBlock">
-    <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру.</button>
-    <div class="show-is-search">
-        <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск.</button>
-        <label>
-            Идёт поиск игры
-            <span id="searchSpan"></span>
-            <span id="searchSpan2"></span>
-        </label>
-        @*<label id="searchTime"></label>*@
+<div id="gameBlock">
+    <div id="searchBlock" class="game-search">
+        <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру</button>
+        <div class="show-is-search">
+            <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
+            <label>
+                Идёт поиск игры
+                <span id="searchSpan"></span>
+                <span id="searchSpan2"></span>
+            </label>
+            @*<label id="searchTime"></label>*@
+        </div>
     </div>
-</div>
-<div id="field" class="game-field">
+    <div id="field" class="game-field">
 
-</div>
+    </div>
 
-<div class="game-status">
-    <label class="game-my-step hidden">Ваш ход</label>
-    <label class="game-not-my-step hidden">Ожидайте хода оппонента</label>
-    <label class="game-my-win hidden">Вы выиграли</label>
-    <label class="game-not-my-win hidden">Вы проиграли</label>
-    <label class="game-draw hidden">Вы проиграли</label>
+    <div class="game-status">
+        <label class="game-my-step hidden">Ваш ход</label>
+        <label class="game-not-my-step hidden">Ожидайте хода оппонента</label>
+        <label class="game-my-win hidden">Вы выиграли</label>
+        <label class="game-not-my-win hidden">Вы проиграли</label>
+        <label class="game-draw hidden">Вы проиграли</label>
+    </div>
+    <div id="actionBlock" class="game-actions">
+        <button class="btn btn-warning" onclick="surrenderInitial()">Сдаться</button>
+    </div>
 </div>
 
 <div id="pawnTransformPieceModal" class="modal fade" tabindex="-1" role="dialog">
@@ -49,15 +54,35 @@
                 </button>
             </div>
             <div class="modal-body pawn-transform-piece-select">
-                <img class="hidden-black" src="~/content/images/piece/queen-black.png" onclick="selectPawnTransformPiece('queen')" >
-                <img class="hidden-black" src="~/content/images/piece/knight-black.png" onclick="selectPawnTransformPiece('knight')" >
-                <img class="hidden-black" src="~/content/images/piece/bishop-black.png" onclick="selectPawnTransformPiece('bishop')" >
-                <img class="hidden-black" src="~/content/images/piece/rook-black.png" onclick="selectPawnTransformPiece('rook')" >
+                <img class="hidden-black" src="~/content/images/piece/queen-black.png" onclick="selectPawnTransformPiece('queen')">
+                <img class="hidden-black" src="~/content/images/piece/knight-black.png" onclick="selectPawnTransformPiece('knight')">
+                <img class="hidden-black" src="~/content/images/piece/bishop-black.png" onclick="selectPawnTransformPiece('bishop')">
+                <img class="hidden-black" src="~/content/images/piece/rook-black.png" onclick="selectPawnTransformPiece('rook')">
 
-                <img class="hidden-white" src="~/content/images/piece/queen-white.png" onclick="selectPawnTransformPiece('queen')" >
-                <img class="hidden-white" src="~/content/images/piece/knight-white.png" onclick="selectPawnTransformPiece('knight')" >
-                <img class="hidden-white" src="~/content/images/piece/bishop-white.png" onclick="selectPawnTransformPiece('bishop')" >
-                <img class="hidden-white" src="~/content/images/piece/rook-white.png" onclick="selectPawnTransformPiece('rook')" >
+                <img class="hidden-white" src="~/content/images/piece/queen-white.png" onclick="selectPawnTransformPiece('queen')">
+                <img class="hidden-white" src="~/content/images/piece/knight-white.png" onclick="selectPawnTransformPiece('knight')">
+                <img class="hidden-white" src="~/content/images/piece/bishop-white.png" onclick="selectPawnTransformPiece('bishop')">
+                <img class="hidden-white" src="~/content/images/piece/rook-white.png" onclick="selectPawnTransformPiece('rook')">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="surrenderModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтвердите действие</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                После нажатия "Признать поражение" игра будет закончена не в вашу пользу
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i>Отмена</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="surrender()"><i class="fa fa-check"></i>Признать поражение</button>
             </div>
         </div>
     </div>

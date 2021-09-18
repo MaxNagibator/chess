@@ -162,7 +162,33 @@ function move(pieceType, pieceSide, fromX, fromY, toX, toY) {
 }
 
 function selectPawnTransformPiece(pieceType) {
-    pawnTransformPieceModalSendRequest(pieceType);            
+    pawnTransformPieceModalSendRequest(pieceType);
+}
+
+function surrenderInitial() {
+    let surrenderModalDom = document.getElementById('surrenderModal');
+    let surrenderModal = new bootstrap.Modal(surrenderModalDom);
+    surrenderModal.show();
+}
+
+function surrender() {
+    SendRequest({
+        url: '/Chess/Surrender',
+        method: 'POST',
+        body: {
+        },
+        success: function (data) {
+            let surrenderModalDom = document.getElementById('surrenderModal');
+            let surrenderModal = new bootstrap.Modal(surrenderModalDom);
+            surrenderModal.hide();
+
+            let data2 = JSON.parse(data.responseText);
+            initGame(data2);
+        },
+        error: function () {
+            alert('shadow bolt');
+        }
+    });
 }
 
 function goGame(alwaysCallback) {
@@ -199,6 +225,7 @@ function initGame(data2) {
     myStepLabel.classList.add('hidden');
 
     if (game.status == GameStatus.InProgress) {
+        document.getElementById('gameBlock').classList.add('game-status-process');
         initField(data2.notation, data2.availableMoves);
         if (game.mySide == game.stepSide) {
             checkEnemyStep = -1;
@@ -208,6 +235,7 @@ function initGame(data2) {
             notMyStepLabel.classList.remove('hidden');
         }
     } else {
+        document.getElementById('gameBlock').classList.remove('game-status-process');
         checkEnemyStep = -1;
 
         initField(data2.notation);

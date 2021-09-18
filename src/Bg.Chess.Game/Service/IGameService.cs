@@ -87,24 +87,24 @@
             dto.Positions = positionsStr;
         }
 
-        private SaveGameDtoV1.Move FillDtoMove(Move x)
+        private SaveGameDtoV1.Move FillDtoMove(Move move)
         {
-            if (x == null)
+            if (move == null)
             {
                 return null;
             }
 
             return new SaveGameDtoV1.Move()
             {
-                From = new SaveGameDtoV1.Position
+                From = move.From == null ? null : new SaveGameDtoV1.Position
                 {
-                    X = x.From.X,
-                    Y = x.From.Y,
+                    X = move.From.X,
+                    Y = move.From.Y,
                 },
                 To = new SaveGameDtoV1.Position
                 {
-                    X = x.To.X,
-                    Y = x.To.Y,
+                    X = move.To.X,
+                    Y = move.To.Y,
                 },
 
             };
@@ -128,24 +128,24 @@
             game.Positions = dto.Positions;
         }
 
-        private Move FillMove(SaveGameDtoV1.Move x)
+        private Move FillMove(SaveGameDtoV1.Move move)
         {
-            if (x == null)
+            if (move == null)
             {
                 return null;
             }
 
             return new Move()
             {
-                From = new Position
+                From = move.From == null ? null : new Position
                 {
-                    X = x.From.X,
-                    Y = x.From.Y,
+                    X = move.From.X,
+                    Y = move.From.Y,
                 },
                 To = new Position
                 {
-                    X = x.To.X,
-                    Y = x.To.Y,
+                    X = move.To.X,
+                    Y = move.To.Y,
                 },
 
             };

@@ -23,6 +23,7 @@
         List<AvailableMove> AvailableMoves();
 
         List<Move> GetMoves();
+        void Surrender(int playerId);
     }
 
     public class GameInfo : IGameInfo
@@ -141,7 +142,7 @@
 
             var dto = new Move
             {
-                From = new Position { X = move.From.X, Y = move.From.Y },
+                From = move.From == null ? null : new Position { X = move.From.X, Y = move.From.Y },
                 To = new Position { X = move.To.X, Y = move.To.Y },
 
                 AdditionalMove = Init(move.AdditionalMove),
@@ -168,6 +169,11 @@
             {
                 return pieceName.ToString();
             }
+        }
+
+        public void Surrender(int playerId)
+        {
+            //game.Surrender(playerId);
         }
 
         public GameStatus Status
