@@ -53,7 +53,9 @@
             game.Move(Side.White, "f1", "c4");
             game.Move(Side.Black, "g8", "f6");
             game.Move(Side.White, "h5", "f7");
-            Assert.AreEqual(GameState.WinWhite, game.State);
+            Assert.AreEqual(GameState.Finish, game.State);
+            Assert.AreEqual(Side.White, game.WinSide);
+            Assert.AreEqual(FinishReason.Mate, game.FinishReason);
         }
     }
 }

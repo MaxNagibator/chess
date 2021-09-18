@@ -17,6 +17,22 @@
         /// </summary>
         public GameState State { get; private set; } = GameState.WaitStart;
 
+        /// <summary>
+        /// Победившая сторона.
+        /// </summary>
+        /// <remarks>
+        /// Заполняется после окончания игры.
+        /// </remarks>
+        public Side? WinSide { get; private set; }
+
+        /// <summary>
+        /// Победившая сторона.
+        /// </summary>
+        /// <remarks>
+        /// Заполняется после окончания игры.
+        /// </remarks>
+        public FinishReason? FinishReason { get; private set; }
+
         // нужны буковки и цифорки, чтоб кормить на вход можно было e2 e4 :)
         private string widthSymbols = "abcdefgh";
         private string heightSymbols = "12345678";
@@ -123,14 +139,9 @@
             var mate = _field.CheckMate(StepSide);
             if (mate == CheckMateResult.Mate)
             {
-                if (StepSide == Side.White)
-                {
-                    State = GameState.WinWhite;
-                }
-                else
-                {
-                    State = GameState.WinBlack;
-                }
+                State = GameState.Finish;
+                FinishReason = Domain.FinishReason.Mate;
+                WinSide = StepSide;
             }
             else if (mate == CheckMateResult.None)
             {
@@ -138,9 +149,19 @@
             }
             else
             {
-                State = GameState.Draw;
+                State = GameState.Finish;
+                FinishReason = Domain.FinishReason.Draw;
             }
+        }
 
+        /// <summary>
+        /// Сдаться.
+        /// </summary>
+        public void Surrender(Side side)
+        {
+            State = GameState.Finish;
+            WinSide = side.Invert();
+            FinishReason = Domain.FinishReason.Surrender;
         }
 
         /// <summary>

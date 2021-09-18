@@ -27,7 +27,9 @@
             var game = new Game();
             game.Init(field);
             game.Move(Side.White, 7, 5, 7, 6);
-            Assert.AreEqual(GameState.Draw, game.State);
+            Assert.AreEqual(GameState.Finish, game.State);
+            Assert.AreEqual(FinishReason.Draw, game.FinishReason);
+            Assert.IsNull(game.WinSide);
         }
     }
 }
