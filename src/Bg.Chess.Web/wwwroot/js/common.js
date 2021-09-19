@@ -6,11 +6,13 @@
     Finish: 'Finish'
 }
 
-const GameStatus = {
+const FinishReason = {
+    Mate: 'Mate',
+    Surrender: 'Surrender',
+    TimeOver: 'TimeOver',
     Draw: 'Draw',
-    InProgress: 'InProgress',
-    WinBlack: 'WinBlack',
-    WinWhite: 'WinWhite'
+    DrawByAgreement: 'DrawByAgreement',
+    DrawByTime: 'DrawByTime',
 }
 
 const PieceTypes = {
@@ -20,11 +22,6 @@ const PieceTypes = {
     Pawn: 'Pawn',
     Queen: 'Queen',
     Rook: 'Rook'
-}
-
-const Side = {
-    White: 'White',
-    Black: 'Black'
 }
 
 function GetPieceByNotation(pos) {

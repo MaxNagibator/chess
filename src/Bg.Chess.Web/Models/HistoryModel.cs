@@ -17,7 +17,9 @@ namespace Bg.Chess.Web.Models
 
             public Player BlackPlayer { get; set; }
 
-            public GameStatus Status { get; set; }
+            public FinishReason FinishReason { get; set; }
+
+            public GameSide? WinSide { get; set; }
         }
 
         public class Player

@@ -14,36 +14,52 @@
 {
     foreach (var game in Model.Games)
     {
-        <div>
-            <a href="/History/@game.Id">Ссылка на игру</a>
-            <label>@game.Id</label>
-            @if (game.Status == GameStatus.Draw)
+<div>
+    <a href="/History/@game.Id">Ссылка на игру</a>
+    <label>@game.Id</label>
+    @if (game.WinSide != null)
+    {
+        if (game.WhitePlayer.Id == Model.MyPlayerId)
+        {
+            if (game.WinSide == GameSide.White)
             {
-                <label>Ничья</label>
-            }
-            else if (game.WhitePlayer.Id == Model.MyPlayerId)
-            {
-                if (game.Status == GameStatus.WinWhite)
-                {
-                    <label>Победа</label>
-                }
-                else
-                {
-                    <label>Поражение</label>
-                }
+                <label>Победа</label>
             }
             else
             {
-                if (game.Status == GameStatus.WinBlack)
-                {
-                    <label>Победа</label>
-                }
-                else
-                {
-                    <label>Поражение</label>
-                }
+                <label>Поражение</label>
             }
+        }
+        else
+        {
+            if (game.WinSide == GameSide.Black)
+            {
+                <label>Победа</label>
+            }
+            else
+            {
+                <label>Поражение</label>
+            }
+        }
+    }
+    else
+    {
+        <label>Ничья</label>
+    }
+    @if (game.FinishReason == FinishReason.Mate)
+    {
+        <label>Мат</label>
+    }
+    else if (game.FinishReason == FinishReason.TimeOver)
+    {
 
-        </div>
+        <label>Время вышло</label>
+    }
+    else if (game.FinishReason == FinishReason.Surrender)
+    {
+
+        <label>Сдался</label>
+    }
+</div>
     }
 }

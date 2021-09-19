@@ -3,10 +3,12 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Chess.Common.Enums;
+
     public interface IGameRepo
     {
         ChessGame GetGame(int gameId);
-        void SaveGame(int id, int whitePlayerId, int blackPlayerId, int status, string data);
+        void SaveGame(int id, int whitePlayerId, int blackPlayerId, FinishReason finishReason, GameSide? winSide, string data);
         List<ChessGame> GetGames(int playerId);
     }
 
@@ -32,7 +34,7 @@
             return dbGames;
         }
 
-        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, int status, string data)
+        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, FinishReason finishReason, GameSide? winSide, string data)
         {
             var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.Id == id);
             if (dbGame == null)
@@ -43,7 +45,8 @@
 
             dbGame.WhitePlayerId = whitePlayerId;
             dbGame.BlackPlayerId = blackPlayerId;
-            dbGame.Status = status;
+            dbGame.FinishReason = (int)finishReason;
+            dbGame.WinSide = (int)winSide;
             dbGame.Data = data;
             _unitOfWork.Context.SaveChanges();
         }

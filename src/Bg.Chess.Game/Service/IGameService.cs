@@ -37,7 +37,7 @@
             FillDtoV1(gameDto, game);
 
             string data = JsonConvert.SerializeObject(gameDto);
-            _gameRepo.SaveGame(0, game.WhitePlayerId, game.BlackPlayerId, (int)game.Status, data);
+            _gameRepo.SaveGame(0, game.WhitePlayerId, game.BlackPlayerId, game.FinishReason, game.WinSide, data);
         }
 
         public HistoryGame GetGame(int gameId)
@@ -49,7 +49,8 @@
             gameInfo.WhitePlayer = _playerService.GetPlayer(game.WhitePlayerId);
             gameInfo.BlackPlayer = _playerService.GetPlayer(game.BlackPlayerId);
 
-            gameInfo.Status = (GameStatus)game.Status;
+            gameInfo.FinishReason = (FinishReason)game.FinishReason;
+            gameInfo.WinSide = (GameSide)game.WinSide;
 
             FillGameFromDtoV1(gameInfo, gameDto);
             return gameInfo;
@@ -64,7 +65,8 @@
                 Id = x.Id,
                 BlackPlayer = new Player { Id = x.BlackPlayerId },
                 WhitePlayer = new Player { Id = x.WhitePlayerId },
-                Status = (GameStatus)x.Status,
+                FinishReason = (FinishReason)x.FinishReason,
+                WinSide = (GameSide)x.WinSide,
             }).ToList();
         }
 

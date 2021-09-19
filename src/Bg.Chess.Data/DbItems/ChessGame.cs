@@ -14,7 +14,9 @@ namespace Bg.Chess.Data
 
         public int BlackPlayerId { get; set; }
 
-        public int Status { get; set; }
+        public int FinishReason { get; set; }
+
+        public int WinSide { get; set; }
 
         public string Data { get; set; }
     }

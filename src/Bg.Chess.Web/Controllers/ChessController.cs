@@ -98,16 +98,11 @@
             var playerId = GetPlayerId();
             var game = _searchManager.FindMyPlayingGame(playerId);
             game.Move(playerId, fromX, fromY, toX, toY, pawnTransformPiece);
-            switch (game.Status)
+            if(game.IsFinish)
             {
-                case GameStatus.InProgress:
-                    break;
-                case GameStatus.Draw:
-                case GameStatus.WinBlack:
-                case GameStatus.WinWhite:
-                    _gameService.SaveGame(game);
-                    break;
+                _gameService.SaveGame(game);
             }
+
             return InitFieldResponse(playerId, game);
         }
         [HttpPost]
@@ -116,13 +111,7 @@
             var playerId = GetPlayerId();
             var game = _searchManager.FindMyPlayingGame(playerId);
             game.Surrender(playerId);
-            switch (game.Status)
-            {
-                case GameStatus.WinBlack:
-                case GameStatus.WinWhite:
-                    _gameService.SaveGame(game);
-                    break;
-            }
+            _gameService.SaveGame(game);
             return InitFieldResponse(playerId, game);
         }
         
@@ -135,35 +124,37 @@
 
             string notation = null;
             List<AvailableMove> moves = null;
-            if (game.Status == GameStatus.InProgress)
+            if (game.IsFinish)
+            {
+                notation = game.GetForsythEdwardsNotation(true);
+            }
+            else
             {
                 notation = game.GetForsythEdwardsNotation();
                 moves = game.AvailableMoves();
             }
-            else 
-            {
-                notation = game.GetForsythEdwardsNotation(true);
-            }
 
             var side = game.WhitePlayerId == playerId ? "White" : "Black";
             var stepSide = game.StepSide == GameSide.White ? "White" : "Black";
-            var status = "";
-            switch (game.Status)
+            var finishReason = "";
+            if (game.IsFinish)
             {
-                case GameStatus.InProgress:
-                    status = "InProgress";
-                    break;
-                case GameStatus.WinBlack:
-                    status = "WinBlack";
-                    break;
-                case GameStatus.WinWhite:
-                    status = "WinWhite";
-                    break;
-                case GameStatus.Draw:
-                    status = "Draw";
-                    break;
+                switch (game.FinishReason)
+                {
+                    case FinishReason.Mate:
+                        finishReason = "Mate";
+                        break;
+                    case FinishReason.Surrender:
+                        finishReason = "Surrender";
+                        break;
+                    case FinishReason.Draw:
+                        finishReason = "Draw";
+                        break;
+                    case FinishReason.TimeOver:
+                        finishReason = "TimeOver";
+                        break;
+                }
             }
-
 
             return Json(new
             {
@@ -171,7 +162,8 @@
                 AvailableMoves = moves,
                 Side = side,
                 StepSide = stepSide,
-                Status = status
+                IsFinish = game.IsFinish,
+                FinishReason = finishReason,
             });
         }
 
@@ -199,7 +191,8 @@
                     Id = x.Id,
                     BlackPlayer = FillPlayer(x.BlackPlayer),
                     WhitePlayer = FillPlayer(x.WhitePlayer),
-                    Status = x.Status,
+                    FinishReason = x.FinishReason,
+                    WinSide = x.WinSide,
                 }).ToList();
             model.MyPlayerId = playerId;
 
@@ -226,7 +219,8 @@
                 Id = game.Id,
                 BlackPlayer = FillPlayer(game.BlackPlayer),
                 WhitePlayer = FillPlayer(game.WhitePlayer),
-                Status = game.Status,
+                FinishReason = game.FinishReason,
+                WinSide = game.WinSide,
             };
 
             HistoryGameModel.Player FillPlayer(Player player)

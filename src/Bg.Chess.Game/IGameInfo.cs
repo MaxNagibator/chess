@@ -5,7 +5,6 @@
     using System.Linq;
 
     using Bg.Chess.Common.Enums;
-    using Bg.Chess.Domain;
 
     public interface IGameInfo
     {
@@ -14,7 +13,6 @@
         GameSide StepSide { get; }
         bool IsMyGame(int playerId);
 
-        GameStatus Status { get; }
         bool IsFinish { get; }
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
 
@@ -24,6 +22,8 @@
 
         List<Move> GetMoves();
         void Surrender(int playerId);
+        FinishReason FinishReason { get; }
+        GameSide? WinSide { get; }
     }
 
     public class GameInfo : IGameInfo
@@ -34,30 +34,30 @@
         public bool whiteConfirm;
         public bool blackConfirm;
 
-        private Game game;
+        private Domain.Game game;
 
         public GameInfo(int whitePlayerId, int blackPlayerId)
         {
             WhitePlayerId = whitePlayerId;
             BlackPlayerId = blackPlayerId;
-            game = new Game();
+            game = new Domain.Game();
             game.Init();
 
             // оставлю для отладки особых случаев
             if (false)
             {
-                var rules = new ClassicRules();
+                var rules = new Domain.ClassicRules();
                 rules.FieldHeight = 8;
                 rules.FieldWidth = 8;
                 rules.Positions.Remove(rules.Positions.First(x => x.X == 4 && x.Y == 6));
                 rules.Positions.Remove(rules.Positions.First(x => x.X == 7 && x.Y == 7));
                 rules.Positions.Remove(rules.Positions.First(x => x.X == 0 && x.Y == 0));
-                rules.Positions.Add(new Domain.Position(4, 6, PieceBuilder.Pawn(Side.White)));
-                rules.Positions.Add(new Domain.Position(7, 7, PieceBuilder.King(Side.Black)));
-                rules.Positions.Add(new Domain.Position(0, 0, PieceBuilder.King(Side.White)));
-                rules.Positions.Add(new Domain.Position(4, 6, PieceBuilder.Pawn(Side.White)));
-                rules.Positions.Add(new Domain.Position(7, 7, PieceBuilder.King(Side.Black)));
-                var field = new Field(rules);
+                rules.Positions.Add(new Domain.Position(4, 6, Domain.PieceBuilder.Pawn(Domain.Side.White)));
+                rules.Positions.Add(new Domain.Position(7, 7, Domain.PieceBuilder.King(Domain.Side.Black)));
+                rules.Positions.Add(new Domain.Position(0, 0, Domain.PieceBuilder.King(Domain.Side.White)));
+                rules.Positions.Add(new Domain.Position(4, 6, Domain.PieceBuilder.Pawn(Domain.Side.White)));
+                rules.Positions.Add(new Domain.Position(7, 7, Domain.PieceBuilder.King(Domain.Side.Black)));
+                var field = new Domain.Field(rules);
                 game.Init(field);
             }
         }
@@ -78,22 +78,22 @@
         /// <param name="pawnTransformPiece">Название фигуры, для превращения пешки в другую фигуру в конце поля.</param>
         public void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null)
         {
-            Side side = GetSide(playerId);
+            Domain.Side side = GetSide(playerId);
 
             game.Move(side, fromX, fromY, toX, toY, pawnTransformPiece);
 
         }
 
-        private Side GetSide(int playerId)
+        private Domain.Side GetSide(int playerId)
         {
-            Side side;
+            Domain.Side side;
             if (WhitePlayerId == playerId)
             {
-                side = Side.White;
+                side = Domain.Side.White;
             }
             else if (BlackPlayerId == playerId)
             {
-                side = Side.Black;
+                side = Domain.Side.Black;
             }
             else
             {
@@ -153,7 +153,7 @@
             return dto;
         }
 
-        private string FillDtoPiece(Piece piece)
+        private string FillDtoPiece(Domain.Piece piece)
         {
             if (piece == null)
             {
@@ -161,7 +161,7 @@
             }
 
             var pieceName = piece.Type.ShortName;
-            if (piece.Side == Side.White)
+            if (piece.Side == Domain.Side.White)
             {
                 return pieceName.ToString().ToUpper();
             }
@@ -173,33 +173,45 @@
 
         public void Surrender(int playerId)
         {
-            //game.Surrender(playerId);
-        }
-
-        public GameStatus Status
-        {
-            get
-            {
-                switch (game.State)
-                {
-                    case Domain.GameState.InProgress:
-                        return GameStatus.InProgress;
-                    case Domain.GameState.WinWhite:
-                        return GameStatus.WinWhite;
-                    case Domain.GameState.WinBlack:
-                        return GameStatus.WinBlack;
-                    case Domain.GameState.Draw:
-                        return GameStatus.Draw;
-                    default:
-                        throw new Exception("state unrecognized " + game.State);
-                }
-            }
+            Domain.Side side = GetSide(playerId);
+            game.Surrender(side);
         }
 
         public GameSide StepSide => game.StepSide == Domain.Side.White ? GameSide.White : GameSide.Black;
 
-        public bool IsFinish => Status == GameStatus.WinBlack 
-                || Status == GameStatus.WinWhite
-                || Status == GameStatus.Draw;
+        public bool IsFinish => game.State == Domain.GameState.Finish;
+
+        public GameSide? WinSide
+        {
+            get
+            {
+                if (game.WinSide == null)
+                {
+                    return null;
+                }
+
+                return game.WinSide == Domain.Side.White ? GameSide.White : GameSide.Black;
+            }
+        }
+
+        public FinishReason FinishReason
+        {
+            get
+            {
+                switch (game.FinishReason)
+                {
+                    case Domain.FinishReason.Draw:
+                        return FinishReason.Draw;
+                    case Domain.FinishReason.Mate:
+                        return FinishReason.Mate;
+                    case Domain.FinishReason.Surrender:
+                        return FinishReason.Surrender;
+                    case Domain.FinishReason.TimeOver:
+                        return FinishReason.TimeOver;
+                    default:
+                        throw new Exception("finish reason unrecognized " + game.FinishReason);
+                }
+            }
+        }
     }
 }

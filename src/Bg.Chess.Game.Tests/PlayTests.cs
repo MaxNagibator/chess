@@ -1,5 +1,6 @@
 namespace Bg.Chess.Game.Tests
 {
+    using Bg.Chess.Common.Enums;
     using Bg.Chess.Data.Repo;
 
     using Moq;
@@ -19,7 +20,7 @@ namespace Bg.Chess.Game.Tests
             _manager = new GameManager(new TestLoggerFactory());
             
             var mock = new Mock<IGameRepo>();
-            mock.Setup(a => a.SaveGame(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()));
+            mock.Setup(a => a.SaveGame(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<string>()));
             _gameService = new GameService(null, mock.Object, new TestLoggerFactory());
         }
 
