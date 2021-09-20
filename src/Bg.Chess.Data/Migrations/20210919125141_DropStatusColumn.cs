@@ -8,10 +8,10 @@ namespace Bg.Chess.Data.Migrations
         {
             migrationBuilder.Sql(@"
 ALTER TABLE dbo.ChessGame
-	ADD WinSide bit NULL
+	ADD WinSide int NULL
 GO
 ALTER TABLE dbo.ChessGame
-	ADD FinishReason smallint NULL
+	ADD FinishReason int NULL
 GO
 UPDATE dbo.ChessGame
 SET FinishReason = 0
@@ -36,10 +36,10 @@ DROP Column Status
 GO
 
 ALTER TABLE dbo.ChessGame
-	ALTER COLUMN WinSide bit NOT NULL
+	ALTER COLUMN WinSide int NOT NULL
 GO
 ALTER TABLE dbo.ChessGame
-	ALTER COLUMN FinishReason smallint NOT NULL
+	ALTER COLUMN FinishReason int NOT NULL
 GO
 ");
         }

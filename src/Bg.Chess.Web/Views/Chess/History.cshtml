@@ -48,17 +48,19 @@
     }
     @if (game.FinishReason == FinishReason.Mate)
     {
-        <label>Мат</label>
+        <label>Поставлен мат</label>
     }
     else if (game.FinishReason == FinishReason.TimeOver)
     {
-
         <label>Время вышло</label>
     }
     else if (game.FinishReason == FinishReason.Surrender)
     {
-
-        <label>Сдался</label>
+        <label>Признанное поражение</label>
+    }
+    else
+    {
+        <label>@game.FinishReason.ToString()</label>
     }
 </div>
     }

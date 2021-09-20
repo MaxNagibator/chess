@@ -67,7 +67,7 @@
                 search = new Search();
                 search.PlayerId = playerId;
                 search.Status = SearchStatus.InProcess;
-                searchList.Add(search);
+                searchList.Insert(0, search);
 
                 CheckPairPlayer();
             }

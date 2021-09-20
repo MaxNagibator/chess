@@ -22,7 +22,7 @@
 
         List<Move> GetMoves();
         void Surrender(int playerId);
-        FinishReason FinishReason { get; }
+        FinishReason? FinishReason { get; }
         GameSide? WinSide { get; }
     }
 
@@ -194,20 +194,25 @@
             }
         }
 
-        public FinishReason FinishReason
+        public FinishReason? FinishReason
         {
             get
             {
+                if (game.FinishReason == null)
+                {
+                    return null;
+                }
+
                 switch (game.FinishReason)
                 {
                     case Domain.FinishReason.Draw:
-                        return FinishReason.Draw;
+                        return Bg.Chess.Common.Enums.FinishReason.Draw;
                     case Domain.FinishReason.Mate:
-                        return FinishReason.Mate;
+                        return Bg.Chess.Common.Enums.FinishReason.Mate;
                     case Domain.FinishReason.Surrender:
-                        return FinishReason.Surrender;
+                        return Bg.Chess.Common.Enums.FinishReason.Surrender;
                     case Domain.FinishReason.TimeOver:
-                        return FinishReason.TimeOver;
+                        return Bg.Chess.Common.Enums.FinishReason.TimeOver;
                     default:
                         throw new Exception("finish reason unrecognized " + game.FinishReason);
                 }

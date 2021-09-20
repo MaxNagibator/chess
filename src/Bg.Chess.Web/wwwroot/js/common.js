@@ -24,6 +24,11 @@ const PieceTypes = {
     Rook: 'Rook'
 }
 
+const Side = {
+    White: 'White',
+    Black: 'Black'
+}
+
 function GetPieceByNotation(pos) {
     function getTypeByChar(char) {
         switch (char) {

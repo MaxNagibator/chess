@@ -122,7 +122,7 @@
                 return Json(new { error = true, message = "Game not found" });
             }
 
-            string notation = null;
+            string notation;
             List<AvailableMove> moves = null;
             if (game.IsFinish)
             {
@@ -136,6 +136,7 @@
 
             var side = game.WhitePlayerId == playerId ? "White" : "Black";
             var stepSide = game.StepSide == GameSide.White ? "White" : "Black";
+            var winSide = game.WinSide == GameSide.White ? "White" : "Black";
             var finishReason = "";
             if (game.IsFinish)
             {
@@ -164,6 +165,7 @@
                 StepSide = stepSide,
                 IsFinish = game.IsFinish,
                 FinishReason = finishReason,
+                WinSide = winSide,
             });
         }
 

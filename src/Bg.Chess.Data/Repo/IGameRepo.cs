@@ -30,7 +30,7 @@
         public List<ChessGame> GetGames(int playerId)
         {
             var dbGames = _unitOfWork.Context.ChessGames
-                .Where(x => x.BlackPlayerId == playerId || x.WhitePlayerId == playerId).ToList();
+                .Where(x => x.BlackPlayerId == playerId || x.WhitePlayerId == playerId).OrderByDescending(x => x.Id).ToList();
             return dbGames;
         }
 

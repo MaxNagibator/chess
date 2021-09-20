@@ -122,9 +122,13 @@ let game = {
 };
 
 let pawnTransformPieceModalSendRequest;
+let pawnTransformPieceModalDom = null;
+let pawnTransformPieceModal = null;
 function move(pieceType, pieceSide, fromX, fromY, toX, toY) {
-    let pawnTransformPieceModalDom = document.getElementById('pawnTransformPieceModal');
-    let pawnTransformPieceModal = new bootstrap.Modal(pawnTransformPieceModalDom);
+    if (pawnTransformPieceModal == null) {
+        pawnTransformPieceModalDom = document.getElementById('pawnTransformPieceModal');
+        pawnTransformPieceModal = new bootstrap.Modal(pawnTransformPieceModalDom);
+    }
     let sendRequest = function (pawnTransformPiece) {
         SendRequest({
             url: '/Chess/Move',
@@ -165,9 +169,14 @@ function selectPawnTransformPiece(pieceType) {
     pawnTransformPieceModalSendRequest(pieceType);
 }
 
+let surrenderModalDom = null;
+let surrenderModal = null;
+
 function surrenderInitial() {
-    let surrenderModalDom = document.getElementById('surrenderModal');
-    let surrenderModal = new bootstrap.Modal(surrenderModalDom);
+    if (surrenderModal == null) {
+        surrenderModalDom = document.getElementById('surrenderModal');
+        surrenderModal = new bootstrap.Modal(surrenderModalDom);
+    }
     surrenderModal.show();
 }
 
@@ -178,8 +187,6 @@ function surrender() {
         body: {
         },
         success: function (data) {
-            let surrenderModalDom = document.getElementById('surrenderModal');
-            let surrenderModal = new bootstrap.Modal(surrenderModalDom);
             surrenderModal.hide();
 
             let data2 = JSON.parse(data.responseText);
@@ -211,20 +218,25 @@ function initGame(data2) {
     game.mySide = data2.side;
     game.stepSide = data2.stepSide;
     game.status = data2.status;
+    game.isFinish = data2.isFinish;
+    game.finishReason = data2.finishReason;
+    game.winSide = data2.winSide;
 
     let myWinLabel = document.getElementsByClassName('game-my-win')[0];
     let notMyWinLabel = document.getElementsByClassName('game-not-my-win')[0];
     let drawLabel = document.getElementsByClassName('game-draw')[0];
+    let finishReasonLabel = document.getElementsByClassName('game-finish-reason')[0];
     myWinLabel.classList.add('hidden');
     notMyWinLabel.classList.add('hidden');
     drawLabel.classList.add('hidden');
+    finishReasonLabel.classList.add('hidden');
 
     let notMyStepLabel = document.getElementsByClassName('game-not-my-step')[0];
     let myStepLabel = document.getElementsByClassName('game-my-step')[0];
     notMyStepLabel.classList.add('hidden');
     myStepLabel.classList.add('hidden');
 
-    if (game.status == GameStatus.InProgress) {
+    if (game.isFinish == false) {
         document.getElementById('gameBlock').classList.add('game-status-process');
         initField(data2.notation, data2.availableMoves);
         if (game.mySide == game.stepSide) {
@@ -240,22 +252,26 @@ function initGame(data2) {
 
         initField(data2.notation);
 
-        if (game.status == GameStatus.WinWhite) {
-            if (game.mySide == Side.White) {
-                myWinLabel.classList.remove('hidden');
-            } else {
-                notMyWinLabel.classList.remove('hidden');
-            }
-        } else if (game.status == GameStatus.WinBlack) {
-            if (game.mySide == Side.Black) {
-                myWinLabel.classList.remove('hidden');
-            } else {
-                notMyWinLabel.classList.remove('hidden');
-            }
-        } else if (game.status == GameStatus.Draw) {
+        if (game.winSide == null) {
             drawLabel.classList.remove('hidden');
-        }
+        } else {
+            if (game.winSide == game.mySide) {
+                myWinLabel.classList.remove('hidden');
+            } else {
+                notMyWinLabel.classList.remove('hidden');
+            }
 
+            finishReasonLabel.classList.remove('hidden');
+            if (game.finishReason == FinishReason.Mate) {
+                finishReasonLabel.innerHTML = 'Поставлен мат';
+            } else if (game.finishReason == FinishReason.Surrender) {
+                finishReasonLabel.innerHTML = 'Признанное поражение';
+            } else if (game.finishReason == FinishReason.TimeOver) {
+                finishReasonLabel.innerHTML = 'Время закончилось';
+            } else {
+                finishReasonLabel.innerHTML = game.finishReason;
+            }
+        }
     }
 }
 
