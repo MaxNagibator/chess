@@ -221,6 +221,9 @@ function initGame(data2) {
     game.isFinish = data2.isFinish;
     game.finishReason = data2.finishReason;
     game.winSide = data2.winSide;
+    game.availableMoves = data2.availableMoves;
+    game.notation = data2.notation;
+    game.historyMoves = data2.historyMoves;
 
     let myWinLabel = document.getElementsByClassName('game-my-win')[0];
     let notMyWinLabel = document.getElementsByClassName('game-not-my-win')[0];
@@ -238,7 +241,7 @@ function initGame(data2) {
 
     if (game.isFinish == false) {
         document.getElementById('gameBlock').classList.add('game-status-process');
-        initField(data2.notation, data2.availableMoves);
+        initField(game.notation, game.availableMoves);
         if (game.mySide == game.stepSide) {
             checkEnemyStep = -1;
             myStepLabel.classList.remove('hidden');
@@ -250,7 +253,7 @@ function initGame(data2) {
         document.getElementById('gameBlock').classList.remove('game-status-process');
         checkEnemyStep = -1;
 
-        initField(data2.notation);
+        initField(game.notation);
 
         if (game.winSide == null) {
             drawLabel.classList.remove('hidden');
@@ -273,6 +276,39 @@ function initGame(data2) {
             }
         }
     }
+    initHistory(game.historyMoves);
+}
+
+function initHistory(moves) {
+    var historyBlock = document.getElementById('historyBlock');
+    historyBlock.innerHTML = '';
+    for (let i = moves.length - 1; i >= 0; i--) {
+        let move = moves[i];
+        let moveDiv = document.createElement('div');
+        moveDiv.classList.add('history-item');
+        let from = Labels.Horizontal[move.from.x];
+        from += Labels.Vertical[move.from.y];
+        let to = Labels.Horizontal[move.to.x];
+        to += Labels.Vertical[move.to.y];
+        moveDiv.innerHTML = from + '->' + to;
+        historyBlock.appendChild(moveDiv);
+
+        if (game.mySide == game.stepSide && i == moves.length - 1) {
+            let cells = document.getElementsByClassName('column');
+            for (let moveIndex = 0; moveIndex < moves.length; moveIndex++) {
+                for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
+                    if (cells[cellIndex].getAttribute('data-position-x') == move.from.x
+                        && cells[cellIndex].getAttribute('data-position-y') == move.from.y) {
+                        cells[cellIndex].classList.add('piece-is-last-move-from');
+                    }
+                    if (cells[cellIndex].getAttribute('data-position-x') == move.to.x
+                        && cells[cellIndex].getAttribute('data-position-y') == move.to.y) {
+                        cells[cellIndex].classList.add('piece-is-last-move-to');
+                    }
+                }
+            }
+        }
+    }
 }
 
 function initField(notation, availableMoves) {
@@ -292,10 +328,6 @@ function initField(notation, availableMoves) {
     target.classList.add('side-' + game.mySide.toLowerCase());
     let draggables = [];
     let dropZones = [];
-    let labels = {
-        vertical: "12345678",
-        horizontal: "ABCDEFGH"
-    }
 
     function horizontalLabel(borderPos) {
         let divNumber1Line = document.createElement('div');
@@ -309,7 +341,7 @@ function initField(notation, availableMoves) {
             let label = document.createElement('label');
             label.classList.add('field-label');
             if (i != -1 && i != 8) {
-                label.innerHTML = labels.horizontal[i];
+                label.innerHTML = Labels.Horizontal[i];
                 if (borderPos) {
                     div.classList.add('field-border-bottom');
                 } else {
@@ -332,7 +364,7 @@ function initField(notation, availableMoves) {
         }
         let label = document.createElement('label');
         label.classList.add('field-label');
-        label.innerHTML = labels.vertical[7 - rowIndex];
+        label.innerHTML = Labels.Vertical[7 - rowIndex];
         div.appendChild(label);
         divLine.appendChild(div);
     }

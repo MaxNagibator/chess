@@ -15,36 +15,40 @@
     return;
 }
 <script src="~/js/chess.js" asp-append-version="true"></script>
-<div id="gameBlock">
-    <div id="searchBlock" class="game-search">
-        <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру</button>
-        <div class="show-is-search">
-            <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
-            <label>
-                Идёт поиск игры
-                <span id="searchSpan"></span>
-                <span id="searchSpan2"></span>
-            </label>
-            @*<label id="searchTime"></label>*@
+<div>
+    <div id="gameBlock" class="game-block">
+        <div id="searchBlock" class="game-search">
+            <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру</button>
+            <div class="show-is-search">
+                <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
+                <label>
+                    Идёт поиск игры
+                    <span id="searchSpan"></span>
+                    <span id="searchSpan2"></span>
+                </label>
+                @*<label id="searchTime"></label>*@
+            </div>
+        </div>
+        <div id="field" class="game-field">
+
+        </div>
+
+        <div class="game-status">
+            <label class="game-my-step hidden">Ваш ход</label>
+            <label class="game-not-my-step hidden">Ожидайте хода оппонента</label>
+
+            <label class="game-my-win hidden">Вы выиграли</label>
+            <label class="game-not-my-win hidden">Вы проиграли</label>
+            <label class="game-draw hidden">Ничья</label>
+
+            <div></div>
+            <label class="game-finish-reason hidden"></label>
+        </div>
+        <div id="actionBlock" class="game-actions">
+            <button class="btn btn-warning" onclick="surrenderInitial()">Сдаться</button>
         </div>
     </div>
-    <div id="field" class="game-field">
-
-    </div>
-
-    <div class="game-status">
-        <label class="game-my-step hidden">Ваш ход</label>
-        <label class="game-not-my-step hidden">Ожидайте хода оппонента</label>
-
-        <label class="game-my-win hidden">Вы выиграли</label>
-        <label class="game-not-my-win hidden">Вы проиграли</label>
-        <label class="game-draw hidden">Ничья</label>
-        
-        <div></div>
-        <label class="game-finish-reason hidden"></label>
-    </div>
-    <div id="actionBlock" class="game-actions">
-        <button class="btn btn-warning" onclick="surrenderInitial()">Сдаться</button>
+    <div id="historyBlock" class="history-block">
     </div>
 </div>
 

@@ -86,15 +86,22 @@
 }
 
 .column .piece-select {
-    border: 2px solid #FF66F2
+    border: 2px solid #FF66F2;
 }
 
 .piece-move-target-good {
-    border: 2px solid #62EF80
+    border: 2px solid #62EF80;
 }
 
 .piece-move-target-bad {
-    border: 2px solid #ED1F1C
+    border: 2px solid #ED1F1C;
+}
+
+.piece-is-last-move-from {
+    border: 2px solid #FF962D;
+}
+.piece-is-last-move-to {
+    border: 2px solid #FF962D;
 }
 
 .show-is-search {
@@ -138,4 +145,14 @@
 }
 .game-actions {
     display: none;
+}
+
+.game-block {
+    display: inline-block;
+}
+.history-block {
+    display: inline-block;
+    vertical-align: top;
+    max-height: 504px;
+    overflow-y: auto;
 }

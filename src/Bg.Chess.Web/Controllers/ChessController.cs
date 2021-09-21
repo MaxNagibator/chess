@@ -134,6 +134,8 @@
                 moves = game.AvailableMoves();
             }
 
+            var historyMoves = game.GetMoves();
+
             var side = game.WhitePlayerId == playerId ? "White" : "Black";
             var stepSide = game.StepSide == GameSide.White ? "White" : "Black";
             var winSide = game.WinSide == GameSide.White ? "White" : "Black";
@@ -157,10 +159,12 @@
                 }
             }
 
+            // todo сделать DTO для отправки на фронт
             return Json(new
             {
                 Notation = notation,
                 AvailableMoves = moves,
+                HistoryMoves = historyMoves,
                 Side = side,
                 StepSide = stepSide,
                 IsFinish = game.IsFinish,

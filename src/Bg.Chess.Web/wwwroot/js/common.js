@@ -29,6 +29,11 @@ const Side = {
     Black: 'Black'
 }
 
+let Labels = {
+    Vertical: "12345678",
+    Horizontal: "ABCDEFGH"
+}
+
 function GetPieceByNotation(pos) {
     function getTypeByChar(char) {
         switch (char) {
