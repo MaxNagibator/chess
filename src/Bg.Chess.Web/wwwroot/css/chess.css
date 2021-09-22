@@ -3,8 +3,13 @@
     border: solid;
     border-width: 2px;
     border-color: black;
-    display: inline-block;
+    display: none;
 }
+
+    .game-field.side-white,
+    .game-field.side-black {
+        display: inline-block;
+    }
 
     .game-field.side-black {
         transform: rotate( 180deg );
@@ -100,9 +105,14 @@
 .piece-is-last-move-from {
     border: 2px solid #FF962D;
 }
+
 .piece-is-last-move-to {
     border: 2px solid #FF962D;
 }
+
+    .piece-is-last-move-to img {
+        margin: 0px;
+    }
 
 .show-is-search {
     display: none;
@@ -140,19 +150,30 @@
 .game-status-process .game-actions {
     display: block;
 }
+
 .game-status-process .game-search {
     display: none;
 }
+
 .game-actions {
     display: none;
 }
 
-.game-block {
+.field-block {
     display: inline-block;
 }
+
 .history-block {
     display: inline-block;
     vertical-align: top;
     max-height: 504px;
     overflow-y: auto;
+}
+
+.history.history-block {
+    max-height: 404px;
+}
+
+.modal button i {
+    padding: 5px;
 }

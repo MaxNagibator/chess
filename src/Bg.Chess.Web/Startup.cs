@@ -90,10 +90,10 @@ namespace Bg.Chess.Web
             //        .MinimumLevel.Debug().WriteTo.File("YOUR FILE PATH HERE")
             //        .CreateLogger();
 
+            app.UseMigrationsEndPoint();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
             }
             else
             {

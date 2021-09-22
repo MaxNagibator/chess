@@ -9,26 +9,26 @@
 
 @if (!success)
 {
-    <label>Для игры обязательна регистрация с подтверждением почты.</label>
-    <br />
-    <a href="/Identity/Account/Manage/Email">Перейти в настройки почты</a>
+<label>Для игры обязательна регистрация с подтверждением почты.</label>
+<br />
+<a href="/Identity/Account/Manage/Email">Перейти в настройки почты</a>
     return;
 }
 <script src="~/js/chess.js" asp-append-version="true"></script>
-<div>
-    <div id="gameBlock" class="game-block">
-        <div id="searchBlock" class="game-search">
-            <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру</button>
-            <div class="show-is-search">
-                <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
-                <label>
-                    Идёт поиск игры
-                    <span id="searchSpan"></span>
-                    <span id="searchSpan2"></span>
-                </label>
-                @*<label id="searchTime"></label>*@
-            </div>
+<div id="gameBlock" class="game-block">
+    <div id="searchBlock" class="game-search">
+        <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру</button>
+        <div class="show-is-search">
+            <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
+            <label>
+                Идёт поиск игры
+                <span id="searchSpan"></span>
+                <span id="searchSpan2"></span>
+            </label>
+            @*<label id="searchTime"></label>*@
         </div>
+    </div>
+    <div id="fieldBlock" class="field-block">
         <div id="field" class="game-field">
 
         </div>
@@ -89,8 +89,25 @@
                 После нажатия "Признать поражение" игра будет закончена не в вашу пользу
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i>Отмена</button>
                 <button type="button" class="btn btn-sm btn-primary" onclick="surrender()"><i class="fa fa-check"></i>Признать поражение</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i>Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="confirmStartGameModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Соперник найден</h5>
+            </div>
+            <div class="modal-body">
+                Подтвердите начало игры
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-primary" onclick="confirmStart(true)"><i class="fa fa-check"></i>Начать игру</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="confirmStart(false)"><i class="fa fa-times-circle"></i>Отмена</button>
             </div>
         </div>
     </div>

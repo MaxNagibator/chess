@@ -73,17 +73,28 @@ setInterval(function () {
     }, 1000);
 }, 1000);
 
+//сделать обёртку для показа модалок, а то чёто много дублирования
+let confirmStartGameModalDom = null;
+let confirmStartGameModal = null;
 function goConfirmAlert() {
-    let isOk = confirm("Игра найдена! Играем?");
+    if (confirmStartGameModal == null) {
+        confirmStartGameModalDom = document.getElementById('confirmStartGameModal');
+        confirmStartGameModal = new bootstrap.Modal(confirmStartGameModalDom);
+    }
+    confirmStartGameModal.show();
+}
+
+function confirmStart(isOk) {
     if (isOk) {
         SendRequest({
             url: '/Chess/ConfirmSearch',
             data: {
             },
             success: function (data) {
+                checkSearchInProcess = false;
+                confirmStartGameModal.hide();
             },
             always: function (data) {
-                checkSearchInProcess = false;
             }
         });
     } else {
@@ -92,10 +103,11 @@ function goConfirmAlert() {
             data: {
             },
             success: function (data) {
+                checkSearchInProcess = false;
+                confirmStartGameModal.hide();
                 document.getElementById('searchBlock').classList.remove('in-process');
             },
             always: function (data) {
-                checkSearchInProcess = false;
             }
         });
     }
