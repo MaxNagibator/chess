@@ -5,7 +5,7 @@ namespace Bg.Chess.Web.Models
 {
     public class HistoryGameModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public Player WhitePlayer { get; set; }
 

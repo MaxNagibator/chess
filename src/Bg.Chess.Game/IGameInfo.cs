@@ -8,6 +8,7 @@
 
     public interface IGameInfo
     {
+        string Id { get; }
         int WhitePlayerId { get; }
         int BlackPlayerId { get; }
         GameSide StepSide { get; }
@@ -28,6 +29,7 @@
 
     public class GameInfo : IGameInfo
     {
+        public string Id { get; private set; }
         public int WhitePlayerId { get; private set; }
         public int BlackPlayerId { get; private set; }
 
@@ -36,8 +38,9 @@
 
         private Domain.Game game;
 
-        public GameInfo(int whitePlayerId, int blackPlayerId)
+        public GameInfo(string id, int whitePlayerId, int blackPlayerId)
         {
+            Id = id;
             WhitePlayerId = whitePlayerId;
             BlackPlayerId = blackPlayerId;
             game = new Domain.Game();

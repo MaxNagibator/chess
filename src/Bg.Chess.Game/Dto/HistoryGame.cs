@@ -6,7 +6,7 @@
 
     public class HistoryGame
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public FinishReason FinishReason { get; set; }
         public GameSide WinSide { get; set; }
         public List<Move> Moves { get; set; }

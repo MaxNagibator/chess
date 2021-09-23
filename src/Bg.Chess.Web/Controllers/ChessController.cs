@@ -98,13 +98,11 @@
             var playerId = GetPlayerId();
             var game = _searchManager.FindMyPlayingGame(playerId);
             game.Move(playerId, fromX, fromY, toX, toY, pawnTransformPiece);
-            if(game.IsFinish)
-            {
-                _gameService.SaveGame(game);
-            }
+            _gameService.SaveGame(game);
 
             return InitFieldResponse(playerId, game);
         }
+
         [HttpPost]
         public JsonResult Surrender()
         {
@@ -114,7 +112,7 @@
             _gameService.SaveGame(game);
             return InitFieldResponse(playerId, game);
         }
-        
+
         private JsonResult InitFieldResponse(int playerId, IGameInfo game)
         {
             if (game == null)
@@ -194,7 +192,7 @@
             model.Games = games.Select(x =>
                 new HistoryModel.Game
                 {
-                    Id = x.Id,
+                    //Id = x.Id,
                     BlackPlayer = FillPlayer(x.BlackPlayer),
                     WhitePlayer = FillPlayer(x.WhitePlayer),
                     FinishReason = x.FinishReason,
@@ -216,10 +214,9 @@
 
         [HttpGet]
         [Route("/History/{gameId}")]
-        public ActionResult HistoryGame(int gameId)
+        public ActionResult HistoryGame(string gameId)
         {
             var game = _gameService.GetGame(gameId);
-
             var model = new HistoryGameModel
             {
                 Id = game.Id,

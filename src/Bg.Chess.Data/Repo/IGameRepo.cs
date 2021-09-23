@@ -7,8 +7,8 @@
 
     public interface IGameRepo
     {
-        ChessGame GetGame(int gameId);
-        void SaveGame(int id, int whitePlayerId, int blackPlayerId, FinishReason finishReason, GameSide? winSide, string data);
+        ChessGame GetGame(string gameId);
+        void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, string data);
         List<ChessGame> GetGames(int playerId);
     }
 
@@ -21,9 +21,9 @@
             _unitOfWork = unitOfWork;
         }
 
-        public ChessGame GetGame(int gameId)
+        public ChessGame GetGame(string gameId)
         {
-            var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.Id == gameId);
+            var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.LogicalName == gameId);
             return dbGame;
         }
 
@@ -34,18 +34,19 @@
             return dbGames;
         }
 
-        public void SaveGame(int id, int whitePlayerId, int blackPlayerId, FinishReason finishReason, GameSide? winSide, string data)
+        public void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, string data)
         {
-            var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.Id == id);
+            var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.LogicalName == id);
             if (dbGame == null)
             {
                 dbGame = new ChessGame();
                 _unitOfWork.Context.ChessGames.Add(dbGame);
             }
 
+            dbGame.LogicalName = id;
             dbGame.WhitePlayerId = whitePlayerId;
             dbGame.BlackPlayerId = blackPlayerId;
-            dbGame.FinishReason = (int)finishReason;
+            dbGame.FinishReason = (int?)finishReason;
             dbGame.WinSide = (int)winSide;
             dbGame.Data = data;
             _unitOfWork.Context.SaveChanges();

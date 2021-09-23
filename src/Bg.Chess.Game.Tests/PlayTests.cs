@@ -20,8 +20,8 @@ namespace Bg.Chess.Game.Tests
             _manager = new GameManager(new TestLoggerFactory());
             
             var mock = new Mock<IGameRepo>();
-            mock.Setup(a => a.SaveGame(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<string>()));
-            _gameService = new GameService(null, mock.Object, new TestLoggerFactory());
+            mock.Setup(a => a.SaveGame(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<string>()));
+            _gameService = new GameService(null, null, mock.Object, new TestLoggerFactory());
         }
 
         [Test]

@@ -10,11 +10,13 @@ namespace Bg.Chess.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public string LogicalName { get; set; }
+
         public int WhitePlayerId { get; set; }
 
         public int BlackPlayerId { get; set; }
 
-        public int FinishReason { get; set; }
+        public int? FinishReason { get; set; }
 
         public int WinSide { get; set; }
 

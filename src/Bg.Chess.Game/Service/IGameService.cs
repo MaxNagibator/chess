@@ -13,7 +13,7 @@
     public interface IGameService
     {
         public void SaveGame(IGameInfo game);
-        public HistoryGame GetGame(int gameId);
+        public HistoryGame GetGame(string gameId);
         public IEnumerable<HistoryGame> GetGames(int playerId);
     }
 
@@ -21,12 +21,14 @@
     {
         private IGameRepo _gameRepo;
         private IPlayerService _playerService;
+        private IGameManager _gameManager;
         private ILogger _logger;
 
-        public GameService(IPlayerService playerService, IGameRepo gameRepo, ILoggerFactory loggerFactory)
+        public GameService(IGameManager gameManager, IPlayerService playerService, IGameRepo gameRepo, ILoggerFactory loggerFactory)
         {
             _gameRepo = gameRepo;
             _playerService = playerService;
+            _gameManager = gameManager;
             // todo сделать LogSource набор констант
             _logger = loggerFactory.CreateLogger("chess");
         }
@@ -37,10 +39,10 @@
             FillDtoV1(gameDto, game);
 
             string data = JsonConvert.SerializeObject(gameDto);
-            _gameRepo.SaveGame(0, game.WhitePlayerId, game.BlackPlayerId, game.FinishReason.Value, game.WinSide, data);
+            _gameRepo.SaveGame(game.Id, game.WhitePlayerId, game.BlackPlayerId, game.FinishReason, game.WinSide, data);
         }
 
-        public HistoryGame GetGame(int gameId)
+        public HistoryGame GetGame(string gameId)
         {
             var game = _gameRepo.GetGame(gameId);
             var gameDto = JsonConvert.DeserializeObject<SaveGameDtoV1>(game.Data);
@@ -62,7 +64,7 @@
 
             return games.Select(x => new HistoryGame
             {
-                Id = x.Id,
+                //Id = x.,
                 BlackPlayer = new Player { Id = x.BlackPlayerId },
                 WhitePlayer = new Player { Id = x.WhitePlayerId },
                 FinishReason = (FinishReason)x.FinishReason,
