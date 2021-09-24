@@ -10,28 +10,43 @@
     using Bg.Chess.Web.Models;
     using Bg.Chess.Common.Enums;
     using Microsoft.AspNetCore.Authorization;
+    using Bg.Chess.Data.Repo;
 
     [Authorize]
     public class ChessController : BaseController
     {
         private readonly ILogger _logger;
-        private IGameManager _searchManager;
+        private IGameManager _gameManager;
         private IPlayerService _playerService;
         private IUserService _userService;
         private IGameService _gameService;
+        private static object lockObject = new object();
 
         public ChessController(
             ILoggerFactory loggerFactory,
-            IGameManager searchManager,
+            IGameManager gameManager,
             IPlayerService playerService,
             IUserService userService,
             IGameService gameService) : base(loggerFactory, userService)
         {
             _logger = loggerFactory.CreateLogger("chess");
-            _searchManager = searchManager;
+            _gameManager = gameManager;
             _playerService = playerService;
             _userService = userService;
             _gameService = gameService;
+
+            // todo костылища страшный
+            if (!gameManager.IsInit)
+            {
+                lock (lockObject)
+                {
+                    if (!gameManager.IsInit)
+                    {
+                        var games = _gameService.GetNotFinishGames();
+                        gameManager.Init(games);
+                    }
+                }
+            }
         }
 
         [HttpGet]
@@ -39,7 +54,7 @@
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _userService.GetUser(userId);
-            
+
             return View();
         }
 
@@ -56,7 +71,7 @@
             }
 
             var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
-            _searchManager.StartSearch(player.Id);
+            _gameManager.StartSearch(player.Id);
             return Json(new { error = false });
         }
 
@@ -64,7 +79,7 @@
         public JsonResult CheckSearch()
         {
             var playerId = GetPlayerId();
-            var status = _searchManager.Check(playerId);
+            var status = _gameManager.Check(playerId);
             return Json(new { status = status.ToString() });
         }
 
@@ -72,7 +87,7 @@
         public JsonResult ConfirmSearch()
         {
             var playerId = GetPlayerId();
-            var status = _searchManager.Confirm(playerId);
+            var status = _gameManager.Confirm(playerId);
             return Json(new { status = status.ToString() });
         }
 
@@ -80,7 +95,7 @@
         public JsonResult StopSearch()
         {
             var playerId = GetPlayerId();
-            _searchManager.StopSearch(playerId);
+            _gameManager.StopSearch(playerId);
             return Json(new { error = false });
         }
 
@@ -88,7 +103,7 @@
         public JsonResult GetGame()
         {
             var playerId = GetPlayerId();
-            var game = _searchManager.FindMyPlayingGame(playerId);
+            var game = _gameManager.FindMyPlayingGame(playerId);
             return InitFieldResponse(playerId, game);
         }
 
@@ -96,7 +111,7 @@
         public JsonResult Move(int fromX, int fromY, int toX, int toY, string pawnTransformPiece)
         {
             var playerId = GetPlayerId();
-            var game = _searchManager.FindMyPlayingGame(playerId);
+            var game = _gameManager.FindMyPlayingGame(playerId);
             game.Move(playerId, fromX, fromY, toX, toY, pawnTransformPiece);
             _gameService.SaveGame(game);
 
@@ -107,7 +122,7 @@
         public JsonResult Surrender()
         {
             var playerId = GetPlayerId();
-            var game = _searchManager.FindMyPlayingGame(playerId);
+            var game = _gameManager.FindMyPlayingGame(playerId);
             game.Surrender(playerId);
             _gameService.SaveGame(game);
             return InitFieldResponse(playerId, game);
@@ -160,6 +175,7 @@
             // todo сделать DTO для отправки на фронт
             return Json(new
             {
+                Id = game.Id,
                 Notation = notation,
                 AvailableMoves = moves,
                 HistoryMoves = historyMoves,
@@ -175,7 +191,7 @@
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var player = _playerService.FindPlayerByUserId(userId);
-            if(player == null)
+            if (player == null)
             {
                 throw new BusinessException("Ваш игровой профиль не готов");
             }
@@ -192,7 +208,7 @@
             model.Games = games.Select(x =>
                 new HistoryModel.Game
                 {
-                    //Id = x.Id,
+                    Id = x.Id,
                     BlackPlayer = FillPlayer(x.BlackPlayer),
                     WhitePlayer = FillPlayer(x.WhitePlayer),
                     FinishReason = x.FinishReason,
@@ -241,10 +257,10 @@
                 dto.AdditionalMove = FillMove(x.AdditionalMove);
                 if (x.KillEnemy != null)
                 {
-                    dto.KillEnemy = x.KillEnemy;
+                    dto.KillEnemy = x.KillEnemy.GetNotation();
 
                 }
-                dto.Runner = x.Runner;
+                dto.Runner = x.Runner.GetNotation();
                 return dto;
             }).ToList();
 
@@ -254,7 +270,7 @@
 
         private HistoryGameModel.Move FillMove(Bg.Chess.Game.Move x)
         {
-            if(x == null)
+            if (x == null)
             {
                 return null;
             }

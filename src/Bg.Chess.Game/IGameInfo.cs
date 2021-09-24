@@ -150,28 +150,24 @@
 
                 AdditionalMove = Init(move.AdditionalMove),
                 KillEnemy = FillDtoPiece(move.KillEnemy),
-                Runner = FillDtoPiece(move.Runner),
             };
 
             return dto;
         }
 
-        private string FillDtoPiece(Domain.Piece piece)
+        private Piece FillDtoPiece(Domain.Piece piece)
         {
             if (piece == null)
             {
                 return null;
             }
 
-            var pieceName = piece.Type.ShortName;
-            if (piece.Side == Domain.Side.White)
+            return new Piece
             {
-                return pieceName.ToString().ToUpper();
-            }
-            else
-            {
-                return pieceName.ToString();
-            }
+                Side = piece.Side == Domain.Side.White ? GameSide.White : GameSide.Black,
+                TypeName = piece.Type.Name,
+                TypeShortName = piece.Type.ShortName.ToString(),
+            };
         }
 
         public void Surrender(int playerId)

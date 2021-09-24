@@ -15,9 +15,9 @@ namespace Bg.Chess.Web.Models
 
         public string Positions { get; set; }
 
-        public FinishReason FinishReason { get; set; }
+        public FinishReason? FinishReason { get; set; }
 
-        public GameSide WinSide { get; set; }
+        public GameSide? WinSide { get; set; }
 
         public class Move
         {

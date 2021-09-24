@@ -18,7 +18,7 @@ namespace Bg.Chess.Data
 
         public int? FinishReason { get; set; }
 
-        public int WinSide { get; set; }
+        public int? WinSide { get; set; }
 
         public string Data { get; set; }
     }

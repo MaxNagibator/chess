@@ -10,6 +10,7 @@
         ChessGame GetGame(string gameId);
         void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, string data);
         List<ChessGame> GetGames(int playerId);
+        List<ChessGame> GetNotFinishGames();
     }
 
     public class GameRepo : IGameRepo
@@ -34,6 +35,11 @@
             return dbGames;
         }
 
+        public List<ChessGame> GetNotFinishGames()
+        {
+            return _unitOfWork.Context.ChessGames.Where(x => x.FinishReason == null).ToList();
+        }
+
         public void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, string data)
         {
             var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.LogicalName == id);
@@ -47,7 +53,7 @@
             dbGame.WhitePlayerId = whitePlayerId;
             dbGame.BlackPlayerId = blackPlayerId;
             dbGame.FinishReason = (int?)finishReason;
-            dbGame.WinSide = (int)winSide;
+            dbGame.WinSide = (int?)winSide;
             dbGame.Data = data;
             _unitOfWork.Context.SaveChanges();
         }

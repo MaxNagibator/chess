@@ -11,13 +11,13 @@ namespace Bg.Chess.Web.Models
 
         public class Game
         {
-            public int Id { get; set; }
+            public string Id { get; set; }
 
             public Player WhitePlayer { get; set; }
 
             public Player BlackPlayer { get; set; }
 
-            public FinishReason FinishReason { get; set; }
+            public FinishReason? FinishReason { get; set; }
 
             public GameSide? WinSide { get; set; }
         }

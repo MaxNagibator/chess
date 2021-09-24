@@ -227,6 +227,7 @@ function goGame(alwaysCallback) {
 }
 
 function initGame(data2) {
+    game.id = data2.id;
     game.mySide = data2.side;
     game.stepSide = data2.stepSide;
     game.status = data2.status;
@@ -250,6 +251,11 @@ function initGame(data2) {
     let myStepLabel = document.getElementsByClassName('game-my-step')[0];
     notMyStepLabel.classList.add('hidden');
     myStepLabel.classList.add('hidden');
+
+
+    let gameLink = document.getElementById('gameLink');
+    gameLink.classList.remove('hidden');
+    gameLink.href = '/History/' + game.id;
 
     if (game.isFinish == false) {
         document.getElementById('gameBlock').classList.add('game-status-process');

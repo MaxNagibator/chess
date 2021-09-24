@@ -1,5 +1,6 @@
 ﻿namespace Bg.Chess.Game
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -15,6 +16,7 @@
         public void SaveGame(IGameInfo game);
         public HistoryGame GetGame(string gameId);
         public IEnumerable<HistoryGame> GetGames(int playerId);
+        List<IGameInfo> GetNotFinishGames();
     }
 
     public class GameService : IGameService
@@ -51,8 +53,8 @@
             gameInfo.WhitePlayer = _playerService.GetPlayer(game.WhitePlayerId);
             gameInfo.BlackPlayer = _playerService.GetPlayer(game.BlackPlayerId);
 
-            gameInfo.FinishReason = (FinishReason)game.FinishReason;
-            gameInfo.WinSide = (GameSide)game.WinSide;
+            gameInfo.FinishReason = (FinishReason?)game.FinishReason;
+            gameInfo.WinSide = (GameSide?)game.WinSide;
 
             FillGameFromDtoV1(gameInfo, gameDto);
             return gameInfo;
@@ -80,10 +82,11 @@
                 dto.AdditionalMove = FillDtoMove(x.AdditionalMove);
                 if (x.KillEnemy != null)
                 {
-                    dto.KillEnemy =x.KillEnemy;
+                    dto.KillEnemy = x.KillEnemy.GetNotation();
 
                 }
-                dto.Runner = x.Runner;
+
+                dto.Runner = x.Runner.GetNotation();
                 return dto;
             }).ToList();
 
@@ -122,15 +125,50 @@
                 dto.AdditionalMove = FillMove(x.AdditionalMove);
                 if (x.KillEnemy != null)
                 {
-                    dto.KillEnemy = x.KillEnemy;
+                    dto.KillEnemy = GetPieceByNotation(x.KillEnemy);
 
                 }
-                dto.Runner = x.Runner;
+                dto.Runner = GetPieceByNotation(x.Runner);
                 return dto;
             }).ToList();
 
             game.Positions = dto.Positions;
         }
+
+        private Piece GetPieceByNotation(string piece)
+        {
+            var toUpper = piece.ToUpper();
+
+            var type = GetTypeByChar(toUpper);
+            var side = piece == toUpper ? GameSide.White : GameSide.Black;
+            return new Piece
+            {
+                TypeName = type,
+                TypeShortName = piece,
+                Side = side,
+            };
+        }
+
+        private string GetTypeByChar(string piece)
+        {
+            switch (piece) {
+                case "R":
+                    return "Rook";
+                case "N":
+                    return "Knight";
+                case "B":
+                    return "Bishop";
+                case "Q":
+                    return "Queen";
+                case "K":
+                    return "King";
+                case "P":
+                    return "Pawn";
+                default:
+                    throw new Exception("type not recognized: " + piece);
+            }
+        }
+
 
         private Move FillMove(SaveGameDtoV1.Move move)
         {
@@ -153,6 +191,29 @@
                 },
 
             };
+        }
+
+        public List<IGameInfo> GetNotFinishGames()
+        {
+            var games = new List<IGameInfo>();
+            var dbGames = _gameRepo.GetNotFinishGames();
+            foreach (var dbGame in dbGames)
+            {
+                var game = new GameInfo(dbGame.LogicalName, dbGame.WhitePlayerId, dbGame.BlackPlayerId);
+                var gameDto = JsonConvert.DeserializeObject<SaveGameDtoV1>(dbGame.Data);
+                var gameInfo = new HistoryGame();
+                FillGameFromDtoV1(gameInfo, gameDto);
+                for (int i = 0; i < gameInfo.Moves.Count; i++)
+                {
+                    var move = gameInfo.Moves[i]; 
+
+                    var pawnTransformPiece = move.Runner.TypeName == "Pawn" ? move.AdditionalMove?.Runner.TypeName : null;
+                    game.Move(i % 2 == 0 ? dbGame.WhitePlayerId : dbGame.BlackPlayerId, move.From.X, move.From.Y, move.To.X, move.To.Y, pawnTransformPiece);
+                }
+                games.Add(game);
+            }
+
+            return games;
         }
     }
 }

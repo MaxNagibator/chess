@@ -18,12 +18,12 @@
         /// <summary>
         /// Кто ходил.
         /// </summary>
-        public string Runner { get; set; }
+        public Piece Runner { get; set; }
 
         /// <summary>
         /// Если после хода умерла вражеская фигура.
         /// </summary>
-        public string KillEnemy { get; set; }
+        public Piece KillEnemy { get; set; }
 
         /// <summary>
         /// При ходе короля, двигалась и ладья, но это один.

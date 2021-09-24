@@ -5,11 +5,16 @@
     using System.Linq;
 
     using Bg.Chess.Common.Enums;
+    using Bg.Chess.Data.Repo;
 
     using Microsoft.Extensions.Logging;
 
+    using Newtonsoft.Json;
+
     public interface IGameManager
     {
+        bool IsInit { get; }
+        void Init(List<IGameInfo> games);
         void StartSearch(int playerId);
         void StopSearch(int playerId);
         SearchStatus Check(int playerId);
@@ -20,7 +25,8 @@
     public class GameManager : IGameManager
     {
         private ILogger _logger;
-        private List<IGameInfo> games = new List<IGameInfo>();
+        private IGameRepo _gameRepo;
+        private List<IGameInfo> _games;
 
         public GameManager(ILoggerFactory loggerFactory)
         {
@@ -43,6 +49,15 @@
 
         private List<Search> searchList = new List<Search>();
 
+        public bool IsInit { get; private set; }
+
+        public void Init(List<IGameInfo> games)
+        {
+            _games = games;
+            IsInit = true;
+        }
+
+
         public void StartSearch(int playerId)
         {
             _logger.LogInformation("Search Start [player=" + playerId + "]");
@@ -56,7 +71,7 @@
                     return;
                 }
 
-                var gameInProcess = games.Any(x => x.IsMyGame(playerId) && !x.IsFinish);
+                var gameInProcess = _games.Any(x => x.IsMyGame(playerId) && !x.IsFinish);
                 if (gameInProcess)
                 {
                     throw new BusinessException("Существует незаконценная игра, поиск невозможен");
@@ -134,7 +149,7 @@
                     }
 
                     IGameInfo game = new GameInfo(search.GameId, whitePlayerId, blackPlayerId);
-                    games.Add(game);
+                    _games.Add(game);
                 }
                 else
                 {
@@ -172,8 +187,9 @@
 
         public IGameInfo FindMyPlayingGame(int playerId)
         {
-            var gameInProcess = games.LastOrDefault(x => x.IsMyGame(playerId));
+            var gameInProcess = _games.LastOrDefault(x => x.IsMyGame(playerId));
             return gameInProcess;
         }
+
     }
 }
