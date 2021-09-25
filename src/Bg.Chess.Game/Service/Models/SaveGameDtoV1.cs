@@ -47,11 +47,6 @@
             /// По вертикали.
             /// </summary>
             public int Y { get; set; }
-
-            /// <summary>
-            /// Фигура.
-            /// </summary>
-            public string Piece { get; set; }
         }
     }
 }

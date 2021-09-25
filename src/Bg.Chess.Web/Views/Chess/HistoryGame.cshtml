@@ -8,11 +8,11 @@
 
 <h2>
     Игра @Model.Id
-
+    <br />
     @Model.WhitePlayer.Name VS @Model.BlackPlayer.Name
 </h2>
 
-<div id="field2" class="game-field">
+<div id="field2" class="game-field" style="display: inline-block;">
      
 </div>
 <div class="history-block history">
@@ -32,6 +32,7 @@
 
         let notationParts = notation.split(' ');
         let pieceLocation = notationParts[0];
+        console.log(pieceLocation);
         let pieceLocationLines = pieceLocation.split('/');
         let cellColorIndex = 0;
         var target = document.querySelector("#field2");

@@ -66,11 +66,11 @@
 
             return games.Select(x => new HistoryGame
             {
-                //Id = x.,
+                Id = x.LogicalName,
                 BlackPlayer = new Player { Id = x.BlackPlayerId },
                 WhitePlayer = new Player { Id = x.WhitePlayerId },
-                FinishReason = (FinishReason)x.FinishReason,
-                WinSide = (GameSide)x.WinSide,
+                FinishReason = (FinishReason?)x.FinishReason,
+                WinSide = (GameSide?)x.WinSide,
             }).ToList();
         }
 
@@ -86,7 +86,6 @@
 
                 }
 
-                dto.Runner = x.Runner.GetNotation();
                 return dto;
             }).ToList();
 
@@ -103,6 +102,7 @@
 
             return new SaveGameDtoV1.Move()
             {
+                Runner = move.Runner.GetNotation(),
                 From = move.From == null ? null : new SaveGameDtoV1.Position
                 {
                     X = move.From.X,
@@ -128,7 +128,6 @@
                     dto.KillEnemy = GetPieceByNotation(x.KillEnemy);
 
                 }
-                dto.Runner = GetPieceByNotation(x.Runner);
                 return dto;
             }).ToList();
 
@@ -179,6 +178,7 @@
 
             return new Move()
             {
+                Runner = GetPieceByNotation(move.Runner),
                 From = move.From == null ? null : new Position
                 {
                     X = move.From.X,
@@ -207,7 +207,7 @@
                 {
                     var move = gameInfo.Moves[i]; 
 
-                    var pawnTransformPiece = move.Runner.TypeName == "Pawn" ? move.AdditionalMove?.Runner.TypeName : null;
+                    var pawnTransformPiece = move.Runner.TypeName == "Pawn" ? move.AdditionalMove?.Runner.TypeName.ToLower() : null;
                     game.Move(i % 2 == 0 ? dbGame.WhitePlayerId : dbGame.BlackPlayerId, move.From.X, move.From.Y, move.To.X, move.To.Y, pawnTransformPiece);
                 }
                 games.Add(game);

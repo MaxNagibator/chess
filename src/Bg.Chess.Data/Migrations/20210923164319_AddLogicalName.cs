@@ -11,6 +11,10 @@ namespace Bg.Chess.Data.Migrations
                 table: "ChessGame",
                 type: "nvarchar(max)",
                 nullable: true);
+
+            migrationBuilder.Sql(@"
+UPDATE dbo.ChessGame
+SET LogicalName = '20210901000000'+cast(id as nvarchar(max))");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

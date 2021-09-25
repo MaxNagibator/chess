@@ -150,6 +150,7 @@
 
                 AdditionalMove = Init(move.AdditionalMove),
                 KillEnemy = FillDtoPiece(move.KillEnemy),
+                Runner = FillDtoPiece(move.Runner),
             };
 
             return dto;

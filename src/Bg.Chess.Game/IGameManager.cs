@@ -108,6 +108,10 @@
             var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
             if (search == null)
             {
+                if(_games.Any(x=>x.IsFinish == false && x.IsMyGame(playerId)))
+                {
+                    return SearchStatus.Finish;
+                }
                 return SearchStatus.NotFound;
             }
 
