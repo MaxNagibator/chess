@@ -26,10 +26,11 @@ const PieceTypes = {
 
 const Side = {
     White: 'White',
-    Black: 'Black'
+    Black: 'Black'.,
+    Spectator: 'Spectator'
 }
 
-let Labels = {
+const Labels = {
     Vertical: "12345678",
     Horizontal: "ABCDEFGH"
 }

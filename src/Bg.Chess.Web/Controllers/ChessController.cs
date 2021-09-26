@@ -260,7 +260,6 @@
                     dto.KillEnemy = x.KillEnemy.GetNotation();
 
                 }
-                dto.Runner = x.Runner.GetNotation();
                 return dto;
             }).ToList();
 
@@ -276,7 +275,8 @@
             }
             return new HistoryGameModel.Move()
             {
-                From = new HistoryGameModel.Position
+                Runner = x.Runner.GetNotation(),
+                From = x.From == null ? null : new HistoryGameModel.Position
                 {
                     X = x.From.X,
                     Y = x.From.Y,
