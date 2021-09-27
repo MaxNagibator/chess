@@ -7,8 +7,8 @@ namespace Bg.Chess.Game.Tests
     public class SearchGameTests
     {
         private IGameManager _manager;
-        private int _player1 = 217;
-        private int _player2 = 999;
+        private Player _player1 = new Player { Id = 217 };
+        private Player _player2 = new Player { Id = 999 };
 
         [SetUp]
         public void SetUp()
@@ -24,7 +24,7 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void CheckStateWithoutSearchTest()
         {
-            var state = _manager.Check(_player1);
+            var state = _manager.Check(_player1.Id);
             Assert.AreEqual(SearchStatus.NotFound, state);
         }
 
@@ -32,7 +32,7 @@ namespace Bg.Chess.Game.Tests
         public void CheckStateAfterStartSearchTest()
         {
             _manager.StartSearch(_player1);
-            var state = _manager.Check(_player1);
+            var state = _manager.Check(_player1.Id);
             Assert.AreEqual(SearchStatus.InProcess, state);
         }
 
@@ -41,8 +41,8 @@ namespace Bg.Chess.Game.Tests
         {
             _manager.StartSearch(_player1);
             _manager.StartSearch(_player2);
-            var state1 = _manager.Check(_player1);
-            var state2 = _manager.Check(_player2);
+            var state1 = _manager.Check(_player1.Id);
+            var state2 = _manager.Check(_player2.Id);
             Assert.AreEqual(SearchStatus.NeedConfirm, state1);
             Assert.AreEqual(SearchStatus.NeedConfirm, state2);
         }
@@ -58,9 +58,9 @@ namespace Bg.Chess.Game.Tests
 
             var confirmPlayer = confirmerNumber == 1 ? _player1 : _player2;
             var anotherPlayer = confirmerNumber == 1 ? _player2 : _player1;
-            _manager.Confirm(confirmPlayer);
-            var state1 = _manager.Check(confirmPlayer);
-            var state2 = _manager.Check(anotherPlayer);
+            _manager.Confirm(confirmPlayer.Id);
+            var state1 = _manager.Check(confirmPlayer.Id);
+            var state2 = _manager.Check(anotherPlayer.Id);
             Assert.AreEqual(SearchStatus.NeedConfirmOpponent, state1);
             Assert.AreEqual(SearchStatus.NeedConfirm, state2);
         }
@@ -71,10 +71,10 @@ namespace Bg.Chess.Game.Tests
             _manager.StartSearch(_player1);
             _manager.StartSearch(_player2);
 
-            var state1a = _manager.Confirm(_player1);
-            var state2a = _manager.Confirm(_player2);
-            var state1b = _manager.Check(_player1);
-            var state2b = _manager.Check(_player2);
+            var state1a = _manager.Confirm(_player1.Id);
+            var state2a = _manager.Confirm(_player2.Id);
+            var state1b = _manager.Check(_player1.Id);
+            var state2b = _manager.Check(_player2.Id);
             Assert.AreEqual(SearchStatus.NeedConfirmOpponent, state1a);
             Assert.AreEqual(SearchStatus.Finish, state2a);
             Assert.AreEqual(SearchStatus.Finish, state1b);

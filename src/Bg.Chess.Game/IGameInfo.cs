@@ -9,8 +9,8 @@
     public interface IGameInfo
     {
         string Id { get; }
-        int WhitePlayerId { get; }
-        int BlackPlayerId { get; }
+        Player WhitePlayer { get; }
+        Player BlackPlayer { get; }
         GameSide StepSide { get; }
         bool IsMyGame(int playerId);
 
@@ -30,19 +30,19 @@
     public class GameInfo : IGameInfo
     {
         public string Id { get; private set; }
-        public int WhitePlayerId { get; private set; }
-        public int BlackPlayerId { get; private set; }
+        public Player WhitePlayer { get; private set; }
+        public Player BlackPlayer { get; private set; }
 
         public bool whiteConfirm;
         public bool blackConfirm;
 
         private Domain.Game game;
 
-        public GameInfo(string id, int whitePlayerId, int blackPlayerId)
+        public GameInfo(string id, Player whitePlayer, Player blackPlayer)
         {
             Id = id;
-            WhitePlayerId = whitePlayerId;
-            BlackPlayerId = blackPlayerId;
+            WhitePlayer = whitePlayer;
+            BlackPlayer = blackPlayer;
             game = new Domain.Game();
             game.Init();
 
@@ -67,7 +67,7 @@
 
         public bool IsMyGame(int playerId)
         {
-            return BlackPlayerId == playerId || WhitePlayerId == playerId;
+            return BlackPlayer.Id == playerId || WhitePlayer.Id == playerId;
         }
 
         /// <summary>
@@ -90,11 +90,11 @@
         private Domain.Side GetSide(int playerId)
         {
             Domain.Side side;
-            if (WhitePlayerId == playerId)
+            if (WhitePlayer.Id == playerId)
             {
                 side = Domain.Side.White;
             }
-            else if (BlackPlayerId == playerId)
+            else if (BlackPlayer.Id == playerId)
             {
                 side = Domain.Side.Black;
             }

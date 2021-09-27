@@ -41,7 +41,7 @@
             FillDtoV1(gameDto, game);
 
             string data = JsonConvert.SerializeObject(gameDto);
-            _gameRepo.SaveGame(game.Id, game.WhitePlayerId, game.BlackPlayerId, game.FinishReason, game.WinSide, data);
+            _gameRepo.SaveGame(game.Id, game.WhitePlayer.Id, game.BlackPlayer.Id, game.FinishReason, game.WinSide, data);
         }
 
         public HistoryGame GetGame(string gameId)
@@ -197,9 +197,13 @@
         {
             var games = new List<IGameInfo>();
             var dbGames = _gameRepo.GetNotFinishGames();
+
+            var playerIds = dbGames.Select(x => x.WhitePlayerId).Distinct().ToList();
+            playerIds.AddRange(dbGames.Select(x => x.BlackPlayerId).Distinct().ToList());
+            var players = playerIds.ToDictionary(x => x, x => _playerService.GetPlayer(x));
             foreach (var dbGame in dbGames)
             {
-                var game = new GameInfo(dbGame.LogicalName, dbGame.WhitePlayerId, dbGame.BlackPlayerId);
+                var game = new GameInfo(dbGame.LogicalName, players[dbGame.WhitePlayerId], players[dbGame.BlackPlayerId]);
                 var gameDto = JsonConvert.DeserializeObject<SaveGameDtoV1>(dbGame.Data);
                 var gameInfo = new HistoryGame();
                 FillGameFromDtoV1(gameInfo, gameDto);

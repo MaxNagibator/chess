@@ -71,7 +71,7 @@
             }
 
             var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
-            _gameManager.StartSearch(player.Id);
+            _gameManager.StartSearch(player);
             return Json(new { error = false });
         }
 
@@ -149,7 +149,7 @@
 
             var historyMoves = game.GetMoves();
 
-            var side = game.WhitePlayerId == playerId ? "White" : "Black";
+            var side = game.WhitePlayer.Id == playerId ? "White" : "Black";
             var stepSide = game.StepSide == GameSide.White ? "White" : "Black";
             var winSide = game.WinSide == GameSide.White ? "White" : "Black";
             var finishReason = "";
@@ -176,6 +176,7 @@
             return Json(new
             {
                 Id = game.Id,
+                EnemyName = game.WhitePlayer.Id == playerId ? game.BlackPlayer.Name : game.WhitePlayer.Name,
                 Notation = notation,
                 AvailableMoves = moves,
                 HistoryMoves = historyMoves,

@@ -15,7 +15,7 @@
     {
         bool IsInit { get; }
         void Init(List<IGameInfo> games);
-        void StartSearch(int playerId);
+        void StartSearch(Player player);
         void StopSearch(int playerId);
         SearchStatus Check(int playerId);
         SearchStatus Confirm(int playerId);
@@ -35,12 +35,8 @@
 
         private class Search
         {
-            public int PlayerId { get; set; }
+            public Player Player { get; set; }
             public SearchStatus Status { get; set; }
-
-            /// <summary>
-            /// В случае когда два игрока нашлись для игры, заполняется это поле
-            /// </summary>
             public string GameId { get; set; }
             public DateTime? GameStart { get; set; }
         }
@@ -58,20 +54,20 @@
         }
 
 
-        public void StartSearch(int playerId)
+        public void StartSearch(Player player)
         {
-            _logger.LogInformation("Search Start [player=" + playerId + "]");
+            _logger.LogInformation("Search Start [player=" + player.Id + "]");
 
             lock (lockSearchList)
             {
-                var search = searchList.FirstOrDefault(x => x.PlayerId == playerId && x.Status != SearchStatus.Finish);
+                var search = searchList.FirstOrDefault(x => x.Player.Id == player.Id && x.Status != SearchStatus.Finish);
                 if (search != null)
                 {
                     _logger.LogInformation("Search in process");
                     return;
                 }
 
-                var gameInProcess = _games.Any(x => x.IsMyGame(playerId) && !x.IsFinish);
+                var gameInProcess = _games.Any(x => x.IsMyGame(player.Id) && !x.IsFinish);
                 if (gameInProcess)
                 {
                     throw new BusinessException("Существует незаконценная игра, поиск невозможен");
@@ -80,7 +76,7 @@
                 _logger.LogInformation("Search Start Success");
 
                 search = new Search();
-                search.PlayerId = playerId;
+                search.Player = player;
                 search.Status = SearchStatus.InProcess;
                 searchList.Insert(0, search);
 
@@ -105,7 +101,7 @@
         public SearchStatus Check(int playerId)
         {
             _logger.LogInformation("Search Check [player=" + playerId + "]");
-            var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
+            var search = searchList.FirstOrDefault(x => x.Player.Id == playerId);
             if (search == null)
             {
                 if(_games.Any(x=>x.IsFinish == false && x.IsMyGame(playerId)))
@@ -121,7 +117,7 @@
         public SearchStatus Confirm(int playerId)
         {
             _logger.LogInformation("Search Confirm [player=" + playerId + "]");
-            var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
+            var search = searchList.FirstOrDefault(x => x.Player.Id == playerId);
             if (search == null)
             {
                 throw new BusinessException("Поиск игры отсутствует");
@@ -129,7 +125,7 @@
 
             if (search.Status == SearchStatus.NeedConfirm)
             {
-                var twoSearch = searchList.First(x => x.GameId == search.GameId && x.PlayerId != search.PlayerId);
+                var twoSearch = searchList.First(x => x.GameId == search.GameId && x.Player.Id != search.Player.Id);
                 if(twoSearch.Status == SearchStatus.NeedConfirmOpponent)
                 {
                     _logger.LogInformation("Two Player Confirm Game Start");
@@ -139,20 +135,20 @@
                     twoSearch.GameStart = gameStartDate;
                     twoSearch.Status = SearchStatus.Finish;
 
-                    int whitePlayerId;
-                    int blackPlayerId;
+                    Player whitePlayer;
+                    Player blackPlayer;
                     if (DateTime.Now.Millisecond % 2 == 0)
                     {
-                        whitePlayerId = searchList[1].PlayerId;
-                        blackPlayerId = searchList[0].PlayerId;
+                        whitePlayer = searchList[1].Player;
+                        blackPlayer = searchList[0].Player;
                     }
                     else
                     {
-                        blackPlayerId = searchList[1].PlayerId;
-                        whitePlayerId = searchList[0].PlayerId;
+                        blackPlayer = searchList[1].Player;
+                        whitePlayer = searchList[0].Player;
                     }
 
-                    IGameInfo game = new GameInfo(search.GameId, whitePlayerId, blackPlayerId);
+                    IGameInfo game = new GameInfo(search.GameId, whitePlayer, blackPlayer);
                     _games.Add(game);
                 }
                 else
@@ -168,7 +164,7 @@
         public void StopSearch(int playerId)
         {
             _logger.LogInformation("Search Stop [player=" + playerId + "]");
-            var search = searchList.FirstOrDefault(x => x.PlayerId == playerId);
+            var search = searchList.FirstOrDefault(x => x.Player.Id == playerId);
             if (search == null)
             {
                 return;
@@ -180,7 +176,7 @@
 
             lock (lockSearchList)
             {
-                var twoSearch = searchList.FirstOrDefault(x => x.GameId == search.GameId && x.PlayerId != search.PlayerId);
+                var twoSearch = searchList.FirstOrDefault(x => x.GameId == search.GameId && x.Player.Id != search.Player.Id);
                 if (twoSearch != null)
                 {
                     twoSearch.Status = SearchStatus.InProcess;

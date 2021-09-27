@@ -54,9 +54,9 @@
     }
     function initGame(data2) {
         game = {
+            mySide: Side.Spectator,
         };
         game.id = data2.id;
-        game.mySide = data2.side;
         game.stepSide = data2.stepSide;
         game.status = data2.status;
         game.isFinish = data2.isFinish;
@@ -71,21 +71,28 @@
             gameIsFinish = true;
         }
 
-        initField("field2", game.notation, null, Side.White);
-        initHistory('historyBlock', game.historyMoves);
+        initField("field2", game);
+        initHistory('historyBlock', game);
+    }
+
+    let checkEnemyStepInProcess = false;;
+
+    function CheckGame() {
+        if (gameIsFinish) {
+            return;
+        }
+
+        checkEnemyStepInProcess = true;
+
+        goGame(function () {
+            checkEnemyStepInProcess = false;
+        });
     }
 
     window.onload = function () {
-        let checkEnemyStepInProcess = false;
+        CheckGame();
         setInterval(function () {
-            if (gameIsFinish) {
-                return;
-            }
-            checkEnemyStepInProcess = true;
-
-            goGame(function () {
-                checkEnemyStepInProcess = false;
-            });
+            CheckGame();
         }, 5000);
     }
 </script>

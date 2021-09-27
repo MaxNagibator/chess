@@ -237,6 +237,7 @@ function initGame(data2) {
     game.availableMoves = data2.availableMoves;
     game.notation = data2.notation;
     game.historyMoves = data2.historyMoves;
+    game.enemyName = data2.enemyName;
 
     let myWinLabel = document.getElementsByClassName('game-my-win')[0];
     let notMyWinLabel = document.getElementsByClassName('game-not-my-win')[0];
@@ -247,11 +248,15 @@ function initGame(data2) {
     drawLabel.classList.add('hidden');
     finishReasonLabel.classList.add('hidden');
 
+
     let notMyStepLabel = document.getElementsByClassName('game-not-my-step')[0];
     let myStepLabel = document.getElementsByClassName('game-my-step')[0];
     notMyStepLabel.classList.add('hidden');
     myStepLabel.classList.add('hidden');
 
+    let enemyNameLabel = document.getElementsByClassName('game-enemy-name')[0];
+    enemyNameLabel.innerHTML = 'Игра против ' + game.enemyName;
+    enemyNameLabel.classList.remove('hidden');
 
     let gameLink = document.getElementById('gameLink');
     gameLink.classList.remove('hidden');
@@ -259,7 +264,7 @@ function initGame(data2) {
 
     if (game.isFinish == false) {
         document.getElementById('gameBlock').classList.add('game-status-process');
-        initField("field", game.notation, game.availableMoves, game.mySide);
+        initField("field", game);
         if (game.mySide == game.stepSide) {
             checkEnemyStep = -1;
             myStepLabel.classList.remove('hidden');
@@ -271,7 +276,7 @@ function initGame(data2) {
         document.getElementById('gameBlock').classList.remove('game-status-process');
         checkEnemyStep = -1;
 
-        initField("field", game.notation, null, game.mySide);
+        initField("field", game);
 
         if (game.winSide == null) {
             drawLabel.classList.remove('hidden');
@@ -295,7 +300,7 @@ function initGame(data2) {
         }
     }
 
-    initHistory('historyBlock', game.historyMoves);
+    initHistory('historyBlock', game);
 }
 
 setInterval(function () {

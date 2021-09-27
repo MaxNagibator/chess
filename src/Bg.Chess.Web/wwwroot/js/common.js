@@ -26,7 +26,7 @@ const PieceTypes = {
 
 const Side = {
     White: 'White',
-    Black: 'Black'.,
+    Black: 'Black',
     Spectator: 'Spectator'
 }
 

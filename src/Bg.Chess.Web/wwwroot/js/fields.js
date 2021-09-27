@@ -1,17 +1,22 @@
-﻿function initField(fieldSelector, notation, availableMoves, mySide) {
+﻿let lastPieceLocation = null;
 
-    console.log(notation);
+function initField(fieldSelector, game) {
+    let notation = game.notation;
+    let availableMoves = game.availableMoves;
+    let mySide = game.mySide;
 
     //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-
     let notationParts = notation.split(' ');
-
-    // todo !!!!! запомнить положение фигур и если положение фигур не менялось. не перерисовывать
     let pieceLocation = notationParts[0];
+    if (lastPieceLocation == pieceLocation) {
+        return;
+    }
+
+    lastPieceLocation = pieceLocation;
+
     let pieceLocationLines = pieceLocation.split('/');
     let cellColorIndex = 0;
     let target = document.getElementById(fieldSelector);
-    //let target = document.querySelector(fieldSelector);
     target.innerHTML = '';
     if (mySide == Side.Spectator) {
         target.classList.add('side-' + Side.White.toLowerCase());
@@ -132,7 +137,7 @@
 
     horizontalLabel(false);
 
-    if (availableMoves != undefined) {
+    if (availableMoves) {
         let dnd_successful;
         for (let i = 0; i < draggables.length; i++) {
             draggables[i].addEventListener('dragstart', function (event) {
@@ -219,7 +224,16 @@
     }
 }
 
-function initHistory(historySelector, moves, mySide) {
+let historyMovesCount = null;
+
+function initHistory(historySelector, game) {
+    var moves = game.historyMoves;
+    if (moves.length == historyMovesCount) {
+        return;
+    }
+    historyMovesCount = moves.length;
+
+    var mySide = game.mySide;
     var historyBlock = document.getElementById(historySelector);
     historyBlock.innerHTML = '';
     for (let i = moves.length - 1; i >= 0; i--) {
@@ -233,8 +247,7 @@ function initHistory(historySelector, moves, mySide) {
         moveDiv.innerHTML = from + '->' + to;
         historyBlock.appendChild(moveDiv);
 
-        asdasd
-        if (mySide == game.stepSide && i == moves.length - 1) {
+        if ((mySide == game.stepSide || mySide == Side.Spectator) && i == moves.length - 1) {
             let cells = document.getElementsByClassName('column');
             for (let moveIndex = 0; moveIndex < moves.length; moveIndex++) {
                 for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
