@@ -21,9 +21,6 @@
         /// </inheritdoc>
         protected override List<Position> GetBaseMoves(Piece piece, MoveMode moveMode)
         {
-            ////var width = position.Field.FieldWidth;
-            ////var height = position.Field.PawnTransforms;
-
             var position = piece.CurrentPosition;
 
             var availablePositions = new List<Position>();

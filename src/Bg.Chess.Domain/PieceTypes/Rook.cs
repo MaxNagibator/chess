@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+// todo заменить Bg.Chess.Domain на Bg.Chess
 namespace Bg.Chess.Domain
 {
     /// <summary>

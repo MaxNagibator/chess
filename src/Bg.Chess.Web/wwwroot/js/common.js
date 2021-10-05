@@ -21,7 +21,10 @@ const PieceTypes = {
     Knight: 'Knight',
     Pawn: 'Pawn',
     Queen: 'Queen',
-    Rook: 'Rook'
+    Rook: 'Rook',
+    Dragon: 'Dragon',
+    Soldier: 'Soldier',
+    Hydra: 'Hydra',
 }
 
 const Side = {
@@ -32,7 +35,7 @@ const Side = {
 
 const Labels = {
     Vertical: "12345678",
-    Horizontal: "ABCDEFGH"
+    Horizontal: "ABCDEFGHIJ"
 }
 
 function GetPieceByNotation(pos) {
@@ -50,6 +53,12 @@ function GetPieceByNotation(pos) {
                 return PieceTypes.King;
             case 'P':
                 return PieceTypes.Pawn;
+            case 'D':
+                return PieceTypes.Dragon;
+            case 'S':
+                return PieceTypes.Soldier;
+            case 'H':
+                return PieceTypes.Hydra;
             default:
                 console.error('type not recognized: ' + char);
                 return null;

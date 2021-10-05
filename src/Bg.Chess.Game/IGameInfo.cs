@@ -5,6 +5,7 @@
     using System.Linq;
 
     using Bg.Chess.Common.Enums;
+    using Bg.Chess.Game.Addon;
 
     public interface IGameInfo
     {
@@ -44,24 +45,27 @@
             WhitePlayer = whitePlayer;
             BlackPlayer = blackPlayer;
             game = new Domain.Game();
-            game.Init();
+            //game.Init();
+
+            var rules = new DragonRules();
+            var field = new Domain.Field(rules);
+            game.Init(field);
 
             // оставлю для отладки особых случаев
             if (false)
             {
-                var rules = new Domain.ClassicRules();
-                rules.FieldHeight = 8;
-                rules.FieldWidth = 8;
-                rules.Positions.Remove(rules.Positions.First(x => x.X == 4 && x.Y == 6));
-                rules.Positions.Remove(rules.Positions.First(x => x.X == 7 && x.Y == 7));
-                rules.Positions.Remove(rules.Positions.First(x => x.X == 0 && x.Y == 0));
-                rules.Positions.Add(new Domain.Position(4, 6, Domain.PieceBuilder.Pawn(Domain.Side.White)));
-                rules.Positions.Add(new Domain.Position(7, 7, Domain.PieceBuilder.King(Domain.Side.Black)));
-                rules.Positions.Add(new Domain.Position(0, 0, Domain.PieceBuilder.King(Domain.Side.White)));
-                rules.Positions.Add(new Domain.Position(4, 6, Domain.PieceBuilder.Pawn(Domain.Side.White)));
-                rules.Positions.Add(new Domain.Position(7, 7, Domain.PieceBuilder.King(Domain.Side.Black)));
-                var field = new Domain.Field(rules);
-                game.Init(field);
+                var rules2 = new Domain.ClassicRules();
+                rules2.Positions = new List<Domain.Position>
+                {
+                    new Domain.Position(4, 6, Domain.PieceBuilder.Pawn(Domain.Side.White)),
+                    new Domain.Position(7, 7, Domain.PieceBuilder.King(Domain.Side.Black)),
+                    new Domain.Position(0, 0, Domain.PieceBuilder.King(Domain.Side.White)),
+                };
+                var field2 = new Domain.Field(rules2);
+                game.Init(field2);
+            }
+            else
+            {
             }
         }
 

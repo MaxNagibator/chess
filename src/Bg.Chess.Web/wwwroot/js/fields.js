@@ -30,14 +30,14 @@ function initField(fieldSelector, game) {
         let divNumber1Line = document.createElement('div');
         divNumber1Line.classList.add('line');
         target.appendChild(divNumber1Line);
-        for (let i = -1; i <= 8; i++) {
+        for (let i = -1; i <= 10; i++) {
             let div = document.createElement('div');
             div.classList.add('column');
             div.classList.add('column-label');
 
             let label = document.createElement('label');
             label.classList.add('field-label');
-            if (i != -1 && i != 8) {
+            if (i != -1 && i != 10) {
                 label.innerHTML = Labels.Horizontal[i];
                 if (borderPos) {
                     div.classList.add('field-border-bottom');
@@ -82,6 +82,14 @@ function initField(fieldSelector, game) {
             let pos = line[posIndex];
             let emptyFields = pos * 1;
             if (Number.isInteger(emptyFields)) {
+               
+                // работает для 99 максимум, сделать для поля хоть в 99999 в ширину
+                let pos2 = line[posIndex + 1];
+                let emptyFields2 = pos2 * 1;
+                if (Number.isInteger(emptyFields2)) {
+                    emptyFields = emptyFields * 10 + emptyFields2;
+                }
+         
                 for (let cellsCount = emptyFields; cellsCount > 0; cellsCount--) {
                     // todo обобщить с дублированием снизу
                     let div = document.createElement('div');
