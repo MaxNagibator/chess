@@ -20,6 +20,8 @@ namespace Bg.Chess.Data
 
         public int? WinSide { get; set; }
 
+        public int GameMode { get; set; }
+
         public string Data { get; set; }
     }
 }

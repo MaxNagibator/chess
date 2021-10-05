@@ -24,13 +24,20 @@
         private IGameRepo _gameRepo;
         private IPlayerService _playerService;
         private IGameManager _gameManager;
+        private PieceTypes _pieceTypes;
         private ILogger _logger;
 
-        public GameService(IGameManager gameManager, IPlayerService playerService, IGameRepo gameRepo, ILoggerFactory loggerFactory)
+        public GameService(
+            IGameManager gameManager,
+            IPlayerService playerService,
+            IGameRepo gameRepo,
+            PieceTypes pieceTypes,
+            ILoggerFactory loggerFactory)
         {
             _gameRepo = gameRepo;
             _playerService = playerService;
             _gameManager = gameManager;
+            _pieceTypes = pieceTypes;
             // todo сделать LogSource набор констант
             _logger = loggerFactory.CreateLogger("chess");
         }
@@ -55,6 +62,7 @@
 
             gameInfo.FinishReason = (FinishReason?)game.FinishReason;
             gameInfo.WinSide = (GameSide?)game.WinSide;
+            gameInfo.GameMode = (GameMode?)game.GameMode;
 
             FillGameFromDtoV1(gameInfo, gameDto);
             return gameInfo;
@@ -70,6 +78,7 @@
                 BlackPlayer = new Player { Id = x.BlackPlayerId },
                 WhitePlayer = new Player { Id = x.WhitePlayerId },
                 FinishReason = (FinishReason?)x.FinishReason,
+                GameMode = (GameMode?)x.GameMode,
                 WinSide = (GameSide?)x.WinSide,
             }).ToList();
         }
@@ -138,7 +147,7 @@
         {
             var toUpper = piece.ToUpper();
 
-            var type = GetTypeByChar(toUpper);
+            var type = GetTypeByChar(piece.ToLower().ToCharArray()[0]);
             var side = piece == toUpper ? GameSide.White : GameSide.Black;
             return new Piece
             {
@@ -148,24 +157,14 @@
             };
         }
 
-        private string GetTypeByChar(string piece)
+        private string GetTypeByChar(char piece)
         {
-            switch (piece) {
-                case "R":
-                    return "Rook";
-                case "N":
-                    return "Knight";
-                case "B":
-                    return "Bishop";
-                case "Q":
-                    return "Queen";
-                case "K":
-                    return "King";
-                case "P":
-                    return "Pawn";
-                default:
-                    throw new Exception("type not recognized: " + piece);
+            var type = _pieceTypes.Value.Select(x => x.Value).FirstOrDefault(x => x.ShortName == piece);
+            if (type == null)
+            {
+                throw new Exception("type not recognized: " + piece);
             }
+            return type.Name;
         }
 
 
@@ -203,15 +202,18 @@
             var players = playerIds.ToDictionary(x => x, x => _playerService.GetPlayer(x));
             foreach (var dbGame in dbGames)
             {
-                var game = new GameInfo(dbGame.LogicalName, players[dbGame.WhitePlayerId], players[dbGame.BlackPlayerId]);
+                var game = new GameInfo(_pieceTypes, dbGame.LogicalName, (GameMode)dbGame.GameMode, players[dbGame.WhitePlayerId], players[dbGame.BlackPlayerId]);
                 var gameDto = JsonConvert.DeserializeObject<SaveGameDtoV1>(dbGame.Data);
                 var gameInfo = new HistoryGame();
                 FillGameFromDtoV1(gameInfo, gameDto);
                 for (int i = 0; i < gameInfo.Moves.Count; i++)
                 {
-                    var move = gameInfo.Moves[i]; 
+                    var move = gameInfo.Moves[i];
 
-                    var pawnTransformPiece = move.Runner.TypeName == "Pawn" ? move.AdditionalMove?.Runner.TypeName.ToLower() : null;
+                    var pawnTransformPiece = 
+                        move.Runner.TypeName == "pawn" || move.Runner.TypeName == "soldier" ? 
+                        move.AdditionalMove?.Runner.TypeName.ToLower() 
+                        : null;
                     game.Move(i % 2 == 0 ? dbGame.WhitePlayerId : dbGame.BlackPlayerId, move.From.X, move.From.Y, move.To.X, move.To.Y, pawnTransformPiece);
                 }
                 games.Add(game);

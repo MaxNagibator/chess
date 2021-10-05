@@ -1,5 +1,7 @@
 namespace Bg.Chess.Game.Tests
 {
+    using System.Collections.Generic;
+
     using Bg.Chess.Common.Enums;
     using Bg.Chess.Data.Repo;
 
@@ -17,18 +19,20 @@ namespace Bg.Chess.Game.Tests
         [SetUp]
         public void SetUp()
         {
-            _manager = new GameManager(new TestLoggerFactory());
-            
+            var pieceTypes = new PieceTypes();
+            _manager = new GameManager(pieceTypes, new TestLoggerFactory());
+            _manager.Init(new List<IGameInfo>());
+
             var mock = new Mock<IGameRepo>();
             mock.Setup(a => a.SaveGame(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<string>()));
-            _gameService = new GameService(null, null, mock.Object, new TestLoggerFactory());
+            _gameService = new GameService(null, null, mock.Object, pieceTypes, new TestLoggerFactory());
         }
 
         [Test]
         public void CheckStateAfterTwoConfirmTest()
         {
-            _manager.StartSearch(_player1);
-            _manager.StartSearch(_player2);
+            _manager.StartSearch(_player1, GameMode.Classic);
+            _manager.StartSearch(_player2, GameMode.Classic);
             _manager.Confirm(_player1.Id);
             _manager.Confirm(_player2.Id);
 
@@ -50,8 +54,8 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void SaveGameAfterPawnTransformTest()
         {
-            _manager.StartSearch(_player1);
-            _manager.StartSearch(_player2);
+            _manager.StartSearch(_player1, GameMode.Classic);
+            _manager.StartSearch(_player2, GameMode.Classic);
             _manager.Confirm(_player1.Id);
             _manager.Confirm(_player2.Id);
 

@@ -59,8 +59,22 @@
         }
 
         [HttpPost]
-        public JsonResult StartSearch()
+        public JsonResult StartSearch(string mode)
         {
+            GameMode gameMode;
+            if (mode == "classic")
+            {
+                gameMode = GameMode.Classic;
+            }
+            else if (mode == "dragon")
+            {
+                gameMode = GameMode.Dragon;
+            }
+            else
+            {
+                throw new System.Exception("unrecognized mode " + mode);
+            }
+
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = this.User.FindFirstValue(ClaimTypes.Name);
 
@@ -71,7 +85,7 @@
             }
 
             var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
-            _gameManager.StartSearch(player);
+            _gameManager.StartSearch(player, gameMode);
             return Json(new { error = false });
         }
 

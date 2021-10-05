@@ -13,6 +13,7 @@
         Player WhitePlayer { get; }
         Player BlackPlayer { get; }
         GameSide StepSide { get; }
+        GameMode GameMode { get; }
         bool IsMyGame(int playerId);
 
         bool IsFinish { get; }
@@ -33,23 +34,30 @@
         public string Id { get; private set; }
         public Player WhitePlayer { get; private set; }
         public Player BlackPlayer { get; private set; }
+        public GameMode GameMode { get; private set; }
 
         public bool whiteConfirm;
         public bool blackConfirm;
 
         private Domain.Game game;
 
-        public GameInfo(string id, Player whitePlayer, Player blackPlayer)
+        public GameInfo(PieceTypes pieceTypes, string id, GameMode gameMode, Player whitePlayer, Player blackPlayer)
         {
             Id = id;
             WhitePlayer = whitePlayer;
             BlackPlayer = blackPlayer;
+            GameMode = gameMode;
             game = new Domain.Game();
-            //game.Init();
-
-            var rules = new DragonRules();
-            var field = new Domain.Field(rules);
-            game.Init(field);
+            if(gameMode == GameMode.Dragon)
+            {
+                var rules = new DragonRules(pieceTypes);
+                var field = new Domain.Field(rules);
+                game.Init(field);
+            }
+            else
+            {
+                game.Init();
+            }
 
             // оставлю для отладки особых случаев
             if (false)
@@ -63,9 +71,6 @@
                 };
                 var field2 = new Domain.Field(rules2);
                 game.Init(field2);
-            }
-            else
-            {
             }
         }
 

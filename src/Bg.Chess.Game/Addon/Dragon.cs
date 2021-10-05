@@ -26,7 +26,7 @@ namespace Bg.Chess.Game.Addon
             var availablePositions = new List<Domain.Position>();
 
             for (var i = -2; i <= 2; i++)
-            {
+            {   
                 for (var j = -2; j <= 2; j++)
                 {
                     if (Math.Abs(i) + Math.Abs(j) <= 2)

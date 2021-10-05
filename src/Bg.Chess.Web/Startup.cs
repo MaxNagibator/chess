@@ -75,7 +75,8 @@ namespace Bg.Chess.Web
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IUserService, UserService>();
             services.AddSingleton<IGameManager, GameManager>();
-            
+            services.AddSingleton<PieceTypes, PieceTypes>();
+
             services.AddLogging(loggingBuilder =>
                {
                    loggingBuilder.ClearProviders();

@@ -1,18 +1,18 @@
 ﻿namespace Bg.Chess.Common.Enums
 {
     /// <summary>
-    /// Модификация игры.
+    /// Игровые стороны.
     /// </summary>
-    public enum GameMode
+    public enum GameSide
     {
         /// <summary>
-        /// Классический.
+        /// Белые.
         /// </summary>
-        Classic = 0,
+        White = 0,
 
         /// <summary>
-        /// Драконы.
+        /// Чёрные.
         /// </summary>
-        Dragon = 1,
+        Black = 1,
     }
 }

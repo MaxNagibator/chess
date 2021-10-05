@@ -7,8 +7,12 @@ function startSearch() {
         return;
     }
     searchRequestInProcess = true;
+    let mode = document.getElementsByClassName('search-mode selected-mode')[0].getAttribute('data-value');
     SendRequest({
         url: '/Chess/StartSearch',
+        body: {
+            mode: mode
+        },
         success: function (data) {
             let response = JSON.parse(data.responseText);
             if (response.error) {
@@ -23,6 +27,15 @@ function startSearch() {
             searchRequestInProcess = false;
         }
     });
+}
+
+function setMode(elem) {
+    if (document.getElementById('searchBlock').classList.contains('in-process')) {
+        return;
+    }
+
+    document.getElementsByClassName('search-mode selected-mode')[0].classList.remove('selected-mode');
+    elem.classList.add('selected-mode');
 }
 
 let currentSearchId = 999;
@@ -275,6 +288,7 @@ function initGame(data2) {
     } else {
         document.getElementById('gameBlock').classList.remove('game-status-process');
         checkEnemyStep = -1;
+        currentSearchId = 999;
 
         initField("field", game);
 

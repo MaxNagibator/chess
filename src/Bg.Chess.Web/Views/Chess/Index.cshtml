@@ -18,6 +18,8 @@
 <script src="~/js/fields.js" asp-append-version="true"></script>
 <div id="gameBlock" class="game-block">
     <div id="searchBlock" class="game-search">
+        <img src="/Content/Images/classic-mode.png" class="search-mode selected-mode" data-value="classic" title="Классическите шахматы" onclick="setMode(this)">
+        <img src="/Content/Images/dragon-mode.png" class="search-mode" data-value="dragon" title="Дополение 'Дракон'" onclick="setMode(this)">
         <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру</button>
         <div class="show-is-search">
             <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>

@@ -34,7 +34,7 @@
         public FinishReason? FinishReason { get; private set; }
 
         // нужны буковки и цифорки, чтоб кормить на вход можно было e2 e4 :)
-        private string widthSymbols = "abcdefgh";
+        private string widthSymbols = "abcdefghij";
         private string heightSymbols = "12345678";
 
         /// <summary>

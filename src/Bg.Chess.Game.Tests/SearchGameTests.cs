@@ -3,6 +3,7 @@ namespace Bg.Chess.Game.Tests
     using NUnit.Framework;
 
     using Bg.Chess.Common.Enums;
+    using System.Collections.Generic;
 
     public class SearchGameTests
     {
@@ -18,7 +19,8 @@ namespace Bg.Chess.Game.Tests
 
         private void InitEnv()
         {
-            _manager = new GameManager(new TestLoggerFactory());
+            _manager = new GameManager(new PieceTypes(), new TestLoggerFactory());
+            _manager.Init(new List<IGameInfo>());
         }
 
         [Test]
@@ -31,7 +33,7 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void CheckStateAfterStartSearchTest()
         {
-            _manager.StartSearch(_player1);
+            _manager.StartSearch(_player1, GameMode.Classic);
             var state = _manager.Check(_player1.Id);
             Assert.AreEqual(SearchStatus.InProcess, state);
         }
@@ -39,8 +41,8 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void CheckStateAfterGameFoundTest()
         {
-            _manager.StartSearch(_player1);
-            _manager.StartSearch(_player2);
+            _manager.StartSearch(_player1, GameMode.Classic);
+            _manager.StartSearch(_player2, GameMode.Classic);
             var state1 = _manager.Check(_player1.Id);
             var state2 = _manager.Check(_player2.Id);
             Assert.AreEqual(SearchStatus.NeedConfirm, state1);
@@ -53,8 +55,8 @@ namespace Bg.Chess.Game.Tests
         public void CheckStateAfterOneConfirmTest(int confirmerNumber)
         {
             InitEnv();
-            _manager.StartSearch(_player1);
-            _manager.StartSearch(_player2);
+            _manager.StartSearch(_player1, GameMode.Classic);
+            _manager.StartSearch(_player2, GameMode.Classic);
 
             var confirmPlayer = confirmerNumber == 1 ? _player1 : _player2;
             var anotherPlayer = confirmerNumber == 1 ? _player2 : _player1;
@@ -68,8 +70,8 @@ namespace Bg.Chess.Game.Tests
         [Test]
         public void CheckStateAfterTwoConfirmTest()
         {
-            _manager.StartSearch(_player1);
-            _manager.StartSearch(_player2);
+            _manager.StartSearch(_player1, GameMode.Classic);
+            _manager.StartSearch(_player2, GameMode.Classic);
 
             var state1a = _manager.Confirm(_player1.Id);
             var state2a = _manager.Confirm(_player2.Id);

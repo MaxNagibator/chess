@@ -5,17 +5,14 @@
     using System.Linq;
 
     using Bg.Chess.Common.Enums;
-    using Bg.Chess.Data.Repo;
 
     using Microsoft.Extensions.Logging;
-
-    using Newtonsoft.Json;
 
     public interface IGameManager
     {
         bool IsInit { get; }
         void Init(List<IGameInfo> games);
-        void StartSearch(Player player);
+        void StartSearch(Player player, GameMode gameMode);
         void StopSearch(int playerId);
         SearchStatus Check(int playerId);
         SearchStatus Confirm(int playerId);
@@ -25,11 +22,12 @@
     public class GameManager : IGameManager
     {
         private ILogger _logger;
-        private IGameRepo _gameRepo;
+        private PieceTypes _pieceTypes;
         private List<IGameInfo> _games;
 
-        public GameManager(ILoggerFactory loggerFactory)
+        public GameManager(PieceTypes pieceTypes, ILoggerFactory loggerFactory)
         {
+            _pieceTypes = pieceTypes;
             _logger = loggerFactory.CreateLogger("chess");
         }
 
@@ -39,6 +37,7 @@
             public SearchStatus Status { get; set; }
             public string GameId { get; set; }
             public DateTime? GameStart { get; set; }
+            public GameMode GameMode { get; set; }
         }
 
         private object lockSearchList = new object();
@@ -54,7 +53,7 @@
         }
 
 
-        public void StartSearch(Player player)
+        public void StartSearch(Player player, GameMode gameMode)
         {
             _logger.LogInformation("Search Start [player=" + player.Id + "]");
 
@@ -78,6 +77,7 @@
                 search = new Search();
                 search.Player = player;
                 search.Status = SearchStatus.InProcess;
+                search.GameMode = gameMode;
                 searchList.Insert(0, search);
 
                 CheckPairPlayer();
@@ -86,7 +86,7 @@
 
         private void CheckPairPlayer()
         {
-            var searchs = searchList.Where(x => x.Status == SearchStatus.InProcess).Take(2);
+            var searchs = searchList.Where(x => x.Status == SearchStatus.InProcess).GroupBy(x=> x.GameMode).First();
             if (searchs.Count() == 2)
             {
                 _logger.LogInformation("Search Finish");
@@ -104,7 +104,7 @@
             var search = searchList.FirstOrDefault(x => x.Player.Id == playerId);
             if (search == null)
             {
-                if(_games.Any(x=>x.IsFinish == false && x.IsMyGame(playerId)))
+                if (_games.Any(x => x.IsFinish == false && x.IsMyGame(playerId)))
                 {
                     return SearchStatus.Finish;
                 }
@@ -126,7 +126,7 @@
             if (search.Status == SearchStatus.NeedConfirm)
             {
                 var twoSearch = searchList.First(x => x.GameId == search.GameId && x.Player.Id != search.Player.Id);
-                if(twoSearch.Status == SearchStatus.NeedConfirmOpponent)
+                if (twoSearch.Status == SearchStatus.NeedConfirmOpponent)
                 {
                     _logger.LogInformation("Two Player Confirm Game Start");
                     var gameStartDate = DateTime.Now;
@@ -148,7 +148,7 @@
                         whitePlayer = searchList[0].Player;
                     }
 
-                    IGameInfo game = new GameInfo(search.GameId, whitePlayer, blackPlayer);
+                    IGameInfo game = new GameInfo(_pieceTypes, search.GameId, search.GameMode, whitePlayer, blackPlayer);
                     _games.Add(game);
                 }
                 else
@@ -190,6 +190,5 @@
             var gameInProcess = _games.LastOrDefault(x => x.IsMyGame(playerId));
             return gameInProcess;
         }
-
     }
 }

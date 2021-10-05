@@ -94,6 +94,14 @@
     border: 2px solid #FF66F2;
 }
 
+.piece-is-last-move-to {
+    border: 2px solid #FF962D;
+}
+
+    .piece-is-last-move-to img {
+        margin: 0px;
+    }
+
 .piece-move-target-good {
     border: 2px solid #62EF80;
 }
@@ -106,14 +114,6 @@
     border: 2px solid #FF962D;
 }
 
-.piece-is-last-move-to {
-    border: 2px solid #FF962D;
-}
-
-    .piece-is-last-move-to img {
-        margin: 0px;
-    }
-
 .show-is-search {
     display: none;
 }
@@ -124,6 +124,20 @@
 
 .in-process .hide-is-search {
     display: none;
+}
+
+.search-mode {
+    width: 50px;
+    border: 2px solid #404040;
+    cursor: pointer;
+}
+
+    .search-mode.selected-mode {
+        border: 2px solid #11db1b;
+    }
+
+.in-process .search-mode {
+    cursor: inherit;
 }
 
 .pawn-transform-piece-select img {

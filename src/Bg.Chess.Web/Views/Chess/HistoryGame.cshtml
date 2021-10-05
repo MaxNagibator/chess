@@ -29,8 +29,11 @@
 <script src="~/js/fields.js" asp-append-version="true"></script>
 <script>
     window.onload = function () {
-        let notation = '@Model.Positions';
-        initField("field2", notation, null, Side.Spectator);
+        let game = {
+            notation: '@Model.Positions',
+            mySide: Side.Spectator
+        };
+        initField("field2", game);
     }
 </script>
 @if(Model.FinishReason == null)

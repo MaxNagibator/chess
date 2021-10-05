@@ -9,6 +9,7 @@
         public string Id { get; set; }
         public FinishReason? FinishReason { get; set; }
         public GameSide? WinSide { get; set; }
+        public GameMode? GameMode { get; set; }
         public List<Move> Moves { get; set; }
         public string Positions { get; set; }
         public Player WhitePlayer { get; set; }
