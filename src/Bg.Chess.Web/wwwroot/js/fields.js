@@ -4,6 +4,8 @@ function initField(fieldSelector, game) {
     let notation = game.notation;
     let availableMoves = game.availableMoves;
     let mySide = game.mySide;
+    let fieldWidth = game.fieldWidth;
+    let fieldHeight = game.fieldHeight;
 
     //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
     let notationParts = notation.split(' ');
@@ -30,14 +32,14 @@ function initField(fieldSelector, game) {
         let divNumber1Line = document.createElement('div');
         divNumber1Line.classList.add('line');
         target.appendChild(divNumber1Line);
-        for (let i = -1; i <= 10; i++) {
+        for (let i = -1; i <= fieldWidth; i++) {
             let div = document.createElement('div');
             div.classList.add('column');
             div.classList.add('column-label');
 
             let label = document.createElement('label');
             label.classList.add('field-label');
-            if (i != -1 && i != 10) {
+            if (i != -1 && i != fieldWidth) {
                 label.innerHTML = Labels.Horizontal[i];
                 if (borderPos) {
                     div.classList.add('field-border-bottom');
@@ -61,14 +63,14 @@ function initField(fieldSelector, game) {
         }
         let label = document.createElement('label');
         label.classList.add('field-label');
-        label.innerHTML = Labels.Vertical[7 - rowIndex];
+        label.innerHTML = Labels.Vertical[fieldHeight - 1 - rowIndex];
         div.appendChild(label);
         divLine.appendChild(div);
     }
 
     horizontalLabel(true);
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < fieldHeight; i++) {
         let line = pieceLocationLines[i];
         let divLine = document.createElement('div');
         divLine.classList.add('line');
@@ -78,7 +80,7 @@ function initField(fieldSelector, game) {
         verticalLabel(divLine, i, false);
 
         for (let posIndex = 0; posIndex < line.length; posIndex++) {
-            let posY = 7 - i;
+            let posY = fieldHeight - 1 - i;
             let pos = line[posIndex];
             let emptyFields = pos * 1;
             if (Number.isInteger(emptyFields)) {
@@ -87,7 +89,7 @@ function initField(fieldSelector, game) {
                 let pos2 = line[posIndex + 1];
                 let emptyFields2 = pos2 * 1;
                 if (Number.isInteger(emptyFields2)) {
-                    emptyFields = emptyFields * 10 + emptyFields2;
+                    emptyFields = emptyFields * fieldWidth + emptyFields2;
                 }
          
                 for (let cellsCount = emptyFields; cellsCount > 0; cellsCount--) {

@@ -49,6 +49,16 @@
 
         private void SetRules(Rules rules)
         {
+            if(rules.FieldWidth > (rules.WidthSymbols?.Length ?? 0))
+            {
+                throw new Exception("FieldWidth > WidthSymbols.Length");
+            }
+
+            if (rules.FieldHeight > (rules.HeightSymbols?.Length ?? 0))
+            {
+                throw new Exception("FieldWidth > WidthSymbols.Length");
+            }
+
             var duplicatePos = rules.Positions.GroupBy(p => new { p.X, p.Y }).FirstOrDefault(pg => pg.Count() > 1);
             if (duplicatePos != null)
             {
@@ -68,8 +78,10 @@
                 }
             }
 
-            FieldWidth = rules.FieldWidth;
-            FieldHeight = rules.FieldHeight;
+            Width = rules.FieldWidth;
+            Height = rules.FieldHeight;
+            WidthSymbols = rules.WidthSymbols;
+            HeightSymbols = rules.HeightSymbols;
             PawnTransforms = rules.PawnTransforms;
             Moves = new List<Move>();
         }
@@ -92,12 +104,22 @@
         /// <summary>
         /// Ширина поля
         /// </summary>
-        public int FieldWidth { get; private set; }
+        public int Width { get; private set; }
 
         /// <summary>
         /// Высота поля
         /// </summary>
-        public int FieldHeight { get; private set; }
+        public int Height { get; private set; }
+
+        /// <summary>
+        /// Описание для системы координат по горизонтали.
+        /// </summary>
+        public string WidthSymbols { get; private set; }
+
+        /// <summary>
+        /// Описание для системы координат по вертикали.
+        /// </summary>
+        public string HeightSymbols { get; private set; }
 
         /// <summary>
         /// Методы получения фигуры для превращения пешки.

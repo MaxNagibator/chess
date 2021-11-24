@@ -33,14 +33,30 @@
         /// </remarks>
         public FinishReason? FinishReason { get; private set; }
 
-        // нужны буковки и цифорки, чтоб кормить на вход можно было e2 e4 :)
-        private string widthSymbols = "abcdefghij";
-        private string heightSymbols = "12345678";
-
         /// <summary>
         /// Чей ход.
         /// </summary>
         public Side StepSide { get; private set; } = Side.White;
+
+        /// <summary>
+        /// Ширина поля
+        /// </summary>
+        public int Width => _field.Width;
+
+        /// <summary>
+        /// Высота поля
+        /// </summary>
+        public int Height => _field.Height;
+
+        /// <summary>
+        /// Описание для системы координат по горизонтали.
+        /// </summary>
+        public string WidthSymbols => _field.WidthSymbols;
+
+        /// <summary>
+        /// Описание для системы координат по вертикали.
+        /// </summary>
+        public string HeightSymbols => _field.HeightSymbols;
 
         /// <summary>
         /// Задать параметры игры.
@@ -105,10 +121,10 @@
                 throw new Exception("need two symbols for to");
             }
 
-            var fromX = widthSymbols.IndexOf(from[0]);
-            var fromY = heightSymbols.IndexOf(from[1]);
-            var toX = widthSymbols.IndexOf(to[0]);
-            var toY = heightSymbols.IndexOf(to[1]);
+            var fromX = _field.WidthSymbols.IndexOf(from[0]);
+            var fromY = _field.HeightSymbols.IndexOf(from[1]);
+            var toX = _field.WidthSymbols.IndexOf(to[0]);
+            var toY = _field.HeightSymbols.IndexOf(to[1]);
             Move(side, fromX, fromY, toX, toY, pawnTransformPiece);
         }
 
@@ -176,14 +192,14 @@
         public string GetForsythEdwardsNotation(bool onlyPositions = false)
         {
             var notationSb = new StringBuilder();
-            for (var i = _field.FieldHeight - 1; i >= 0; i--)
+            for (var i = _field.Height - 1; i >= 0; i--)
             {
-                if (i < _field.FieldHeight - 1)
+                if (i < _field.Height - 1)
                 {
                     notationSb.Append("/");
                 }
                 var lineEmptyCount = 0;
-                for (var j = 0; j < _field.FieldWidth; j++)
+                for (var j = 0; j < _field.Width; j++)
                 {
                     var posPiece = _field[j, i].Piece;
                     if (posPiece != null)
@@ -273,7 +289,7 @@
             var lastMove = _field.Moves.LastOrDefault();
             if (lastMove != null && lastMove.Runner.Type is Pawn && Math.Abs(lastMove.To.Y - lastMove.From.Y) == 2)
             {
-                var toX = widthSymbols[lastMove.To.X];
+                var toX = _field.WidthSymbols[lastMove.To.X];
                 int toY;
                 if (lastMove.To.Y > lastMove.From.Y)
                 {
@@ -283,7 +299,7 @@
                 {
                     toY = lastMove.To.Y + 1;
                 }
-                notationSb.Append(" " + toX + heightSymbols[toY]);
+                notationSb.Append(" " + toX + _field.HeightSymbols[toY]);
             }
             else
             {

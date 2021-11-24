@@ -18,6 +18,8 @@ namespace Bg.Chess.Game.Addon
         {
             FieldWidth = 10;
             FieldHeight = 8;
+            WidthSymbols = "abcdefghij";
+            HeightSymbols = "12345678";
 
             Positions = new List<DomainPosition>
             {

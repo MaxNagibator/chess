@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bg.Chess" Version="0.1.2" />
+    <PackageReference Include="Bg.Chess" Version="0.1.5" />
   </ItemGroup>
 
   <ItemGroup>

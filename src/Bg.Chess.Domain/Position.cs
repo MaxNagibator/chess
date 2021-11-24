@@ -153,7 +153,7 @@
                 // если дошли до края поля, то выбираем новую фигуру
                 if (transformEnable)
                 {
-                    if (Piece.MoveMult == 1 && newPosition.Y == Field.FieldHeight - 1
+                    if (Piece.MoveMult == 1 && newPosition.Y == Field.Height - 1
                         || Piece.MoveMult == -1 && newPosition.Y == 0)
                     {
                         if (pawnTransformPiece == null)

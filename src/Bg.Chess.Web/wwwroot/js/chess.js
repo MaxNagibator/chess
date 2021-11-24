@@ -242,6 +242,8 @@ function goGame(alwaysCallback) {
 function initGame(data2) {
     game.id = data2.id;
     game.mySide = data2.side;
+    game.fieldWidth = data2.fieldWidth;
+    game.fieldHeight = data2.fieldHeight;
     game.stepSide = data2.stepSide;
     game.status = data2.status;
     game.isFinish = data2.isFinish;

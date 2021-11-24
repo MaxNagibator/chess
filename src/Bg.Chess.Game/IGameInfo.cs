@@ -15,6 +15,8 @@
         GameSide StepSide { get; }
         GameMode GameMode { get; }
         bool IsMyGame(int playerId);
+        int FieldWidth { get; }
+        int FieldHeight { get; }
 
         bool IsFinish { get; }
         void Move(int playerId, int fromX, int fromY, int toX, int toY, string pawnTransformPiece = null);
@@ -35,11 +37,13 @@
         public Player WhitePlayer { get; private set; }
         public Player BlackPlayer { get; private set; }
         public GameMode GameMode { get; private set; }
+        public int FieldWidth => _game.Width;
+        public int FieldHeight => _game.Height;
 
         public bool whiteConfirm;
         public bool blackConfirm;
 
-        private Domain.Game game;
+        private Domain.Game _game;
 
         public GameInfo(PieceTypes pieceTypes, string id, GameMode gameMode, Player whitePlayer, Player blackPlayer)
         {
@@ -47,16 +51,16 @@
             WhitePlayer = whitePlayer;
             BlackPlayer = blackPlayer;
             GameMode = gameMode;
-            game = new Domain.Game();
+            _game = new Domain.Game();
             if(gameMode == GameMode.Dragon)
             {
                 var rules = new DragonRules(pieceTypes);
                 var field = new Domain.Field(rules);
-                game.Init(field);
+                _game.Init(field);
             }
             else
             {
-                game.Init();
+                _game.Init();
             }
 
             // оставлю для отладки особых случаев
@@ -70,7 +74,7 @@
                     new Domain.Position(0, 0, Domain.PieceBuilder.King(Domain.Side.White)),
                 };
                 var field2 = new Domain.Field(rules2);
-                game.Init(field2);
+                _game.Init(field2);
             }
         }
 
@@ -92,7 +96,7 @@
         {
             Domain.Side side = GetSide(playerId);
 
-            game.Move(side, fromX, fromY, toX, toY, pawnTransformPiece);
+            _game.Move(side, fromX, fromY, toX, toY, pawnTransformPiece);
 
         }
 
@@ -122,12 +126,12 @@
         /// <returns>Растановка фигур на доске.</returns>
         public string GetForsythEdwardsNotation(bool onlyPositions = false)
         {
-            return game.GetForsythEdwardsNotation(onlyPositions);
+            return _game.GetForsythEdwardsNotation(onlyPositions);
         }
 
         public List<AvailableMove> AvailableMoves()
         {
-            return game.AvailableMoves().Select(move =>
+            return _game.AvailableMoves().Select(move =>
             {
                 var dto = new AvailableMove();
                 dto.From = new Position { X = move.From.X, Y = move.From.Y };
@@ -138,7 +142,7 @@
 
         public List<Move> GetMoves()
         {
-            return game.GetMoves().Select(move =>
+            return _game.GetMoves().Select(move =>
             {
                 var dto = Init(move);
                 return dto;
@@ -183,23 +187,23 @@
         public void Surrender(int playerId)
         {
             Domain.Side side = GetSide(playerId);
-            game.Surrender(side);
+            _game.Surrender(side);
         }
 
-        public GameSide StepSide => game.StepSide == Domain.Side.White ? GameSide.White : GameSide.Black;
+        public GameSide StepSide => _game.StepSide == Domain.Side.White ? GameSide.White : GameSide.Black;
 
-        public bool IsFinish => game.State == Domain.GameState.Finish;
+        public bool IsFinish => _game.State == Domain.GameState.Finish;
 
         public GameSide? WinSide
         {
             get
             {
-                if (game.WinSide == null)
+                if (_game.WinSide == null)
                 {
                     return null;
                 }
 
-                return game.WinSide == Domain.Side.White ? GameSide.White : GameSide.Black;
+                return _game.WinSide == Domain.Side.White ? GameSide.White : GameSide.Black;
             }
         }
 
@@ -207,12 +211,12 @@
         {
             get
             {
-                if (game.FinishReason == null)
+                if (_game.FinishReason == null)
                 {
                     return null;
                 }
 
-                switch (game.FinishReason)
+                switch (_game.FinishReason)
                 {
                     case Domain.FinishReason.Draw:
                         return Bg.Chess.Common.Enums.FinishReason.Draw;
@@ -223,7 +227,7 @@
                     case Domain.FinishReason.TimeOver:
                         return Bg.Chess.Common.Enums.FinishReason.TimeOver;
                     default:
-                        throw new Exception("finish reason unrecognized " + game.FinishReason);
+                        throw new Exception("finish reason unrecognized " + _game.FinishReason);
                 }
             }
         }

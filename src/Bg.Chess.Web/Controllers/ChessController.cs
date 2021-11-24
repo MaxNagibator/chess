@@ -191,6 +191,8 @@
             {
                 Id = game.Id,
                 EnemyName = game.WhitePlayer.Id == playerId ? game.BlackPlayer.Name : game.WhitePlayer.Name,
+                FieldWidth = game.FieldWidth,
+                FieldHeight = game.FieldHeight,
                 Notation = notation,
                 AvailableMoves = moves,
                 HistoryMoves = historyMoves,

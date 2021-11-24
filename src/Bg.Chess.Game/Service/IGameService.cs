@@ -48,7 +48,13 @@
             FillDtoV1(gameDto, game);
 
             string data = JsonConvert.SerializeObject(gameDto);
-            _gameRepo.SaveGame(game.Id, game.WhitePlayer.Id, game.BlackPlayer.Id, game.FinishReason, game.WinSide, data);
+            _gameRepo.SaveGame(game.Id,
+                game.WhitePlayer.Id,
+                game.BlackPlayer.Id,
+                game.FinishReason,
+                game.WinSide,
+                game.GameMode,
+                data);
         }
 
         public HistoryGame GetGame(string gameId)

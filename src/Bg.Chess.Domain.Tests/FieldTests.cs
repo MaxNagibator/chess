@@ -55,9 +55,9 @@ K  ")]
         private string GetFieldText(Field field)
         {
             var sb = new StringBuilder();
-            for (var h = field.FieldHeight - 1; h >= 0; h--)
+            for (var h = field.Height - 1; h >= 0; h--)
             {
-                for (var w = 0; w < field.FieldWidth; w++)
+                for (var w = 0; w < field.Width; w++)
                 {
                     var piece = field[w, h].Piece;
                     if (piece == null)
