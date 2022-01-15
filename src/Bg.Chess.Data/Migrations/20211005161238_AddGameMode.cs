@@ -20,7 +20,7 @@ SET GameMode = 0");
                 name: "GameMode",
                 table: "ChessGame",
                 type: "int",
-                nullable: true,
+                nullable: false,
                 oldClrType: typeof(int),
                 oldType: "int");
         }
