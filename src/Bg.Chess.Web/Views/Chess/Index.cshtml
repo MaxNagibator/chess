@@ -20,7 +20,7 @@
     <div id="searchBlock" class="game-search">
         <img src="/Content/Images/classic-mode.png" class="search-mode selected-mode" data-value="classic" title="Классическите шахматы" onclick="setMode(this)">
         <img src="/Content/Images/dragon-mode.png" class="search-mode" data-value="dragon" title="Дополение 'Дракон'" onclick="setMode(this)">
-        <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти игру</button>
+        <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти рейтинговую игру</button>
         <div class="show-is-search">
             <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
             <label>
@@ -28,6 +28,11 @@
                 <span id="searchSpan"></span>
                 <span id="searchSpan2"></span>
             </label>
+        </div>
+
+        <div>
+            <input id="targetGamePlayerName" value="maxnagibator@gmail.com " type="text" placeholder="почта игрока" />
+            <button class="btn btn-success hide-is-search" onclick="startTargetGame()">Бросить вызов игроку</button>
         </div>
     </div>
     <div id="fieldBlock" class="field-block">
@@ -113,6 +118,23 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-primary" onclick="confirmStart(true)"><i class="fa fa-check"></i>Начать игру</button>
                 <button type="button" class="btn btn-sm btn-secondary" onclick="confirmStart(false)"><i class="fa fa-times-circle"></i>Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="confirmStartTargetGameModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Вам вызов</h5>
+            </div>
+            <div class="modal-body">
+                Подтвердите начало игры
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-primary" onclick="confirmStartTargetGame(true)"><i class="fa fa-check"></i>Начать игру</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="confirmStartTargetGame(false)"><i class="fa fa-times-circle"></i>Отмена</button>
             </div>
         </div>
     </div>

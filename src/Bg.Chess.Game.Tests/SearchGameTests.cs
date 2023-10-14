@@ -27,7 +27,7 @@ namespace Bg.Chess.Game.Tests
         public void CheckStateWithoutSearchTest()
         {
             var state = _manager.Check(_player1.Id);
-            Assert.AreEqual(SearchStatus.NotFound, state);
+            Assert.AreEqual(RatingSearchStatus.NotFound, state);
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace Bg.Chess.Game.Tests
         {
             _manager.StartSearch(_player1, GameMode.Classic);
             var state = _manager.Check(_player1.Id);
-            Assert.AreEqual(SearchStatus.InProcess, state);
+            Assert.AreEqual(RatingSearchStatus.InProcess, state);
         }
 
         [Test]
@@ -45,8 +45,8 @@ namespace Bg.Chess.Game.Tests
             _manager.StartSearch(_player2, GameMode.Classic);
             var state1 = _manager.Check(_player1.Id);
             var state2 = _manager.Check(_player2.Id);
-            Assert.AreEqual(SearchStatus.NeedConfirm, state1);
-            Assert.AreEqual(SearchStatus.NeedConfirm, state2);
+            Assert.AreEqual(RatingSearchStatus.NeedConfirm, state1);
+            Assert.AreEqual(RatingSearchStatus.NeedConfirm, state2);
         }
 
         [Test]
@@ -63,8 +63,8 @@ namespace Bg.Chess.Game.Tests
             _manager.Confirm(confirmPlayer.Id);
             var state1 = _manager.Check(confirmPlayer.Id);
             var state2 = _manager.Check(anotherPlayer.Id);
-            Assert.AreEqual(SearchStatus.NeedConfirmOpponent, state1);
-            Assert.AreEqual(SearchStatus.NeedConfirm, state2);
+            Assert.AreEqual(RatingSearchStatus.NeedConfirmOpponent, state1);
+            Assert.AreEqual(RatingSearchStatus.NeedConfirm, state2);
         }
 
         [Test]
@@ -77,10 +77,10 @@ namespace Bg.Chess.Game.Tests
             var state2a = _manager.Confirm(_player2.Id);
             var state1b = _manager.Check(_player1.Id);
             var state2b = _manager.Check(_player2.Id);
-            Assert.AreEqual(SearchStatus.NeedConfirmOpponent, state1a);
-            Assert.AreEqual(SearchStatus.Finish, state2a);
-            Assert.AreEqual(SearchStatus.Finish, state1b);
-            Assert.AreEqual(SearchStatus.Finish, state2b);
+            Assert.AreEqual(RatingSearchStatus.NeedConfirmOpponent, state1a);
+            Assert.AreEqual(RatingSearchStatus.Finish, state2a);
+            Assert.AreEqual(RatingSearchStatus.Finish, state1b);
+            Assert.AreEqual(RatingSearchStatus.Finish, state2b);
         }
     }
 }

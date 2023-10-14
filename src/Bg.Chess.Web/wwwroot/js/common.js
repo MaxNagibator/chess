@@ -6,6 +6,13 @@
     Finish: 'Finish'
 }
 
+const TargetGameConfirmStatus = {
+    NotFound: 'NotFound',
+    NeedConfirmOpponent: 'NeedConfirmOpponent',
+    NeedConfirm: 'NeedConfirm',
+    Finish: 'Finish'
+}
+
 const FinishReason = {
     Mate: 'Mate',
     Surrender: 'Surrender',

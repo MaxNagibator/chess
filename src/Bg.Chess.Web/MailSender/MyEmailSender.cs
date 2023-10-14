@@ -38,6 +38,8 @@ namespace Bg.Chess.Web
         {
             if (_options.SaveLocal)
             {
+                // чтоб ссылка с логов корректно открывалась
+                htmlMessage = htmlMessage.Replace("&amp;", "&");
                 _mailLocalSaver.LogInformation("send mail to " + email + "\r\n" + subject + "\r\n" + htmlMessage);
                 return;
             }

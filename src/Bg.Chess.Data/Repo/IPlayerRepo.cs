@@ -6,6 +6,7 @@
     public interface IPlayerRepo
     {
         ChessPlayer FindPlayerByUserId(string userId);
+        ChessPlayer FindPlayerByName(string name);
         ChessPlayer CreatePlayer(string userId, string name);
         ChessPlayer GetPlayer(int id);
     }
@@ -30,6 +31,13 @@
         {
             var player = _unitOfWork.Context.ChessPlayers
                 .FirstOrDefault(x => x.UserId == userId);
+            return player;
+        }
+
+        public ChessPlayer FindPlayerByName(string userName)
+        {
+            var player = _unitOfWork.Context.ChessPlayers
+                .FirstOrDefault(x => x.Name == userName);
             return player;
         }
 

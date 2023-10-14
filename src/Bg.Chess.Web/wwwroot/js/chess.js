@@ -19,8 +19,9 @@ function startSearch() {
                 alert(response.message);
             } else {
                 currentSearchId = 217;
-                startTime = new Date();
+                //startTime = new Date();
                 document.getElementById('searchBlock').classList.add('in-process');
+                document.getElementById('searchBlock').classList.add('ranked-game');
             }
         },
         always: function (data) {
@@ -39,7 +40,7 @@ function setMode(elem) {
 }
 
 let currentSearchId = 999;
-let startTime = null;
+//let startTime = null;
 
 let checkSearchInProcess = false;
 
@@ -65,14 +66,14 @@ setInterval(function () {
                 } else {
                     if (status == SearchStatuses.NotFound) {
                         currentSearchId = -1;
-                        document.getElementById('searchBlock').classList.remove('in-process');
+                        SearchBlockRemoveClassInProcess();
                     } else if (status == SearchStatuses.InProcess) {
                         document.getElementById('searchSpan').innerHTML = document.getElementById('searchSpan').innerHTML + '.';
                     } else if (status == SearchStatuses.NeedConfirmOpponent) {
                         document.getElementById('searchSpan2').innerHTML = 'Ожидается подтверждение оппонента';
                     } else if (status == SearchStatuses.Finish) {
                         currentSearchId = -1;
-                        document.getElementById('searchBlock').classList.remove('in-process');
+                        SearchBlockRemoveClassInProcess();
                         goGame();
                     } else {
                         console.error('unrecognized status -> ' + status);
@@ -118,7 +119,7 @@ function confirmStart(isOk) {
             success: function (data) {
                 checkSearchInProcess = false;
                 confirmStartGameModal.hide();
-                document.getElementById('searchBlock').classList.remove('in-process');
+                SearchBlockRemoveClassInProcess();
             },
             always: function (data) {
             }
@@ -132,12 +133,135 @@ function stopSearch() {
         data: {
         },
         success: function (data) {
-            document.getElementById('searchBlock').classList.remove('in-process');
+            SearchBlockRemoveClassInProcess();
         },
         always: function (data) {
             checkSearchInProcess = false;
         }
     });
+}
+
+let startTargetGameInProcess = false;
+
+function startTargetGame() {
+    if (startTargetGameInProcess) {
+        return;
+    }
+    startTargetGameInProcess = true;
+    let mode = document.getElementsByClassName('search-mode selected-mode')[0].getAttribute('data-value');
+    let playerName = document.getElementById('targetGamePlayerName').value;
+    SendRequest({
+        url: '/Chess/StartSearchTargetGame',
+        body: {
+            mode: mode,
+            playerName: playerName,
+        },
+        success: function (data) {
+            let response = JSON.parse(data.responseText);
+            if (response.error) {
+                alert(response.message);
+            } else {
+                targetGameSearchId = 217;
+                document.getElementById('searchBlock').classList.add('in-process');
+                document.getElementById('searchBlock').classList.add('target-game');;
+            }
+        },
+        always: function (data) {
+            searchRequestInProcess = false;
+        }
+    });
+}
+
+let targetGameSearchId = 999;
+
+let checkSearchTargetGameInProcess = false;
+
+setInterval(function () {
+    if (targetGameSearchId == -1) {
+        return;
+    }
+    if (checkSearchTargetGameInProcess) {
+        return;
+    }
+    checkSearchTargetGameInProcess = true;
+    setTimeout(function () {
+        SendRequest({
+            url: '/Chess/CheckSearchTargetGame',
+            data: {
+            },
+            success: function (data) {
+                let response = JSON.parse(data.responseText);
+                let status = response.status;
+                document.getElementById('searchSpan2').innerHTML = '';
+                if (status == TargetGameConfirmStatus.NeedConfirm) {
+                    goConfirmAlert();
+                } else {
+                    if (status == TargetGameConfirmStatus.NotFound) {
+                        targetGameSearchId = -1;
+                        SearchBlockRemoveClassInProcess();
+                    } else if (status == TargetGameConfirmStatus.NeedConfirmOpponent) {
+                        document.getElementById('searchSpan2').innerHTML = 'Ожидается подтверждение оппонента';
+                    } else if (status == TargetGameConfirmStatus.Finish) {
+                        targetGameSearchId = -1;
+                        SearchBlockRemoveClassInProcess();
+                        goGame();
+                    } else {
+                        console.error('unrecognized status -> ' + status);
+                    }
+                    checkSearchTargetGameInProcess = false;
+                }
+            },
+            always: function (data) {
+            }
+        });
+    }, 1000);
+}, 1000);
+
+//сделать обёртку для показа модалок, а то чёто много дублирования
+let confirmStartTargetGameModalDom = null;
+let confirmStartTargetGameModal = null;
+function goConfirmAlert() {
+    if (confirmStartTargetGameModal == null) {
+        confirmStartTargetGameModalDom = document.getElementById('confirmStartTargetGameModal');
+        confirmStartTargetGameModal = new bootstrap.Modal(confirmStartTargetGameModalDom);
+    }
+    confirmStartTargetGameModal.show();
+}
+
+function confirmStartTargetGame(isOk) {
+    if (isOk) {
+        SendRequest({
+            url: '/Chess/ConfirmSearchTargetGame',
+            data: {
+            },
+            success: function (data) {
+                checkSearchTargetGameInProcess = false;
+                confirmStartTargetGameModal.hide();
+            },
+            always: function (data) {
+            }
+        });
+    } else {
+        SendRequest({
+            url: '/Chess/StopSearchTargetGame',
+            data: {
+            },
+            success: function (data) {
+                checkSearchTargetGameInProcess = false;
+                confirmStartTargetGameModal.hide();
+                SearchBlockRemoveClassInProcess();
+            },
+            always: function (data) {
+            }
+        });
+    }
+}
+
+function SearchBlockRemoveClassInProcess() {
+    let elem = document.getElementById('searchBlock');
+    elem.classList.remove('in-process');
+    elem.classList.remove('target-game');
+    elem.classList.remove('ranked-game');
 }
 
 let game = {

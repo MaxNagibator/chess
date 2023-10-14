@@ -208,7 +208,7 @@
             var players = playerIds.ToDictionary(x => x, x => _playerService.GetPlayer(x));
             foreach (var dbGame in dbGames)
             {
-                var game = new GameInfo(_pieceTypes, dbGame.LogicalName, (GameMode)dbGame.GameMode, players[dbGame.WhitePlayerId], players[dbGame.BlackPlayerId]);
+                var game = new GameInfo(_pieceTypes, dbGame.LogicalName, (GameType)dbGame.GameType, (GameMode)dbGame.GameMode, players[dbGame.WhitePlayerId], players[dbGame.BlackPlayerId]);
                 var gameDto = JsonConvert.DeserializeObject<SaveGameDtoV1>(dbGame.Data);
                 var gameInfo = new HistoryGame();
                 FillGameFromDtoV1(gameInfo, gameDto);

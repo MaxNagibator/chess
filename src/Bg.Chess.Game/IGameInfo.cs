@@ -14,6 +14,7 @@
         Player BlackPlayer { get; }
         GameSide StepSide { get; }
         GameMode GameMode { get; }
+        GameType GameType { get; }
         bool IsMyGame(int playerId);
         int FieldWidth { get; }
         int FieldHeight { get; }
@@ -37,6 +38,7 @@
         public Player WhitePlayer { get; private set; }
         public Player BlackPlayer { get; private set; }
         public GameMode GameMode { get; private set; }
+        public GameType GameType { get; private set; }
         public int FieldWidth => _game.Width;
         public int FieldHeight => _game.Height;
 
@@ -45,12 +47,13 @@
 
         private Domain.Game _game;
 
-        public GameInfo(PieceTypes pieceTypes, string id, GameMode gameMode, Player whitePlayer, Player blackPlayer)
+        public GameInfo(PieceTypes pieceTypes, string id, GameType gameType, GameMode gameMode, Player whitePlayer, Player blackPlayer)
         {
             Id = id;
             WhitePlayer = whitePlayer;
             BlackPlayer = blackPlayer;
             GameMode = gameMode;
+            GameType = gameType;
             _game = new Domain.Game();
             if(gameMode == GameMode.Dragon)
             {

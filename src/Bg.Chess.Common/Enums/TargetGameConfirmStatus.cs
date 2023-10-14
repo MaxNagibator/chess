@@ -1,9 +1,9 @@
 ﻿namespace Bg.Chess.Common.Enums
 {
     /// <summary>
-    /// Статус поиска.
+    /// Статус вызова.
     /// </summary>
-    public enum SearchStatus
+    public enum TargetGameConfirmStatus
     {
         /// <summary>
         /// Не существует.
@@ -11,9 +11,9 @@
         NotFound = 0,
 
         /// <summary>
-        /// В процессе.
+        /// Ожидается подтверждение противника.
         /// </summary>
-        InProcess = 1,
+        NeedConfirmOpponent = 1,
 
         /// <summary>
         /// Ожидается подтверждение.
@@ -21,13 +21,8 @@
         NeedConfirm = 2,
 
         /// <summary>
-        /// Ожидается подтверждение противника.
-        /// </summary>
-        NeedConfirmOpponent = 3,
-
-        /// <summary>
         /// Окончен.
         /// </summary>
-        Finish = 4,
+        Finish = 3,
     }
 }

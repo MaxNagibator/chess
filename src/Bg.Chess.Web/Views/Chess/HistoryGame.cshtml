@@ -31,7 +31,9 @@
     window.onload = function () {
         let game = {
             notation: '@Model.Positions',
-            mySide: Side.Spectator
+            mySide: Side.Spectator,
+            fieldWidth: @(Model.Positions.Split('/')[0].Length),
+            fieldHeight: @(Model.Positions.Split('/').Length)
         };
         initField("field2", game);
     }

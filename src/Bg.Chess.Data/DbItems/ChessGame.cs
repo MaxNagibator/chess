@@ -22,6 +22,8 @@ namespace Bg.Chess.Data
 
         public int GameMode { get; set; }
 
+        public int GameType { get; set; }
+
         public string Data { get; set; }
     }
 }

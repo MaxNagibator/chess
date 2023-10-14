@@ -6,6 +6,7 @@
     public interface IPlayerService
     {
         public Player FindPlayerByUserId(string userId);
+        public Player FindPlayerByName(string name);
         public Player GetOrCreatePlayerByUserId(string userId, string name);
         public Player GetPlayer(int id);
     }
@@ -23,6 +24,16 @@
         {
             var dbPlayer = _playerRepo.FindPlayerByUserId(userId);
             if(dbPlayer == null)
+            {
+                return null;
+            }
+            return FillPlayerDto(dbPlayer);
+        }
+
+        public Player FindPlayerByName(string name)
+        {
+            var dbPlayer = _playerRepo.FindPlayerByName(name);
+            if (dbPlayer == null)
             {
                 return null;
             }

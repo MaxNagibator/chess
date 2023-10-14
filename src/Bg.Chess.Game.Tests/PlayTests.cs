@@ -24,7 +24,7 @@ namespace Bg.Chess.Game.Tests
             _manager.Init(new List<IGameInfo>());
 
             var mock = new Mock<IGameRepo>();
-            mock.Setup(a => a.SaveGame(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<string>()));
+            mock.Setup(a => a.SaveGame(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<GameMode>(), It.IsAny<string>()));
             _gameService = new GameService(null, null, mock.Object, pieceTypes, new TestLoggerFactory());
         }
 
@@ -35,6 +35,22 @@ namespace Bg.Chess.Game.Tests
             _manager.StartSearch(_player2, GameMode.Classic);
             _manager.Confirm(_player1.Id);
             _manager.Confirm(_player2.Id);
+
+            var game = _manager.FindMyPlayingGame(_player2.Id);
+            Assert.AreEqual(true, game.IsMyGame(_player1.Id));
+            Assert.AreEqual(true, game.IsMyGame(_player2.Id));
+
+            game.Move(game.WhitePlayer.Id, 5, 1, 5, 3);
+            game.Move(game.BlackPlayer.Id, 5, 6, 5, 4);
+            _gameService.SaveGame(game);
+        }
+
+        [Test]
+        public void CheckStateAfterTwoConfirmTargetGameTest()
+        {
+            _manager.StartSearchTargetGame(_player1, _player2, GameMode.Classic);
+            _manager.ConfirmTargetGame(_player2.Id);
+            _manager.ConfirmTargetGame(_player1.Id);
 
             var game = _manager.FindMyPlayingGame(_player2.Id);
             Assert.AreEqual(true, game.IsMyGame(_player1.Id));

@@ -11,6 +11,7 @@
     using Bg.Chess.Common.Enums;
     using Microsoft.AspNetCore.Authorization;
     using Bg.Chess.Data.Repo;
+    using Bg.Chess.Web.Models.Common;
 
     [Authorize]
     public class ChessController : BaseController
@@ -61,6 +62,24 @@
         [HttpPost]
         public JsonResult StartSearch(string mode)
         {
+            var gameMode = GetMode(mode);
+
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = this.User.FindFirstValue(ClaimTypes.Name);
+
+            var user = _userService.GetUser(userId);
+            if (!user.IsEmailConfirmed)
+            {
+                return Json(new { error = true, message = "Подтвердите почту, перед началом игры" });
+            }
+
+            var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
+            _gameManager.StartSearch(player, gameMode);
+            return Json(new { error = false });
+        }
+
+        private static GameMode GetMode(string mode)
+        {
             GameMode gameMode;
             if (mode == "classic")
             {
@@ -75,18 +94,7 @@
                 throw new System.Exception("unrecognized mode " + mode);
             }
 
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = this.User.FindFirstValue(ClaimTypes.Name);
-
-            var user = _userService.GetUser(userId);
-            if (!user.IsEmailConfirmed)
-            {
-                return Json(new { error = true, message = "Подтвердите почту, перед началом игры" });
-            }
-
-            var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
-            _gameManager.StartSearch(player, gameMode);
-            return Json(new { error = false });
+            return gameMode;
         }
 
         [HttpPost]
@@ -110,6 +118,53 @@
         {
             var playerId = GetPlayerId();
             _gameManager.StopSearch(playerId);
+            return Json(new { error = false });
+        }
+
+        public JsonResult StartSearchTargetGame(string mode, string playerName)
+        {
+            var gameMode = GetMode(mode);
+
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = this.User.FindFirstValue(ClaimTypes.Name);
+
+            var user = _userService.GetUser(userId);
+            if (!user.IsEmailConfirmed)
+            {
+                return Json(new { error = true, message = "Подтвердите почту, перед началом игры" });
+            }
+            var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
+
+            var targetPlayer = _playerService.FindPlayerByName(playerName);
+            if (targetPlayer == null)
+            {
+                throw new BusinessException("Противник " + playerName + " не найден");
+            }
+            _gameManager.StartSearchTargetGame(player, targetPlayer, gameMode);
+            return Json(new { error = false });
+        }
+
+        [HttpPost]
+        public JsonResult CheckSearchTargetGame()
+        {
+            var playerId = GetPlayerId();
+            var status = _gameManager.CheckTargetGame(playerId);
+            return Json(new { status = status.ToString() });
+        }
+
+        [HttpPost]
+        public JsonResult ConfirmSearchTargetGame()
+        {
+            var playerId = GetPlayerId();
+            var status = _gameManager.ConfirmTargetGame(playerId);
+            return Json(new { status = status.ToString() });
+        }
+
+        [HttpPost]
+        public JsonResult StopSearchTargetGame()
+        {
+            var playerId = GetPlayerId();
+            _gameManager.StopSearchTargetGame(playerId);
             return Json(new { error = false });
         }
 
