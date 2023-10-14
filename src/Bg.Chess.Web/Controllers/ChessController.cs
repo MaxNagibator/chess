@@ -149,7 +149,7 @@
         {
             var playerId = GetPlayerId();
             var status = _gameManager.CheckTargetGame(playerId);
-            return Json(new { status = status.ToString() });
+            return Json(new { status = status.Status.ToString(), opponentName = status.OpponentPlayer?.Name });
         }
 
         [HttpPost]
@@ -157,7 +157,7 @@
         {
             var playerId = GetPlayerId();
             var status = _gameManager.ConfirmTargetGame(playerId);
-            return Json(new { status = status.ToString() });
+            return Json(new { status = status.Status.ToString(), opponentName = status.OpponentPlayer?.Name });
         }
 
         [HttpPost]

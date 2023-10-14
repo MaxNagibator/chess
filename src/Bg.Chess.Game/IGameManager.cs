@@ -20,8 +20,8 @@
 
         void StartSearchTargetGame(Player player, Player targetPlayer, GameMode gameMode);
         void StopSearchTargetGame(int playerId);
-        TargetGameConfirmStatus CheckTargetGame(int playerId);
-        TargetGameConfirmStatus ConfirmTargetGame(int playerId);
+        TargetGameStatusWithOpponent CheckTargetGame(int playerId);
+        TargetGameStatusWithOpponent ConfirmTargetGame(int playerId);
     }
 
     public class GameManager : IGameManager
@@ -50,7 +50,6 @@
             public Player Player { get; set; }
             public Player TargetPlayer { get; set; }
             public TargetGameConfirmStatus Status { get; set; }
-            public string GameId { get; set; }
             public DateTime? GameStart { get; set; }
             public GameMode GameMode { get; set; }
         }
@@ -106,7 +105,7 @@
             if (searchs.Count() == 2)
             {
                 _logger.LogInformation("Search Finish");
-                var gameId = DateTime.Now.ToString("yyyyMMddHHmmss") + Guid.NewGuid().ToString("N");
+                var gameId = GetGameId();
                 ratingSearchList[0].GameId = gameId;
                 ratingSearchList[0].Status = RatingSearchStatus.NeedConfirm;
                 ratingSearchList[1].GameId = gameId;
@@ -215,6 +214,10 @@
 
         public void StartSearchTargetGame(Player player, Player targetPlayer, GameMode gameMode)
         {
+            if (player.Id == targetPlayer.Id)
+            {
+                throw new BusinessException("Нельзя бросить вызов самому себе.");
+            }
             lock (lockSearchList)
             {
                 var search = ratingSearchList.FirstOrDefault(x => x.Player.Id == player.Id && x.Status != RatingSearchStatus.Finish);
@@ -277,8 +280,7 @@
             }
         }
 
-
-        public TargetGameConfirmStatus ConfirmTargetGame(int playerId)
+        public TargetGameStatusWithOpponent ConfirmTargetGame(int playerId)
         {
             lock (lockSearchList)
             {
@@ -295,7 +297,8 @@
                     {
                         search.Status = TargetGameConfirmStatus.Finish;
                         GetWhiteBlackPlayer(search.Player, search.TargetPlayer, out Player whitePlayer, out Player blackPlayer);
-                        IGameInfo game = new GameInfo(_pieceTypes, search.GameId, GameType.Ranked, search.GameMode, whitePlayer, blackPlayer);
+                        var gameId = GetGameId();
+                        IGameInfo game = new GameInfo(_pieceTypes, gameId, GameType.Ranked, search.GameMode, whitePlayer, blackPlayer);
                         // если никто не сходил, то игра пропадает после перезапуска пула.
                         //_gameService.SaveGame(game);
                         _games.Add(game);
@@ -317,20 +320,25 @@
                     }
                 }
 
-                return search.Status;
+                return new TargetGameStatusWithOpponent { Status = search.Status };
             }
         }
 
-        public TargetGameConfirmStatus CheckTargetGame(int playerId)
+        private string GetGameId()
+        {
+            return DateTime.Now.ToString("yyyyMMddHHmmss") + Guid.NewGuid().ToString("N");
+        }
+
+        public TargetGameStatusWithOpponent CheckTargetGame(int playerId)
         {
             var search = targetGameList.FirstOrDefault(x => x.Player.Id == playerId || x.TargetPlayer.Id == playerId);
             if (search == null)
             {
                 if (_games.Any(x => x.GameType == GameType.Target && x.IsFinish == false && x.IsMyGame(playerId)))
                 {
-                    return TargetGameConfirmStatus.Finish;
+                    return new TargetGameStatusWithOpponent { Status = TargetGameConfirmStatus.Finish };
                 }
-                return TargetGameConfirmStatus.NotFound;
+                return new TargetGameStatusWithOpponent { Status = TargetGameConfirmStatus.NotFound };
             }
 
             if (search.TargetPlayer.Id == playerId)
@@ -338,15 +346,15 @@
                 // если это второй игрок справшивает статус вызова, то инвертируем ему статусы подтвержедния
                 if (search.Status == TargetGameConfirmStatus.NeedConfirmOpponent)
                 {
-                    return TargetGameConfirmStatus.NeedConfirm;
+                    return new TargetGameStatusWithOpponent { Status = TargetGameConfirmStatus.NeedConfirm, OpponentPlayer = search.Player };
                 }
                 if (search.Status == TargetGameConfirmStatus.NeedConfirm)
                 {
-                    return TargetGameConfirmStatus.NeedConfirmOpponent;
+                    return new TargetGameStatusWithOpponent { Status = TargetGameConfirmStatus.NeedConfirmOpponent, OpponentPlayer = search.Player };
                 }
             }
 
-            return search.Status;
+            return new TargetGameStatusWithOpponent { Status = search.Status, OpponentPlayer = search.TargetPlayer };
         }
     }
 }

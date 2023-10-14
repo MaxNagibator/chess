@@ -20,19 +20,27 @@
     <div id="searchBlock" class="game-search">
         <img src="/Content/Images/classic-mode.png" class="search-mode selected-mode" data-value="classic" title="Классическите шахматы" onclick="setMode(this)">
         <img src="/Content/Images/dragon-mode.png" class="search-mode" data-value="dragon" title="Дополение 'Дракон'" onclick="setMode(this)">
-        <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти рейтинговую игру</button>
-        <div class="show-is-search">
-            <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
-            <label>
-                Идёт поиск игры
-                <span id="searchSpan"></span>
-                <span id="searchSpan2"></span>
-            </label>
+        <div class="ranked-game-block">
+            <button class="btn btn-success hide-is-search" onclick="startSearch()">Найти рейтинговую игру</button>
+            <div class="show-is-search">
+                <button class="btn btn-warning" onclick="stopSearch()">Остановить поиск</button>
+                <label>
+                    Идёт поиск игры
+                    <span id="searchSpan"></span>
+                    <span id="searchSpan2"></span>
+                </label>
+            </div>
         </div>
-
-        <div>
-            <input id="targetGamePlayerName" value="maxnagibator@gmail.com " type="text" placeholder="почта игрока" />
+        <div class="target-game-block">
             <button class="btn btn-success hide-is-search" onclick="startTargetGame()">Бросить вызов игроку</button>
+            <input id="targetGamePlayerName" class="hide-is-search" value="maxnagibator@gmail.com " type="text" placeholder="почта игрока" style="width: 300px" />
+            <div class="show-is-search">
+                <button class="btn btn-warning" onclick="stopSearchTargetGame()">Отменить вызов</button>
+                <label>
+                    <span id="targetGameSearchSpan"></span>
+                    <span id="targetGameSearchSpan2"></span>
+                </label>
+            </div>
         </div>
     </div>
     <div id="fieldBlock" class="field-block">
@@ -127,7 +135,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Вам вызов</h5>
+                <h5 class="modal-title" id="confirmStartTargetGameModalTitle">Вызов</h5>
             </div>
             <div class="modal-body">
                 Подтвердите начало игры

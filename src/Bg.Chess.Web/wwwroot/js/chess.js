@@ -167,7 +167,7 @@ function startTargetGame() {
             }
         },
         always: function (data) {
-            searchRequestInProcess = false;
+            startTargetGameInProcess = false;
         }
     });
 }
@@ -177,9 +177,9 @@ let targetGameSearchId = 999;
 let checkSearchTargetGameInProcess = false;
 
 setInterval(function () {
-    if (targetGameSearchId == -1) {
-        return;
-    }
+    //if (targetGameSearchId == -1) {
+    //    return;
+    //}
     if (checkSearchTargetGameInProcess) {
         return;
     }
@@ -192,17 +192,19 @@ setInterval(function () {
             success: function (data) {
                 let response = JSON.parse(data.responseText);
                 let status = response.status;
-                document.getElementById('searchSpan2').innerHTML = '';
+                document.getElementById('targetGameSearchSpan2').innerHTML = '';
                 if (status == TargetGameConfirmStatus.NeedConfirm) {
-                    goConfirmAlert();
+                    addInProcessTargetGameStatus();
+                    goConfirmTargetGameAlert(response.opponentName);
                 } else {
                     if (status == TargetGameConfirmStatus.NotFound) {
                         targetGameSearchId = -1;
                         SearchBlockRemoveClassInProcess();
                     } else if (status == TargetGameConfirmStatus.NeedConfirmOpponent) {
-                        document.getElementById('searchSpan2').innerHTML = 'Ожидается подтверждение оппонента';
+                        addInProcessTargetGameStatus();
+                        document.getElementById('targetGameSearchSpan2').innerHTML = 'Ожидается подтверждение вызова от ' + response.opponentName;
                     } else if (status == TargetGameConfirmStatus.Finish) {
-                        targetGameSearchId = -1;
+/*                        targetGameSearchId = -1;*/
                         SearchBlockRemoveClassInProcess();
                         goGame();
                     } else {
@@ -215,16 +217,23 @@ setInterval(function () {
             }
         });
     }, 1000);
-}, 1000);
+}, 5000);
+
+function addInProcessTargetGameStatus() {
+    document.getElementById('searchBlock').classList.add('in-process');
+    document.getElementById('searchBlock').classList.add('target-game');;
+}
 
 //сделать обёртку для показа модалок, а то чёто много дублирования
 let confirmStartTargetGameModalDom = null;
 let confirmStartTargetGameModal = null;
-function goConfirmAlert() {
+function goConfirmTargetGameAlert(opponent) {
     if (confirmStartTargetGameModal == null) {
         confirmStartTargetGameModalDom = document.getElementById('confirmStartTargetGameModal');
         confirmStartTargetGameModal = new bootstrap.Modal(confirmStartTargetGameModalDom);
     }
+    let title = document.getElementById('confirmStartTargetGameModalTitle');
+    title.innerHTML = 'Вызов от ' + opponent;
     confirmStartTargetGameModal.show();
 }
 
@@ -255,6 +264,20 @@ function confirmStartTargetGame(isOk) {
             }
         });
     }
+}
+
+function stopSearchTargetGame() {
+    SendRequest({
+        url: '/Chess/StopSearchTargetGame',
+        data: {
+        },
+        success: function (data) {
+            SearchBlockRemoveClassInProcess();
+        },
+        always: function (data) {
+            checkSearchInProcess = false;
+        }
+    });
 }
 
 function SearchBlockRemoveClassInProcess() {

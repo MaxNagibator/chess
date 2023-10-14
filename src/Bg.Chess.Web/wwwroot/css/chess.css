@@ -173,6 +173,18 @@
     display: none;
 }
 
+.ranked-game-block,
+.target-game-block {
+    margin-top: 10px;
+}
+
+.game-search.target-game .ranked-game-block {
+    display: none;
+}
+.game-search.ranked-game .target-game-block {
+    display: none;
+}
+
 .field-block {
     display: inline-block;
 }
