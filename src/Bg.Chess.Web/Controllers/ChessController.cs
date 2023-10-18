@@ -1,6 +1,7 @@
 ﻿namespace Bg.Chess.Web.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.Logging;
     using System.Collections.Generic;
     using System.Linq;
@@ -9,9 +10,6 @@
     using Bg.Chess.Game;
     using Bg.Chess.Web.Models;
     using Bg.Chess.Common.Enums;
-    using Microsoft.AspNetCore.Authorization;
-    using Bg.Chess.Data.Repo;
-    using Bg.Chess.Web.Models.Common;
 
     [Authorize]
     public class ChessController : BaseController
@@ -302,6 +300,7 @@
 
         [HttpGet]
         [Route("/History/{gameId}")]
+        [AllowAnonymous]
         public ActionResult HistoryGame(string gameId)
         {
             var game = _gameService.GetGame(gameId);
@@ -337,6 +336,21 @@
 
             model.Positions = game.Positions;
             return View("HistoryGame", model);
+        }
+
+        [HttpGet]
+        [Route("/HistoryData/{gameId}")]
+        [AllowAnonymous]
+        public JsonResult GetHistoryData(string gameId)
+        {
+            var game = _gameService.GetGame(gameId);
+           
+            return Json(new
+            {
+                notation = game.Positions,
+                fieldWidth = game.Positions.Split('/')[0].Length,
+                fieldHeight = game.Positions.Split('/').Length,
+            });
         }
 
         private HistoryGameModel.Move FillMove(Bg.Chess.Game.Move x)

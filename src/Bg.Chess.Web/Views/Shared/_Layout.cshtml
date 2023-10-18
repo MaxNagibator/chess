@@ -37,15 +37,6 @@
                                     }
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Chess" asp-action="Index">
-                                    Бросить вызов
-                                    @if (user.IsEmailConfirmed == false)
-                                    {
-                                        <i class="fa fa-lock"></i>
-                                    }
-                                </a>
-                            </li>
                             @if (user.IsEmailConfirmed)
                             {
                                 <li class="nav-item">

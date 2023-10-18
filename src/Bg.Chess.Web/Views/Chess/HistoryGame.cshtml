@@ -37,6 +37,7 @@
         };
         initField("field2", game);
     }
+    let gameId = '@Model.Id';
 </script>
 @if(Model.FinishReason == null)
 {
@@ -44,8 +45,11 @@
     let gameIsFinish = false;
     function goGame(alwaysCallback) {
         SendRequest({
-            url: '/Chess/GetGame',
-            method: 'POST',
+            url: '/HistoryData/'+gameId,
+            body: {
+                gameId: gameId
+            },
+            method: 'GET',
             success: function (data) {
                 let data2 = JSON.parse(data.responseText);
                 initGame(data2);
@@ -61,31 +65,20 @@
         game = {
             mySide: Side.Spectator,
         };
-        game.id = data2.id;
-        game.stepSide = data2.stepSide;
-        game.status = data2.status;
-        game.isFinish = data2.isFinish;
-        game.finishReason = data2.finishReason;
-        game.winSide = data2.winSide;
-        game.availableMoves = data2.availableMoves;
         game.notation = data2.notation;
-        game.historyMoves = data2.historyMoves;
         game.fieldWidth = data2.fieldWidth;
         game.fieldHeight = data2.fieldHeight;
-
-        if (game.isFinish == false) {
-        } else {
-            gameIsFinish = true;
-        }
-
         initField("field2", game);
-        initHistory('historyBlock', game);
     }
 
     let checkEnemyStepInProcess = false;;
 
     function CheckGame() {
         if (gameIsFinish) {
+            return;
+        }
+
+        if (checkEnemyStepInProcess) {
             return;
         }
 
