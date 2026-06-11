@@ -45,5 +45,10 @@
         /// Методы получения фигуры для превращения пешки.
         /// </summary>
         public Dictionary<string, Func<Side, Piece>> PawnTransforms { get; set; }
+
+        /// <summary>
+        /// Включить автоматические ничьи по классическим правилам.
+        /// </summary>
+        public bool AutomaticDrawRulesEnabled { get; set; }
     }
 }

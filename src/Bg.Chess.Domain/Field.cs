@@ -83,6 +83,7 @@
             WidthSymbols = rules.WidthSymbols;
             HeightSymbols = rules.HeightSymbols;
             PawnTransforms = rules.PawnTransforms;
+            AutomaticDrawRulesEnabled = rules.AutomaticDrawRulesEnabled;
             Moves = new List<Move>();
         }
 
@@ -125,6 +126,11 @@
         /// Методы получения фигуры для превращения пешки.
         /// </summary>
         public Dictionary<string, Func<Side, Piece>> PawnTransforms { get; private set; }
+
+        /// <summary>
+        /// Включены ли автоматические ничьи по классическим правилам.
+        /// </summary>
+        public bool AutomaticDrawRulesEnabled { get; private set; }
 
         /// <summary>
         /// Взять позицию по координатам.

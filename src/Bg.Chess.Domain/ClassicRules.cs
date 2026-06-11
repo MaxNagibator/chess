@@ -14,6 +14,7 @@
             FieldHeight = 8;
             WidthSymbols = "abcdefgh";
             HeightSymbols = "12345678";
+            AutomaticDrawRulesEnabled = true;
             Positions = new List<Position>
             {
                 new Position(0, 0, PieceBuilder.Rook(Side.White)),

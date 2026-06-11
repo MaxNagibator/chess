@@ -10,7 +10,29 @@
     /// </summary>
     public class Game
     {
+        /// <summary>
+        /// Ничья при 50 холостых ходах.
+        /// </summary>
+        /// <remarks>
+        /// Если игроки за последние 50 ходов не сделали ни одного хода пешкой,
+        /// а также не совершили ни одного взятия, то такой партии присуждается ничья.
+        /// </remarks>
+        private const int FiftyMoveRuleHalfMoveLimit = 100;
+
+        /// <summary>
+        /// Ничья при троекратном повторение позиции.
+        /// </summary>
+        /// <remarks>
+        /// Т.е., когда одно и тоже положение на доске повторяется 3 раза.
+        /// В этом случае должны соблюдаться два условия:
+        /// повторения делают оба шахматиста;
+        /// возможные позиции фигур аналогичны ― то есть один и тот же тип фигуры три раза встает на одну и ту же клетку.
+        /// Пример ситуации ― когда два коня поменялись местами, но оказались на тех же клетках.
+        /// </remarks>
+        private const int ThreefoldRepetitionLimit = 3;
+
         private Field _field;
+        private readonly Dictionary<string, int> _positionRepeatCounts = new Dictionary<string, int>();
 
         /// <summary>
         /// Состояние игры.
@@ -86,6 +108,7 @@
                 throw new Exception("need one black king");
             }
             State = GameState.InProgress;
+            RegisterCurrentPosition();
         }
 
         public List<AvailableMove> AvailableMoves()
@@ -162,6 +185,7 @@
             else if (mate == CheckMateResult.None)
             {
                 StepSide = StepSide.Invert();
+                CheckAutomaticDraw();
             }
             else
             {
@@ -330,6 +354,67 @@
         public List<Position> GetPositions()
         {
             return _field.Positions;
+        }
+
+        private void CheckAutomaticDraw()
+        {
+            if (!_field.AutomaticDrawRulesEnabled)
+            {
+                return;
+            }
+
+            RegisterCurrentPosition();
+            if (GetHalfMoveClock() >= FiftyMoveRuleHalfMoveLimit || IsThreefoldRepetition())
+            {
+                State = GameState.Finish;
+                FinishReason = Domain.FinishReason.Draw;
+            }
+        }
+
+        private void RegisterCurrentPosition()
+        {
+            if (_field == null || !_field.AutomaticDrawRulesEnabled)
+            {
+                return;
+            }
+
+            var positionKey = GetPositionRepeatKey();
+            if (_positionRepeatCounts.ContainsKey(positionKey))
+            {
+                _positionRepeatCounts[positionKey]++;
+            }
+            else
+            {
+                _positionRepeatCounts.Add(positionKey, 1);
+            }
+        }
+
+        private bool IsThreefoldRepetition()
+        {
+            var positionKey = GetPositionRepeatKey();
+            return _positionRepeatCounts.TryGetValue(positionKey, out var count) && count >= ThreefoldRepetitionLimit;
+        }
+
+        private int GetHalfMoveClock()
+        {
+            var withoutKillAndPawnMoveCount = 0;
+            for (var i = _field.Moves.Count - 1; i >= 0; i--)
+            {
+                if (_field.Moves[i].Runner.Type is Pawn || _field.Moves[i].KillEnemy != null)
+                {
+                    break;
+                }
+
+                withoutKillAndPawnMoveCount++;
+            }
+
+            return withoutKillAndPawnMoveCount;
+        }
+
+        private string GetPositionRepeatKey()
+        {
+            var notationParts = GetForsythEdwardsNotation().Split(' ');
+            return string.Join(" ", notationParts.Take(4));
         }
     }
 }
