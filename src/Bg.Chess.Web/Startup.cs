@@ -1,4 +1,4 @@
-using Bg.Chess.Game;
+п»їusing Bg.Chess.Game;
 using Bg.Chess.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +27,7 @@ namespace Bg.Chess.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
+                options.UseNpgsql(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -64,7 +64,7 @@ namespace Bg.Chess.Web
                 options.Password.RequiredLength = 3;
             });
 
-            // todo сделать шкатулочку зависимостей
+            // todo пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IUserRepo, UserRepo>();
