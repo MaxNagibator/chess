@@ -22,24 +22,15 @@ on:
           - release
 
 env:
-  PROJECT_FILE: 'src/Bg.Chess.Web/Bg.Chess.Web.csproj'
+  SOLUTION_FILE: 'src/Bg.Chess.sln'
+  WEB_PROJECT_FILE: 'src/Bg.Chess.Web/Bg.Chess.Web.csproj'
   PUBLISH_FOLDER: 'publish/web'
   DOTNET_VERSION: '5.0.x'
 
 jobs:
-  build:
+  build-and-test:
     if: ${{ github.event.inputs.tag != 'production' }}
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-  test:
-    if: ${{ github.event.inputs.tag != 'production' }}
-    needs: build
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./src
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET
@@ -47,11 +38,11 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Restore
-        run: dotnet restore ${{ env.PROJECT_FILE }}
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
       - name: Build
-        run: dotnet build ${{ env.PROJECT_FILE }} --no-restore
+        run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore
       - name: Run tests
-        run: dotnet test --verbosity normal
+        run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --verbosity normal
 
   deploy:
     runs-on:
@@ -68,10 +59,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.PROJECT_FILE }}
+        run: dotnet restore ${{ env.WEB_PROJECT_FILE }}
 
       - name: Publish
-        run: dotnet publish ${{ env.PROJECT_FILE }} -c ${{ github.event.inputs.configuration }} -o ${{ env.PUBLISH_FOLDER }}
+        run: dotnet publish ${{ env.WEB_PROJECT_FILE }} -c ${{ github.event.inputs.configuration }} -o ${{ env.PUBLISH_FOLDER }}
 
       - name: Copy new files
         env:
