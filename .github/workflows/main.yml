@@ -1,0 +1,89 @@
+﻿name: Main
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Select configuration'
+        required: true
+        type: string
+        default: 'production'
+      configuration:
+        description: 'release/debug'
+        required: true
+        type: choice
+        default: 'release'
+        options:
+          - debug
+          - release
+
+env:
+  PROJECT_FILE: 'src/Bg.Chess.Web/Bg.Chess.Web.csproj'
+  PUBLISH_FOLDER: 'publish/web'
+  DOTNET_VERSION: '5.0.x'
+
+jobs:
+  build:
+    if: ${{ github.event.inputs.tag != 'production' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+  test:
+    if: ${{ github.event.inputs.tag != 'production' }}
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_FILE }}
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_FILE }} --no-restore
+      - name: Run tests
+        run: dotnet test --verbosity normal
+
+  deploy:
+    runs-on:
+      labels: BobGroupWindowsServer
+    environment: globals
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag == 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_FILE }}
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_FILE }} -c ${{ github.event.inputs.configuration }} -o ${{ env.PUBLISH_FOLDER }}
+
+      - name: Copy new files
+        env:
+          SAMBA_USER: ${{ vars.SAMBA_USER }}
+          SAMBA_PASS: ${{ secrets.SAMBA_PASS }}
+        run: |
+          $SambaServer = "192.168.0.17"
+          $SambaShare = "publish"
+          $DestDir = "\\$SambaServer\$SambaShare\bob217chess\production"
+          net use \\$SambaServer\$SambaShare /user:$env:SAMBA_USER $env:SAMBA_PASS /persistent:no
+          if (-not (Test-Path -Path $DestDir)) {
+            New-Item -ItemType Directory -Path $DestDir -Force | Out-Null
+          }
+          Copy-Item -Path "${{ env.PUBLISH_FOLDER }}\*" -Destination $DestDir -Recurse -Force -Exclude "web.config", "appsettings.json", "nlog.config"
+          net use \\$SambaServer\$SambaShare /delete /y
