@@ -129,9 +129,9 @@ function initField(fieldSelector, game) {
                 divLine.appendChild(div);
                 cellColorIndex++;
                 let img = document.createElement('img');
-                let imgSrcName = piece.Type + "-" + piece.Side + '.png';
+                let imgSrcName = (piece.Type + "-" + piece.Side + '.png').toLowerCase();
                 img.classList.add('piece-img');
-                img.src = '/Content/Images/Piece/' + imgSrcName;
+                img.src = '/content/images/piece/' + imgSrcName;
                 div.appendChild(img);
                 dropZones.push(div);
                 if (mySide == piece.Side) {
