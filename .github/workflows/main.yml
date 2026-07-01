@@ -71,7 +71,7 @@ jobs:
         run: |
           $SambaServer = "192.168.0.17"
           $SambaShare = "publish"
-          $DestDir = "\\$SambaServer\$SambaShare\bob217chess\production"
+          $DestDir = "\\$SambaServer\$SambaShare\bob217chess\production\web"
           net use \\$SambaServer\$SambaShare /user:$env:SAMBA_USER $env:SAMBA_PASS /persistent:no
           if (-not (Test-Path -Path $DestDir)) {
             New-Item -ItemType Directory -Path $DestDir -Force | Out-Null
