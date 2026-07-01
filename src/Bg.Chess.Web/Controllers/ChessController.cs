@@ -20,6 +20,7 @@
         private IUserService _userService;
         private IGameService _gameService;
         private static object lockObject = new object();
+        private static readonly System.Random BotRandom = new System.Random();
 
         public ChessController(
             ILoggerFactory loggerFactory,
@@ -119,6 +120,29 @@
             return Json(new { error = false });
         }
 
+        [HttpPost]
+        public JsonResult StartBotGame(string mode, string difficulty)
+        {
+            var gameMode = GetMode(mode);
+            var botDifficulty = GetBotDifficulty(difficulty);
+
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = this.User.FindFirstValue(ClaimTypes.Name);
+
+            var user = _userService.GetUser(userId);
+            if (!user.IsEmailConfirmed)
+            {
+                return Json(new { error = true, message = "Подтвердите почту, перед началом игры" });
+            }
+
+            var player = _playerService.GetOrCreatePlayerByUserId(userId, userName);
+            var botPlayer = _playerService.GetOrCreatePlayerByUserId("bot:" + botDifficulty, GetBotName(botDifficulty));
+            var game = _gameManager.StartBotGame(player, botPlayer, gameMode);
+            _gameService.SaveGame(game);
+
+            return InitFieldResponse(player.Id, game);
+        }
+
         public JsonResult StartSearchTargetGame(string mode, string playerName)
         {
             var gameMode = GetMode(mode);
@@ -180,6 +204,10 @@
             var playerId = GetPlayerId();
             var game = _gameManager.FindMyPlayingGame(playerId);
             game.Move(playerId, fromX, fromY, toX, toY, pawnTransformPiece);
+            if (!game.IsFinish && game.GameType == GameType.Bot)
+            {
+                MoveBot(game);
+            }
             _gameService.SaveGame(game);
 
             return InitFieldResponse(playerId, game);
@@ -218,7 +246,11 @@
 
             var side = game.WhitePlayer.Id == playerId ? "White" : "Black";
             var stepSide = game.StepSide == GameSide.White ? "White" : "Black";
-            var winSide = game.WinSide == GameSide.White ? "White" : "Black";
+            string winSide = null;
+            if (game.WinSide != null)
+            {
+                winSide = game.WinSide == GameSide.White ? "White" : "Black";
+            }
             var finishReason = "";
             if (game.IsFinish)
             {
@@ -244,6 +276,7 @@
             {
                 Id = game.Id,
                 EnemyName = game.WhitePlayer.Id == playerId ? game.BlackPlayer.Name : game.WhitePlayer.Name,
+                GameType = game.GameType.ToString(),
                 FieldWidth = game.FieldWidth,
                 FieldHeight = game.FieldHeight,
                 Notation = notation,
@@ -266,6 +299,210 @@
                 throw new BusinessException("Ваш игровой профиль не готов");
             }
             return player.Id;
+        }
+
+        private void MoveBot(IGameInfo game)
+        {
+            var botPlayer = game.BlackPlayer.UserId.StartsWith("bot:") ? game.BlackPlayer : game.WhitePlayer;
+            var difficulty = GetBotDifficulty(botPlayer.UserId.Replace("bot:", string.Empty));
+            var move = ChooseBotMove(game, difficulty);
+            if (move == null)
+            {
+                return;
+            }
+
+            var pawnTransformPiece = GetPawnTransformPiece(game, move);
+            game.Move(botPlayer.Id, move.From.X, move.From.Y, move.To.X, move.To.Y, pawnTransformPiece);
+        }
+
+        private AvailableMoveCandidate ChooseBotMove(IGameInfo game, string difficulty)
+        {
+            var moves = game.AvailableMoves()
+                .SelectMany(move => move.To.Select(to => new AvailableMoveCandidate { From = move.From, To = to }))
+                .ToList();
+            if (!moves.Any())
+            {
+                return null;
+            }
+
+            if (difficulty == "easy")
+            {
+                return moves[BotRandom.Next(moves.Count)];
+            }
+
+            var pieces = ReadPieces(game);
+            var evaluatedMoves = moves.Select(move =>
+            {
+                var targetPiece = pieces.FirstOrDefault(x => x.X == move.To.X && x.Y == move.To.Y);
+                var runnerPiece = pieces.FirstOrDefault(x => x.X == move.From.X && x.Y == move.From.Y);
+                var captureScore = targetPiece == null ? 0 : GetPieceValue(targetPiece.Type);
+                var centerScore = 4 - System.Math.Abs(3 - move.To.X) - System.Math.Abs(3 - move.To.Y);
+                var promotionScore = IsPromotionMove(game, move, runnerPiece) ? 8 : 0;
+                var score = captureScore * 10 + promotionScore;
+                if (difficulty == "hard")
+                {
+                    score += centerScore;
+                    score += GetPieceValue(runnerPiece?.Type) < captureScore ? 2 : 0;
+                }
+
+                return new { Move = move, Score = score };
+            }).ToList();
+
+            var bestScore = evaluatedMoves.Max(x => x.Score);
+            var bestMoves = evaluatedMoves.Where(x => x.Score == bestScore).Select(x => x.Move).ToList();
+            return bestMoves[BotRandom.Next(bestMoves.Count)];
+        }
+
+        private string GetPawnTransformPiece(IGameInfo game, AvailableMoveCandidate move)
+        {
+            var piece = ReadPieces(game).FirstOrDefault(x => x.X == move.From.X && x.Y == move.From.Y);
+            if (IsPromotionMove(game, move, piece))
+            {
+                return "queen";
+            }
+
+            return null;
+        }
+
+        private bool IsPromotionMove(IGameInfo game, AvailableMoveCandidate move, BotPiece piece)
+        {
+            if (piece == null || (piece.Type != "pawn" && piece.Type != "soldier"))
+            {
+                return false;
+            }
+
+            return (piece.Side == "White" && move.To.Y == game.FieldHeight - 1)
+                || (piece.Side == "Black" && move.To.Y == 0);
+        }
+
+        private List<BotPiece> ReadPieces(IGameInfo game)
+        {
+            var notation = game.GetForsythEdwardsNotation().Split(' ')[0];
+            var lines = notation.Split('/');
+            var result = new List<BotPiece>();
+            for (var rowIndex = 0; rowIndex < lines.Length; rowIndex++)
+            {
+                var x = 0;
+                var y = game.FieldHeight - 1 - rowIndex;
+                for (var symbolIndex = 0; symbolIndex < lines[rowIndex].Length; symbolIndex++)
+                {
+                    var symbol = lines[rowIndex][symbolIndex];
+                    if (char.IsDigit(symbol))
+                    {
+                        var emptyFieldsText = symbol.ToString();
+                        while (symbolIndex + 1 < lines[rowIndex].Length && char.IsDigit(lines[rowIndex][symbolIndex + 1]))
+                        {
+                            symbolIndex++;
+                            emptyFieldsText += lines[rowIndex][symbolIndex];
+                        }
+
+                        var emptyFields = int.Parse(emptyFieldsText);
+                        x += emptyFields;
+                        continue;
+                    }
+
+                    result.Add(new BotPiece
+                    {
+                        X = x,
+                        Y = y,
+                        Side = char.IsUpper(symbol) ? "White" : "Black",
+                        Type = GetPieceTypeByNotation(char.ToLower(symbol)),
+                    });
+                    x++;
+                }
+            }
+
+            return result;
+        }
+
+        private string GetPieceTypeByNotation(char symbol)
+        {
+            switch (symbol)
+            {
+                case 'p':
+                    return "pawn";
+                case 'r':
+                    return "rook";
+                case 'n':
+                    return "knight";
+                case 'b':
+                    return "bishop";
+                case 'q':
+                    return "queen";
+                case 'k':
+                    return "king";
+                case 'd':
+                    return "dragon";
+                case 's':
+                    return "soldier";
+                case 'h':
+                    return "hydra";
+                default:
+                    return symbol.ToString();
+            }
+        }
+
+        private int GetPieceValue(string type)
+        {
+            switch (type)
+            {
+                case "pawn":
+                case "soldier":
+                    return 1;
+                case "knight":
+                case "bishop":
+                    return 3;
+                case "rook":
+                case "hydra":
+                    return 5;
+                case "queen":
+                case "dragon":
+                    return 9;
+                case "king":
+                    return 100;
+                default:
+                    return 0;
+            }
+        }
+
+        private string GetBotDifficulty(string difficulty)
+        {
+            switch (difficulty)
+            {
+                case "easy":
+                case "normal":
+                case "hard":
+                    return difficulty;
+                default:
+                    return "normal";
+            }
+        }
+
+        private string GetBotName(string difficulty)
+        {
+            switch (difficulty)
+            {
+                case "easy":
+                    return "Бот: легкий";
+                case "hard":
+                    return "Бот: сложный";
+                default:
+                    return "Бот: нормальный";
+            }
+        }
+
+        private class AvailableMoveCandidate
+        {
+            public Position From { get; set; }
+            public Position To { get; set; }
+        }
+
+        private class BotPiece
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+            public string Side { get; set; }
+            public string Type { get; set; }
         }
 
         [HttpGet]

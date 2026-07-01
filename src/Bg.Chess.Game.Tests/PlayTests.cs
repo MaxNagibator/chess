@@ -1,4 +1,4 @@
-namespace Bg.Chess.Game.Tests
+﻿namespace Bg.Chess.Game.Tests
 {
     using System.Collections.Generic;
 
@@ -24,7 +24,7 @@ namespace Bg.Chess.Game.Tests
             _manager.Init(new List<IGameInfo>());
 
             var mock = new Mock<IGameRepo>();
-            mock.Setup(a => a.SaveGame(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<GameMode>(), It.IsAny<string>()));
+            mock.Setup(a => a.SaveGame(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<FinishReason>(), It.IsAny<GameSide?>(), It.IsAny<GameMode>(), It.IsAny<GameType>(), It.IsAny<string>()));
             _gameService = new GameService(null, null, mock.Object, pieceTypes, new TestLoggerFactory());
         }
 

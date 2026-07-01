@@ -17,6 +17,7 @@
         RatingSearchStatus Check(int playerId);
         RatingSearchStatus Confirm(int playerId);
         IGameInfo FindMyPlayingGame(int playerId);
+        IGameInfo StartBotGame(Player player, Player botPlayer, GameMode gameMode);
 
         void StartSearchTargetGame(Player player, Player targetPlayer, GameMode gameMode);
         void StopSearchTargetGame(int playerId);
@@ -212,6 +213,34 @@
             return gameInProcess;
         }
 
+        public IGameInfo StartBotGame(Player player, Player botPlayer, GameMode gameMode)
+        {
+            lock (lockSearchList)
+            {
+                var search = ratingSearchList.FirstOrDefault(x => x.Player.Id == player.Id && x.Status != RatingSearchStatus.Finish);
+                if (search != null)
+                {
+                    throw new BusinessException("Запущен рейтинговый поиск. Игра с ботом невозможна.");
+                }
+
+                var targetSearch = targetGameList.FirstOrDefault(x => (x.Player.Id == player.Id || x.TargetPlayer.Id == player.Id) && x.Status != TargetGameConfirmStatus.Finish);
+                if (targetSearch != null)
+                {
+                    throw new BusinessException("Есть активный вызов. Игра с ботом невозможна.");
+                }
+
+                var gameInProcess = _games.Any(x => x.IsMyGame(player.Id) && !x.IsFinish);
+                if (gameInProcess)
+                {
+                    throw new BusinessException("Существует незаконценная игра, игра с ботом невозможна");
+                }
+
+                var game = new GameInfo(_pieceTypes, GetGameId(), GameType.Bot, gameMode, player, botPlayer);
+                _games.Add(game);
+                return game;
+            }
+        }
+
         public void StartSearchTargetGame(Player player, Player targetPlayer, GameMode gameMode)
         {
             if (player.Id == targetPlayer.Id)
@@ -298,7 +327,7 @@
                         search.Status = TargetGameConfirmStatus.Finish;
                         GetWhiteBlackPlayer(search.Player, search.TargetPlayer, out Player whitePlayer, out Player blackPlayer);
                         var gameId = GetGameId();
-                        IGameInfo game = new GameInfo(_pieceTypes, gameId, GameType.Ranked, search.GameMode, whitePlayer, blackPlayer);
+                        IGameInfo game = new GameInfo(_pieceTypes, gameId, GameType.Target, search.GameMode, whitePlayer, blackPlayer);
                         // если никто не сходил, то игра пропадает после перезапуска пула.
                         //_gameService.SaveGame(game);
                         _games.Add(game);

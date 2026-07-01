@@ -280,6 +280,36 @@ function stopSearchTargetGame() {
     });
 }
 
+let startBotGameInProcess = false;
+function startBotGame() {
+    if (startBotGameInProcess || document.getElementById('searchBlock').classList.contains('in-process')) {
+        return;
+    }
+
+    startBotGameInProcess = true;
+    let mode = document.getElementsByClassName('search-mode selected-mode')[0].getAttribute('data-value');
+    let difficulty = document.getElementById('botDifficulty').value;
+    SendRequest({
+        url: '/Chess/StartBotGame',
+        method: 'POST',
+        body: {
+            mode: mode,
+            difficulty: difficulty
+        },
+        success: function (data) {
+            let response = JSON.parse(data.responseText);
+            if (response.error) {
+                alert(response.message);
+            } else {
+                initGame(response);
+            }
+        },
+        always: function () {
+            startBotGameInProcess = false;
+        }
+    });
+}
+
 function SearchBlockRemoveClassInProcess() {
     let elem = document.getElementById('searchBlock');
     elem.classList.remove('in-process');
@@ -293,6 +323,7 @@ let game = {
     status: null
 };
 
+let lastGameId = null;
 let pawnTransformPieceModalSendRequest;
 let pawnTransformPieceModalDom = null;
 let pawnTransformPieceModal = null;
@@ -387,8 +418,15 @@ function goGame(alwaysCallback) {
 }
 
 function initGame(data2) {
+    if (lastGameId != data2.id) {
+        lastGameId = data2.id;
+        lastPieceLocation = null;
+        historyMovesCount = null;
+    }
+
     game.id = data2.id;
     game.mySide = data2.side;
+    game.gameType = data2.gameType;
     game.fieldWidth = data2.fieldWidth;
     game.fieldHeight = data2.fieldHeight;
     game.stepSide = data2.stepSide;

@@ -54,6 +54,7 @@
                 game.FinishReason,
                 game.WinSide,
                 game.GameMode,
+                game.GameType,
                 data);
         }
 

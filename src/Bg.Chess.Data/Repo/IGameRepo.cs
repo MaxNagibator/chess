@@ -8,7 +8,7 @@
     public interface IGameRepo
     {
         ChessGame GetGame(string gameId);
-        void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, GameMode gameMode, string data);
+        void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, GameMode gameMode, GameType gameType, string data);
         List<ChessGame> GetGames(int playerId);
         List<ChessGame> GetNotFinishGames();
     }
@@ -40,7 +40,7 @@
             return _unitOfWork.Context.ChessGames.Where(x => x.FinishReason == null).ToList();
         }
 
-        public void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, GameMode gameMode, string data)
+        public void SaveGame(string id, int whitePlayerId, int blackPlayerId, FinishReason? finishReason, GameSide? winSide, GameMode gameMode, GameType gameType, string data)
         {
             var dbGame = _unitOfWork.Context.ChessGames.FirstOrDefault(x => x.LogicalName == id);
             if (dbGame == null)
@@ -50,6 +50,7 @@
             }
 
             dbGame.GameMode = (int)gameMode;
+            dbGame.GameType = (int)gameType;
             dbGame.LogicalName = id;
             dbGame.WhitePlayerId = whitePlayerId;
             dbGame.BlackPlayerId = blackPlayerId;

@@ -174,7 +174,8 @@
 }
 
 .ranked-game-block,
-.target-game-block {
+.target-game-block,
+.bot-game-block {
     margin-top: 10px;
 }
 
@@ -183,6 +184,11 @@
 }
 .game-search.ranked-game .target-game-block {
     display: none;
+}
+
+.bot-difficulty {
+    height: 38px;
+    vertical-align: middle;
 }
 
 .field-block {
